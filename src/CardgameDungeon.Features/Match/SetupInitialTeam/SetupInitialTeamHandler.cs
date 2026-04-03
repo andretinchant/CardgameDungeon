@@ -1,10 +1,11 @@
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Repositories;
+using CardgameDungeon.Features.Match.Shared;
 using MediatR;
 
 namespace CardgameDungeon.Features.Match.SetupInitialTeam;
 
-public class SetupInitialTeamHandler(IMatchRepository matchRepo)
+public class SetupInitialTeamHandler(IMatchRepository matchRepo, IMatchNotifier notifier)
     : IRequestHandler<SetupInitialTeamCommand, SetupInitialTeamResponse>
 {
     public async Task<SetupInitialTeamResponse> Handle(SetupInitialTeamCommand request, CancellationToken ct)
@@ -23,6 +24,8 @@ public class SetupInitialTeamHandler(IMatchRepository matchRepo)
         match.SubmitSetupTeam(request.PlayerId, allies);
 
         await matchRepo.UpdateAsync(match, ct);
+
+        await notifier.SetupTeamSubmitted(match.Id, request.PlayerId, match.BothTeamsSubmitted);
 
         return new SetupInitialTeamResponse(
             match.Id,

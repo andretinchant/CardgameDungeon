@@ -8,8 +8,9 @@ public class ResolveInitiativeHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
     private readonly CombatResolver _combatResolver = new();
+    private readonly FakeMatchNotifier _notifier = new();
 
-    private ResolveInitiativeHandler Handler => new(_matchRepo, _combatResolver);
+    private ResolveInitiativeHandler Handler => new(_matchRepo, _combatResolver, _notifier);
 
     [Fact]
     public async Task DifferentInitiative_ReturnsWinner()

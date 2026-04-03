@@ -7,8 +7,9 @@ namespace CardgameDungeon.Tests.Match;
 public class SetupInitialTeamHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
+    private readonly FakeMatchNotifier _notifier = new();
 
-    private SetupInitialTeamHandler Handler => new(_matchRepo);
+    private SetupInitialTeamHandler Handler => new(_matchRepo, _notifier);
 
     [Fact]
     public async Task ValidTeam_SubmitsSuccessfully()

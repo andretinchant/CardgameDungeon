@@ -10,9 +10,10 @@ public class PlaceBetHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
     private readonly CombatResolver _combatResolver = new();
+    private readonly FakeMatchNotifier _notifier = new();
 
-    private PlaceBetHandler BetHandler => new(_matchRepo);
-    private ResolveInitiativeHandler InitiativeHandler => new(_matchRepo, _combatResolver);
+    private PlaceBetHandler BetHandler => new(_matchRepo, _notifier);
+    private ResolveInitiativeHandler InitiativeHandler => new(_matchRepo, _combatResolver, _notifier);
 
     private async Task SetupTiedInitiative(Domain.Entities.MatchState match)
     {

@@ -7,7 +7,8 @@ namespace CardgameDungeon.Tests.Match.Combat;
 public class ConcedeRoomHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
-    private ConcedeRoomHandler Handler => new(_matchRepo);
+    private readonly FakeMatchNotifier _notifier = new();
+    private ConcedeRoomHandler Handler => new(_matchRepo, _notifier);
 
     [Fact]
     public async Task DefenderConcedes_AdvancesToRoomResolution()

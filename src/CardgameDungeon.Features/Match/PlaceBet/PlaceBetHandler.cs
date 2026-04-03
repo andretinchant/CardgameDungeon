@@ -1,9 +1,10 @@
 using CardgameDungeon.Domain.Repositories;
+using CardgameDungeon.Features.Match.Shared;
 using MediatR;
 
 namespace CardgameDungeon.Features.Match.PlaceBet;
 
-public class PlaceBetHandler(IMatchRepository matchRepo)
+public class PlaceBetHandler(IMatchRepository matchRepo, IMatchNotifier notifier)
     : IRequestHandler<PlaceBetCommand, PlaceBetResponse>
 {
     public async Task<PlaceBetResponse> Handle(PlaceBetCommand request, CancellationToken ct)
@@ -17,12 +18,16 @@ public class PlaceBetHandler(IMatchRepository matchRepo)
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return new PlaceBetResponse(
+        var response = new PlaceBetResponse(
             match.Id,
             request.PlayerId,
             match.Player1BetTotal,
             match.Player2BetTotal,
             resolved,
             match.InitiativeWinnerId);
+
+        await notifier.BetPlaced(match.Id, response);
+
+        return response;
     }
 }

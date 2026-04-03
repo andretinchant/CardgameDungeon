@@ -1,11 +1,12 @@
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Domain.Services;
+using CardgameDungeon.Features.Match.Shared;
 using MediatR;
 
 namespace CardgameDungeon.Features.Match.Combat.ResolveOpportunityAttack;
 
-public class ResolveOpportunityAttackHandler(IMatchRepository matchRepo, CombatResolver combatResolver)
+public class ResolveOpportunityAttackHandler(IMatchRepository matchRepo, CombatResolver combatResolver, IMatchNotifier notifier)
     : IRequestHandler<ResolveOpportunityAttackCommand, ResolveOpportunityAttackResponse>
 {
     public async Task<ResolveOpportunityAttackResponse> Handle(
@@ -37,7 +38,11 @@ public class ResolveOpportunityAttackHandler(IMatchRepository matchRepo, CombatR
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return new ResolveOpportunityAttackResponse(
+        var response = new ResolveOpportunityAttackResponse(
             match.Id, request.AttackerAllyId, request.FleeingAllyId, damage);
+
+        await notifier.OpportunityAttackResolved(match.Id, response);
+
+        return response;
     }
 }

@@ -11,10 +11,11 @@ public class AdvanceRoomHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
     private readonly CombatResolver _combatResolver = new();
+    private readonly FakeMatchNotifier _notifier = new();
 
-    private AssignCombatHandler AssignHandler => new(_matchRepo);
-    private ResolveCombatRoundHandler ResolveHandler => new(_matchRepo, _combatResolver);
-    private AdvanceRoomHandler AdvanceHandler => new(_matchRepo);
+    private AssignCombatHandler AssignHandler => new(_matchRepo, _notifier);
+    private ResolveCombatRoundHandler ResolveHandler => new(_matchRepo, _combatResolver, _notifier);
+    private AdvanceRoomHandler AdvanceHandler => new(_matchRepo, _notifier);
 
     private async Task BringToRoomResolution(Domain.Entities.MatchState match)
     {

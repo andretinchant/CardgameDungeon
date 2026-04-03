@@ -9,8 +9,9 @@ public class CreateMatchHandlerTests
 {
     private readonly FakeDeckRepository _deckRepo = new();
     private readonly FakeMatchRepository _matchRepo = new();
+    private readonly FakeMatchNotifier _notifier = new();
 
-    private CreateMatchHandler Handler => new(_deckRepo, _matchRepo);
+    private CreateMatchHandler Handler => new(_deckRepo, _matchRepo, _notifier);
 
     [Fact]
     public async Task ValidDecks_CreatesMatch_InSetupPhase()

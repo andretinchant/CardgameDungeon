@@ -1,10 +1,11 @@
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Repositories;
+using CardgameDungeon.Features.Match.Shared;
 using MediatR;
 
 namespace CardgameDungeon.Features.Match.Combat.AssignCombat;
 
-public class AssignCombatHandler(IMatchRepository matchRepo)
+public class AssignCombatHandler(IMatchRepository matchRepo, IMatchNotifier notifier)
     : IRequestHandler<AssignCombatCommand, AssignCombatResponse>
 {
     public async Task<AssignCombatResponse> Handle(AssignCombatCommand request, CancellationToken ct)
@@ -31,9 +32,13 @@ public class AssignCombatHandler(IMatchRepository matchRepo)
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return new AssignCombatResponse(
+        var response = new AssignCombatResponse(
             match.Id,
             match.CombatBoard.Assignments.Count,
             request.Pairings);
+
+        await notifier.CombatAssigned(match.Id, response);
+
+        return response;
     }
 }

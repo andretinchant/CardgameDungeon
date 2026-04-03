@@ -2,11 +2,12 @@ using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Enums;
 using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Domain.Services;
+using CardgameDungeon.Features.Match.Shared;
 using MediatR;
 
 namespace CardgameDungeon.Features.Match.Combat.ResolveCombatRound;
 
-public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolver combatResolver)
+public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolver combatResolver, IMatchNotifier notifier)
     : IRequestHandler<ResolveCombatRoundCommand, ResolveCombatRoundResponse>
 {
     public async Task<ResolveCombatRoundResponse> Handle(ResolveCombatRoundCommand request, CancellationToken ct)
@@ -103,11 +104,18 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return new ResolveCombatRoundResponse(
+        var response = new ResolveCombatRoundResponse(
             match.Id,
             results,
             overallOutcome,
             overallOutcome == CombatOutcome.SimultaneousElimination,
             match.Phase.ToString());
+
+        await notifier.CombatResolved(match.Id, response);
+
+        if (match.IsFinished)
+            await notifier.MatchFinished(match.Id, match.WinnerId!.Value, MatchMapper.ToResponse(match));
+
+        return response;
     }
 }

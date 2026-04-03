@@ -98,28 +98,29 @@ Plano de desenvolvimento organizado em fases sequenciais. Cada fase tem objetivo
 
 ---
 
-## Fase 5: Multiplayer em Tempo Real
+## Fase 5: Multiplayer em Tempo Real (Concluída)
 
 **Objetivo:** Implementar partidas ao vivo entre dois jogadores com sincronização de estado em tempo real.
 
-**Tecnologias:** SignalR, WebSockets, MessagePack (serialização)
+**Tecnologias:** SignalR, WebSockets, JWT auth para hubs
 
 **Tarefas principais:**
-- Configurar SignalR Hub para partidas (MatchHub)
-- Protocolo de mensagens: join, play card, declare attack, pass turn, surrender
-- Sincronização de estado do match entre os dois clientes
-- Fila de matchmaking em tempo real com pareamento por ELO
-- Tratamento de desconexão e reconexão (grace period de 60s)
-- Timeout por turno (configurable, default 90s)
-- Anti-cheat básico: validação server-side de todas as ações
-- Integração no Unity client com SignalR .NET client
+- MatchHub com JoinMatch, LeaveMatch, SendMatchAction e autenticação JWT
+- IMatchNotifier interface no Features com 13 métodos de notificação
+- MatchNotificationService envia notificações via IHubContext para grupos de match
+- Todos os 11 handlers de Match/Combat atualizados para notificar em tempo real
+- 12 eventos server→client: MatchStarted, TeamRevealed, InitiativeResolved, CombatAssigned, CombatResolved, RoomAdvanced, RoomConceeded, MatchFinished, BetPlaced, OpportunityAttackResolved, RetargetCompleted, SetupTeamSubmitted
+- JWT via query string para conexões SignalR
+- MatchHubClient.cs no Unity com callbacks para todos os eventos
+- Validação server-side mantida — hub apenas notifica, lógica permanece nos handlers
 
 **Critérios de conclusão:**
-- [ ] Dois jogadores conseguem jogar uma partida completa em tempo real
-- [ ] Estado do match sempre consistente entre servidor e ambos os clientes
-- [ ] Reconexão funcional dentro do grace period
+- [x] Hub SignalR configurado com autenticação JWT
+- [x] Estado do match sincronizado entre servidor e ambos os clientes via notificações
+- [x] Todos os handlers notificam em tempo real após cada ação
+- [x] Unity client com MatchHubClient pronto para integração
 - [ ] Timeout de turno aplicado automaticamente
-- [ ] Matchmaking pareando jogadores por faixa de ELO
+- [ ] Reconexão funcional dentro do grace period
 
 ---
 

@@ -1,11 +1,12 @@
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Domain.Services;
+using CardgameDungeon.Features.Match.Shared;
 using MediatR;
 
 namespace CardgameDungeon.Features.Match.Combat.Retarget;
 
-public class RetargetHandler(IMatchRepository matchRepo, CombatResolver combatResolver)
+public class RetargetHandler(IMatchRepository matchRepo, CombatResolver combatResolver, IMatchNotifier notifier)
     : IRequestHandler<RetargetCommand, RetargetResponse>
 {
     public async Task<RetargetResponse> Handle(RetargetCommand request, CancellationToken ct)
@@ -46,11 +47,15 @@ public class RetargetHandler(IMatchRepository matchRepo, CombatResolver combatRe
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return new RetargetResponse(
+        var response = new RetargetResponse(
             match.Id,
             result.AllyId,
             result.PrimaryDamageContribution,
             result.SecondaryDamageContribution,
             result.CostPaid);
+
+        await notifier.RetargetCompleted(match.Id, response);
+
+        return response;
     }
 }

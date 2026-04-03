@@ -7,7 +7,8 @@ namespace CardgameDungeon.Tests.Match.Combat;
 public class AssignCombatHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
-    private AssignCombatHandler Handler => new(_matchRepo);
+    private readonly FakeMatchNotifier _notifier = new();
+    private AssignCombatHandler Handler => new(_matchRepo, _notifier);
 
     [Fact]
     public async Task ValidAssignment_CreatesParings()

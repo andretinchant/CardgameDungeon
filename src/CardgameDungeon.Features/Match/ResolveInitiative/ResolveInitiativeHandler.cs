@@ -1,10 +1,11 @@
 using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Domain.Services;
+using CardgameDungeon.Features.Match.Shared;
 using MediatR;
 
 namespace CardgameDungeon.Features.Match.ResolveInitiative;
 
-public class ResolveInitiativeHandler(IMatchRepository matchRepo, CombatResolver combatResolver)
+public class ResolveInitiativeHandler(IMatchRepository matchRepo, CombatResolver combatResolver, IMatchNotifier notifier)
     : IRequestHandler<ResolveInitiativeCommand, InitiativeResponse>
 {
     public async Task<InitiativeResponse> Handle(ResolveInitiativeCommand request, CancellationToken ct)
@@ -22,11 +23,15 @@ public class ResolveInitiativeHandler(IMatchRepository matchRepo, CombatResolver
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return new InitiativeResponse(
+        var response = new InitiativeResponse(
             match.Id,
             result.Player1Total,
             result.Player2Total,
             result.WinnerId,
             result.IsTied);
+
+        await notifier.InitiativeResolved(match.Id, response);
+
+        return response;
     }
 }

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace CardgameDungeon.Features.Match.CreateMatch;
 
-public class CreateMatchHandler(IDeckRepository deckRepo, IMatchRepository matchRepo)
+public class CreateMatchHandler(IDeckRepository deckRepo, IMatchRepository matchRepo, IMatchNotifier notifier)
     : IRequestHandler<CreateMatchCommand, MatchResponse>
 {
     public async Task<MatchResponse> Handle(CreateMatchCommand request, CancellationToken ct)
@@ -36,7 +36,9 @@ public class CreateMatchHandler(IDeckRepository deckRepo, IMatchRepository match
 
         await matchRepo.SaveAsync(match, ct);
 
-        return MatchMapper.ToResponse(match);
+        var response = MatchMapper.ToResponse(match);
+        await notifier.MatchStarted(match.Id, response);
+        return response;
     }
 
     private static List<Card> Shuffle(IReadOnlyList<Card> cards)

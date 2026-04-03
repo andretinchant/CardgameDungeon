@@ -1,11 +1,14 @@
 using System.Text;
 using CardgameDungeon.API.Data.Seeds;
 using CardgameDungeon.API.Endpoints;
+using CardgameDungeon.API.Hubs;
 using CardgameDungeon.API.Infrastructure;
 using CardgameDungeon.API.Middleware;
+using CardgameDungeon.API.Services;
 using CardgameDungeon.Domain.Services;
 using CardgameDungeon.Features.Behaviors;
 using CardgameDungeon.Features.Collection.OpenBooster;
+using CardgameDungeon.Features.Match.Shared;
 using CardgameDungeon.Infrastructure;
 using FluentValidation;
 using MediatR;
@@ -48,11 +51,29 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSection["Issuer"] ?? "CardgameDungeon",
         ValidAudience = jwtSection["Audience"] ?? "CardgameDungeon",
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
-        ClockSkew = TimeSpan.FromMinutes(1)
+        ClockSkew = TimeSpan.FromMinutes(1),
+        NameClaimType = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub
+    };
+
+    // Allow SignalR to receive JWT from query string
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                context.Token = accessToken;
+            return Task.CompletedTask;
+        }
     };
 });
 
 builder.Services.AddAuthorization();
+
+// SignalR for real-time multiplayer
+builder.Services.AddSignalR();
+builder.Services.AddScoped<IMatchNotifier, MatchNotificationService>();
 
 // Swagger with JWT support
 builder.Services.AddEndpointsApiExplorer();
@@ -126,6 +147,9 @@ app.MapGet("/health", () => Results.Ok("healthy")).WithTags("Health");
 
 // Auth endpoints (public)
 app.MapAuthEndpoints();
+
+// SignalR hubs
+app.MapHub<MatchHub>("/hubs/match");
 
 // Protected feature endpoints
 app.MapDeckEndpoints();

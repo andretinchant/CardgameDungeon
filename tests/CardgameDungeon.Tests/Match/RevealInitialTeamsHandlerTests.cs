@@ -8,8 +8,9 @@ namespace CardgameDungeon.Tests.Match;
 public class RevealInitialTeamsHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
+    private readonly FakeMatchNotifier _notifier = new();
 
-    private RevealInitialTeamsHandler Handler => new(_matchRepo);
+    private RevealInitialTeamsHandler Handler => new(_matchRepo, _notifier);
 
     [Fact]
     public async Task BothTeamsSubmitted_RevealsAndAdvancesToInitiative()

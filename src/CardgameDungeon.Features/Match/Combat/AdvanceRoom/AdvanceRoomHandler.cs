@@ -5,7 +5,7 @@ using MediatR;
 
 namespace CardgameDungeon.Features.Match.Combat.AdvanceRoom;
 
-public class AdvanceRoomHandler(IMatchRepository matchRepo)
+public class AdvanceRoomHandler(IMatchRepository matchRepo, IMatchNotifier notifier)
     : IRequestHandler<AdvanceRoomCommand, MatchResponse>
 {
     public async Task<MatchResponse> Handle(AdvanceRoomCommand request, CancellationToken ct)
@@ -26,6 +26,8 @@ public class AdvanceRoomHandler(IMatchRepository matchRepo)
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return MatchMapper.ToResponse(match);
+        var response = MatchMapper.ToResponse(match);
+        await notifier.RoomAdvanced(match.Id, response);
+        return response;
     }
 }

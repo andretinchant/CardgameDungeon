@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CardgameDungeon.Features.Match.Combat.ConcedeRoom;
 
-public class ConcedeRoomHandler(IMatchRepository matchRepo)
+public class ConcedeRoomHandler(IMatchRepository matchRepo, IMatchNotifier notifier)
     : IRequestHandler<ConcedeRoomCommand, MatchResponse>
 {
     public async Task<MatchResponse> Handle(ConcedeRoomCommand request, CancellationToken ct)
@@ -21,6 +21,8 @@ public class ConcedeRoomHandler(IMatchRepository matchRepo)
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return MatchMapper.ToResponse(match);
+        var response = MatchMapper.ToResponse(match);
+        await notifier.RoomConceeded(match.Id, response);
+        return response;
     }
 }

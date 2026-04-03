@@ -10,9 +10,10 @@ public class RetargetHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
     private readonly CombatResolver _combatResolver = new();
+    private readonly FakeMatchNotifier _notifier = new();
 
-    private AssignCombatHandler AssignHandler => new(_matchRepo);
-    private RetargetHandler RetargetHandler => new(_matchRepo, _combatResolver);
+    private AssignCombatHandler AssignHandler => new(_matchRepo, _notifier);
+    private RetargetHandler RetargetHandler => new(_matchRepo, _combatResolver, _notifier);
 
     [Fact]
     public async Task ValidRetarget_DealsDamageOnlyInPrimary()

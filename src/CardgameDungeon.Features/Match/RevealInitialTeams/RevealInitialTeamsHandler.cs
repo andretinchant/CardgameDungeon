@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CardgameDungeon.Features.Match.RevealInitialTeams;
 
-public class RevealInitialTeamsHandler(IMatchRepository matchRepo)
+public class RevealInitialTeamsHandler(IMatchRepository matchRepo, IMatchNotifier notifier)
     : IRequestHandler<RevealInitialTeamsCommand, MatchResponse>
 {
     public async Task<MatchResponse> Handle(RevealInitialTeamsCommand request, CancellationToken ct)
@@ -17,6 +17,8 @@ public class RevealInitialTeamsHandler(IMatchRepository matchRepo)
 
         await matchRepo.UpdateAsync(match, ct);
 
-        return MatchMapper.ToResponse(match);
+        var response = MatchMapper.ToResponse(match);
+        await notifier.TeamRevealed(match.Id, response);
+        return response;
     }
 }
