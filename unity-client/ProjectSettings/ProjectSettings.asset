@@ -1,0 +1,12 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!129 &1
+PlayerSettings:
+  productName: CardgameDungeon
+  companyName: CardgameDungeon
+  defaultScreenWidth: 1920
+  defaultScreenHeight: 1080
+  colorSpace: 1
+  scriptingDefineSymbols: {}
+  scriptingBackend: {}
+  apiCompatibilityLevel: {}
