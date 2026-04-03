@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/.git/
+**/unity-client/
+**/.vs/
+**/.idea/
+**/tests/
+*.md
+!CLAUDE.md
+.github/
+infrastructure/

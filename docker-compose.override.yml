@@ -1,0 +1,21 @@
+# Development overrides — applied automatically by docker compose up
+services:
+  api:
+    build:
+      target: build
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    volumes:
+      - ./src:/src/src:ro
+    command: dotnet watch run --project src/CardgameDungeon.API/CardgameDungeon.API.csproj --urls http://+:8080
+
+  db:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"

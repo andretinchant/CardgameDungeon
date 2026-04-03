@@ -2,10 +2,12 @@ using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Features.Auth;
 using CardgameDungeon.Infrastructure.Auth;
 using CardgameDungeon.Infrastructure.Data;
+using CardgameDungeon.Infrastructure.Redis;
 using CardgameDungeon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace CardgameDungeon.Infrastructure;
 
@@ -32,6 +34,18 @@ public static class DependencyInjection
         // Auth services
         services.AddSingleton<IAuthTokenService, JwtTokenService>();
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+
+        // Redis (optional — falls back to EF if not configured)
+        var redisConnectionString = configuration["Redis:ConnectionString"];
+        if (!string.IsNullOrEmpty(redisConnectionString))
+        {
+            services.AddSingleton<IConnectionMultiplexer>(_ =>
+                ConnectionMultiplexer.Connect(redisConnectionString));
+
+            // Replace EF queue repo with Redis-backed one
+            services.AddScoped<IQueueRepository, RedisMatchmakingQueue>();
+            services.AddSingleton<RedisSessionCache>();
+        }
 
         return services;
     }

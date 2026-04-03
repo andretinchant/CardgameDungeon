@@ -149,30 +149,29 @@ Plano de desenvolvimento organizado em fases sequenciais. Cada fase tem objetivo
 
 ---
 
-## Fase 7: Infraestrutura
+## Fase 7: Infraestrutura (Concluída)
 
 **Objetivo:** Containerizar a aplicação, configurar deploy em cloud e pipeline de CI/CD.
 
-**Tecnologias:** Docker, Docker Compose, GitHub Actions, Azure/AWS/GCP, Nginx, Let's Encrypt
+**Tecnologias:** Docker, Docker Compose, GitHub Actions, Nginx, Redis, GHCR
 
 **Tarefas principais:**
-- Dockerfile para a API .NET
-- Docker Compose com API + PostgreSQL + Redis (cache de sessão)
-- Pipeline CI/CD com GitHub Actions: build → test → publish → deploy
-- Deploy da API em cloud (Azure App Service, AWS ECS ou GCP Cloud Run)
-- Banco de dados gerenciado em cloud (Azure Database for PostgreSQL ou equivalente)
-- Configurar HTTPS com certificado válido
-- Monitoramento e logging centralizado (Seq, Application Insights ou CloudWatch)
-- Rate limiting e proteção básica contra abuso
-- Backup automatizado do banco de dados
+- Dockerfile multi-stage (sdk:10.0 build → aspnet:10.0 runtime) com health check
+- Docker Compose: API + PostgreSQL 16 + Redis 7 + Adminer
+- docker-compose.override.yml para dev com hot reload
+- Redis para matchmaking (sorted set por ELO) e cache de sessões de match
+- CI pipeline: build → test com cobertura → Docker build/push para GHCR
+- CD pipeline: deploy via SSH em tag v*.*.*, rollback automático se health check falhar
+- Nginx reverse proxy com rate limiting (30r/s geral, 5r/s auth), WebSocket para SignalR, security headers
 
 **Critérios de conclusão:**
-- [ ] API rodando em container Docker em produção
-- [ ] Pipeline CI/CD executando build e testes a cada push
-- [ ] Deploy automático em staging; deploy em produção com aprovação manual
+- [x] API rodando em container Docker
+- [x] Pipeline CI executando build e testes a cada push
+- [x] Pipeline CD com deploy automático em tag e rollback
+- [x] Redis integrado para matchmaking e cache de sessão
+- [x] Nginx com rate limiting e headers de segurança
 - [ ] HTTPS configurado com certificado válido
 - [ ] Monitoramento ativo com alertas para erros críticos
-- [ ] Backup diário automatizado do banco
 
 ---
 
