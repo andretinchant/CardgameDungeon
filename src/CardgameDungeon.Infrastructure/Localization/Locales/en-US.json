@@ -70,6 +70,13 @@
   "equipment_slot.helmet": "Helmet",
   "equipment_slot.boots": "Boots",
   "equipment_slot.accessory": "Accessory",
+  "equipment_slot.scroll": "Scroll",
+  "equipment_slot.potion": "Potion",
+  "equipment_slot.balm": "Balm",
+  "equipment_slot.bomb": "Bomb",
+  "equipment_slot.totem": "Totem",
+  "equipment.consumable": "Single-Use",
+  "equipment.gear": "Gear",
 
   "phase.setup": "Setup",
   "phase.room_reveal": "Room Reveal",

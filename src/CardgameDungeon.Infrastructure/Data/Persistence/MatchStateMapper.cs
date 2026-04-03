@@ -160,6 +160,7 @@ internal static class MatchStateMapper
                 dto.StrengthModifier = e.StrengthModifier;
                 dto.HitPointsModifier = e.HitPointsModifier;
                 dto.InitiativeModifier = e.InitiativeModifier;
+                dto.Effect = e.Effect;
                 break;
             case MonsterCard m:
                 dto.Race = (int)m.Race;
@@ -205,7 +206,7 @@ internal static class MatchStateMapper
 
             "Equipment" => new EquipmentCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.StrengthModifier ?? 0, dto.HitPointsModifier ?? 0, dto.InitiativeModifier ?? 0,
-                (EquipmentSlot)(dto.EquipmentSlot ?? 5)),
+                (EquipmentSlot)(dto.EquipmentSlot ?? 5), dto.Effect),
 
             "Monster" => new MonsterCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Strength ?? 0, dto.HitPoints ?? 1, dto.Initiative ?? 0,

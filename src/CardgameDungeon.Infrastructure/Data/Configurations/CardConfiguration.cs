@@ -56,6 +56,8 @@ internal class EquipmentCardConfiguration : IEntityTypeConfiguration<EquipmentCa
         builder.Property(e => e.StrengthModifier);
         builder.Property(e => e.HitPointsModifier);
         builder.Property(e => e.InitiativeModifier);
+        builder.Property(e => e.Effect).HasColumnName("Effect").HasMaxLength(500);
+        builder.Ignore(e => e.IsConsumable);
     }
 }
 

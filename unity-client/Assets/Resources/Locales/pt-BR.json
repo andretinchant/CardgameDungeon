@@ -70,6 +70,13 @@
   "equipment_slot.helmet": "Elmo",
   "equipment_slot.boots": "Botas",
   "equipment_slot.accessory": "Acessorio",
+  "equipment_slot.scroll": "Pergaminho",
+  "equipment_slot.potion": "Pocao",
+  "equipment_slot.balm": "Balsamo",
+  "equipment_slot.bomb": "Bomba",
+  "equipment_slot.totem": "Totem",
+  "equipment.consumable": "Uso Unico",
+  "equipment.gear": "Equipamento",
 
   "phase.setup": "Preparacao",
   "phase.room_reveal": "Revelacao da Sala",

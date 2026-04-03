@@ -216,8 +216,10 @@ namespace CardgameDungeon.Unity.Cards
                                   (a.Treasure > 0 ? $"Treasure: {a.Treasure}\n" : "") +
                                   (!string.IsNullOrEmpty(a.Effect) ? $"<i>{a.Effect}</i>" : ""),
 
-                EquipmentCardData e => $"STR: {Signed(e.StrengthModifier)}  HP: {Signed(e.HitPointsModifier)}  " +
-                                       $"INIT: {Signed(e.InitiativeModifier)}",
+                EquipmentCardData e => $"[{e.Slot}]{(e.IsConsumable ? " <color=#FF6600>Single-Use</color>" : "")}\n" +
+                                       $"STR: {Signed(e.StrengthModifier)}  HP: {Signed(e.HitPointsModifier)}  " +
+                                       $"INIT: {Signed(e.InitiativeModifier)}\n" +
+                                       (!string.IsNullOrEmpty(e.Effect) ? $"<i>{e.Effect}</i>" : ""),
 
                 MonsterCardData m => $"STR: {m.Strength}  HP: {m.HitPoints}  INIT: {m.Initiative}\n" +
                                      (m.Treasure > 0 ? $"Treasure: {m.Treasure}\n" : "") +
@@ -434,6 +436,7 @@ namespace CardgameDungeon.Unity.Cards
             return cardData switch
             {
                 AllyCardData ally => ally.Effect,
+                EquipmentCardData equip => equip.Effect,
                 MonsterCardData monster => monster.Effect,
                 TrapCardData trap => trap.Effect,
                 DungeonRoomCardData room => room.Effect,

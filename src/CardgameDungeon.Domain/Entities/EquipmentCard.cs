@@ -9,6 +9,13 @@ public class EquipmentCard : Card
     public int StrengthModifier { get; private set; }
     public int HitPointsModifier { get; private set; }
     public int InitiativeModifier { get; private set; }
+    public string? Effect { get; private set; }
+
+    /// <summary>
+    /// Consumables (Scroll, Potion, Balm, Bomb, Totem) have no equip limit
+    /// and are destroyed after a single use. Gear slots are limited to 1 per ally.
+    /// </summary>
+    public bool IsConsumable => Slot.IsConsumable();
 
     private EquipmentCard() { } // EF Core
 
@@ -20,12 +27,14 @@ public class EquipmentCard : Card
         int strengthModifier,
         int hitPointsModifier,
         int initiativeModifier,
-        EquipmentSlot slot = EquipmentSlot.Accessory)
+        EquipmentSlot slot = EquipmentSlot.Accessory,
+        string? effect = null)
         : base(id, name, rarity, cost)
     {
         Slot = slot;
         StrengthModifier = strengthModifier;
         HitPointsModifier = hitPointsModifier;
         InitiativeModifier = initiativeModifier;
+        Effect = effect;
     }
 }

@@ -40,7 +40,9 @@ Unity client is a separate project that consumes the API.
 
 **Races:** Human, Elf, Dwarf, Orc, Halfling, Dragonborn, Tiefling, Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon. Allies, Monsters, and Bosses each have a Race.
 
-**Equipment Slots:** Weapon, Armor, Shield, Helmet, Boots, Accessory. Each equipment card occupies one slot. An ally cannot equip two items in the same slot (e.g., no 2 boots, no 2 armors).
+**Equipment Slots (Gear):** Weapon, Armor, Shield, Helmet, Boots, Accessory. Limited to 1 per slot per ally (e.g., no 2 boots, no 2 armors).
+
+**Consumables:** Scroll, Potion, Balm, Bomb, Totem. No equip limit — an ally can carry multiple. Single-use: destroyed after activation. Typically have stronger effects than gear to compensate for being one-time-only. Have an Effect text describing their activation.
 
 ### Match Flow
 

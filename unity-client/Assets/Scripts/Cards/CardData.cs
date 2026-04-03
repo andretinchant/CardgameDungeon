@@ -28,7 +28,10 @@ namespace CardgameDungeon.Unity.Cards
 
     public enum EquipmentSlot
     {
-        Weapon, Armor, Shield, Helmet, Boots, Accessory
+        // Gear — 1 per slot per ally
+        Weapon, Armor, Shield, Helmet, Boots, Accessory,
+        // Consumables — no limit, single-use
+        Scroll, Potion, Balm, Bomb, Totem
     }
 
     [CreateAssetMenu(fileName = "NewCard", menuName = "CardgameDungeon/Cards/CardData")]
@@ -86,11 +89,14 @@ namespace CardgameDungeon.Unity.Cards
         [SerializeField] private int strengthModifier;
         [SerializeField] private int hitPointsModifier;
         [SerializeField] private int initiativeModifier;
+        [SerializeField, TextArea] private string effect;
 
         public EquipmentSlot Slot => slot;
         public int StrengthModifier => strengthModifier;
         public int HitPointsModifier => hitPointsModifier;
         public int InitiativeModifier => initiativeModifier;
+        public string Effect => effect;
+        public bool IsConsumable => slot >= EquipmentSlot.Scroll;
     }
 
     [CreateAssetMenu(fileName = "NewMonsterCard", menuName = "CardgameDungeon/Cards/MonsterCardData")]
