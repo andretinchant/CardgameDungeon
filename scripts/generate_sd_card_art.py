@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STYLE_GUIDE_PATH = ROOT / "STYLE_GUIDE_DND_DUNGEON.md"
 SEEDS_ROOT = ROOT / "src" / "CardgameDungeon.API" / "Data" / "Seeds"
 OUTPUT_ROOT = ROOT / "art-output" / "stable-diffusion"
+OVERRIDES_PATH = ROOT / "scripts" / "card_art_prompt_overrides.json"
 
 CARD_TYPE_ORDER = ["Equipment", "Ally", "Monster", "Trap", "DungeonRoom", "Boss"]
 
@@ -172,6 +173,9 @@ SD_PAYLOAD = {
     "batch_size": 1,
 }
 
+CHECKPOINT_DREAMSHAPER = "dreamshaper_8.safetensors [879db523c3]"
+CHECKPOINT_SD15 = "v1-5-pruned-emaonly.safetensors [6ce0161689]"
+
 CLASS_HINTS = {
     "paladin": "paladin",
     "ranger": "ranger",
@@ -254,6 +258,328 @@ EQUIPMENT_NEGATIVE_PROMPT = "person, character, hands, body, humanoid, anime, ca
 CREATURE_NEGATIVE_PROMPT = "anime, cartoon, low detail, flat lighting, pastel colors"
 ENVIRONMENT_NEGATIVE_PROMPT = "person, character, humanoid, anime, cartoon"
 
+RACE_VISUALS = {
+    "aasimar": "radiant celestial features and faint halo glow",
+    "dragonborn": "draconic snout, scales, and proud warrior posture",
+    "dwarven": "stout dwarven build, braided beard, and heavy armor",
+    "dwarf": "stout dwarven build, braided beard, and heavy armor",
+    "elven": "sharp elven features, elegant silhouette, and refined gear",
+    "elf": "sharp elven features, elegant silhouette, and refined gear",
+    "half-orc": "broad muscular frame, tusks, and brutal scarred armor",
+    "halfling": "small nimble body and practical adventuring clothes",
+    "gnome": "small clever inventor silhouette and tool-laden gear",
+    "tiefling": "curved horns, infernal eyes, and arcane clothing",
+    "firbolg": "towering forest giant build and druidic ornamentation",
+    "goliath": "massive stone-like musculature and tribal markings",
+    "tabaxi": "feline features, agile body, and swashbuckling attire",
+    "kenku": "crow-like beak, feathered silhouette, and shadowy gear",
+    "tortle": "armored shell and stoic guardian posture",
+    "changeling": "ambiguous shifting facial features and spy attire",
+    "eladrin": "fey elegance, luminous eyes, and flowing bladesinger robes",
+    "genasi": "elemental aura and windswept magical clothing",
+    "lizardfolk": "reptilian scales and primal bone ornaments",
+    "bugbear": "hulking hairy goblinoid frame and savage weapons",
+    "hobgoblin": "disciplined martial armor and commanding stance",
+    "human": "human adventurer proportions and grounded heroic presence",
+}
+
+CLASS_VISUALS = {
+    "paladin": "wielding a blessed weapon and shield",
+    "ranger": "with bow or dual hunting blades ready",
+    "cleric": "holding a holy symbol and radiant mace",
+    "rogue": "with daggers drawn and stealthy footwork",
+    "artificer": "surrounded by arcane gadgets and crafted tools",
+    "warlock": "channeling eldritch magic through one hand",
+    "fighter": "in disciplined combat stance with battle weapon",
+    "barbarian": "mid-charge with raw fury and heavy weapon",
+    "monk": "mid-strike with flowing martial motion",
+    "druid": "surrounded by primal nature magic and animal motifs",
+    "berserker": "roaring in savage melee momentum",
+    "swashbuckler": "dueling gracefully with rapier-like precision",
+    "spy": "half-hidden, watchful, and ready to deceive",
+    "bladesinger": "mixing swordplay and arcane energy in one motion",
+    "stormcaller": "calling lightning around an outstretched arm",
+    "shaman": "with bone charms and primal ritual power",
+    "warlord": "commanding the battlefield with tactical authority",
+    "wizard": "casting a precise arcane spell",
+    "mage": "surrounded by controlled magical sigils",
+    "healer": "projecting restorative holy light",
+    "merchant": "carrying valuable gear and relics",
+    "beast handler": "with trained companion cues and command posture",
+    "oracle": "reading fate through mystical cards and visions",
+    "hunter": "tracking prey with lethal focus",
+    "guardian": "interposing defensively with shielded stance",
+    "exorcist": "brandishing relics against evil forces",
+    "acrobat": "caught in dynamic agile movement",
+    "knight": "in heavy plate with noble martial bearing",
+    "witch": "casting sinister or whimsical hex magic",
+    "witch queen": "radiating regal arcane menace",
+    "ringmaster": "with theatrical yet dangerous flourish",
+    "priest": "invoking sacred power through ritual gesture",
+    "mystic": "shrouded in prophecy and spirit magic",
+    "adventurer": "armed and ready for dungeon combat",
+}
+
+MONSTER_BASE_VISUALS = {
+    "dragon": "single dragon only, colossal reptilian body, huge wings, horned head, long tail, and dominating claws",
+    "brain": "single elder brain only, enormous exposed brain mass with hanging neural tendrils in a grotesque vat-like setting",
+    "beholder": "single beholder only, floating spherical body, giant central eye, many eyestalks, and levitating menace",
+    "lich": "single lich only, skeletal undead sorcerer in decayed regal robes with necromantic aura",
+    "mind flayer": "single mind flayer only, tall robed aberration with squid-like face tentacles and psychic presence",
+    "vampire": "single vampire noble only, pale aristocratic predator with fangs, dark cape, and blood magic",
+    "death knight": "single undead knight only, blackened cursed armor, burning eye sockets, and runed greatsword",
+    "fiend": "single infernal fiend only, towering demonic musculature, horns, burning skin, and hellish wings",
+    "demon": "single demon only, massive horned abyssal body with fiery whip-like energy and monstrous claws",
+    "golem": "single construct only, immense metal body, heavy forged plates, and unstoppable weight",
+    "hydra": "single hydra only, one giant beast with multiple serpentine heads from one shared body",
+    "ooze": "single ooze creature only, amorphous translucent slime mass with corrosive sheen",
+    "spider": "single giant spider only, oversized arachnid body, many legs, fangs, and web-coated silhouette",
+    "wolf": "single dire wolf only, huge lupine body, snarling jaws, and predatory eyes",
+    "giant": "single giant only, enormous humanoid frame with oversized weapon and brutal scale",
+    "troll": "single troll only, lanky regenerating brute with long limbs and claws",
+    "basilisk": "single basilisk only, low reptilian body, crown-like horns, and petrifying gaze",
+    "cockatrice": "single cockatrice only, twisted rooster-lizard hybrid with sharp beak and stone curse aura",
+    "ghost": "single ghost only, spectral humanoid silhouette with trailing ectoplasmic robes",
+    "wraith": "single wraith only, shadowy reaper-like apparition with hollow glowing eyes",
+    "skeleton": "single skeleton warrior only, animated bones, rusted armor, and undead menace",
+    "zombie": "single zombie only, rotting corpse body and shambling aggression",
+    "mummy": "single mummy only, wrapped ancient corpse with cursed burial regalia",
+    "devil": "single devil only, infernal aristocratic monster with horns, tail, and hellfire aura",
+    "imp": "single imp only, small winged devilish creature with sharp silhouette",
+    "elemental": "single elemental entity only, body formed from raw fire, ice, stone, or storm energy",
+    "hag": "single hag only, twisted witch-like monster with clawed hands and curse magic",
+    "kobold": "single kobold only, small draconic reptilian scavenger with cunning stance",
+    "goblin": "single goblin only, wiry green raider with crude weapons and vicious grin",
+    "orc": "single orc only, brutal tusked warrior with heavy musculature and savage gear",
+    "gnoll": "single gnoll only, hyena-headed marauder with ragged armor and feral hunger",
+    "minotaur": "single minotaur only, bull-headed giant labyrinth brute with huge horns",
+    "medusa": "single medusa only, humanoid serpent-haired monster with petrifying stare",
+    "wyvern": "single wyvern only, winged reptile with stinger tail and predatory profile",
+    "gargoyle": "single gargoyle only, winged stone demon perched in predatory crouch",
+    "mimic": "single mimic only, monstrous treasure chest with teeth, tongue, and transformed wood flesh",
+}
+
+MONSTER_ADJECTIVE_VISUALS = {
+    "ancient": "scarred by ages, primeval, and immensely old",
+    "red": "glowing crimson scales or red infernal light",
+    "elder": "elder intellect and grotesque ancient dominance",
+    "tyrant": "regal tyrannical presence and domineering posture",
+    "lord": "regal and oppressive high-status menace",
+    "arcanist": "arcane sigils and spellcasting energy",
+    "pit": "hellish fire and infernal smoke",
+    "iron": "forged iron surfaces and metallic weight",
+    "death": "necrotic aura and deathly gloom",
+    "vampire": "blood-drinking elegance and predatory nobility",
+    "balor": "flaming abyssal energy and demonic grandeur",
+}
+
+MONSTER_EFFECT_VISUALS = {
+    "fire damage": "fire streaming from maw, claws, or aura",
+    "explodes": "volatile energy swelling inside the body",
+    "eye rays": "multiple magical beams firing from eyes",
+    "petrify": "stone curse energy gathering around the gaze",
+    "charm": "hypnotic eyes and enthralling magic swirl",
+    "phylactery": "necromantic soul-binding aura hinting at immortality",
+    "devours their intellect": "psychic tendrils and mind-rending pressure",
+    "heals hp": "blood or life essence flowing back into the body",
+    "immune to fire": "fire curling harmlessly across the skin",
+    "extra damage": "weapon or claws crackling with lethal energy",
+    "takes control": "domination tendrils or psychic domination energy",
+}
+
+MONSTER_IDENTITY_RULES = {
+    "dragon": {
+        "identity": "unmistakably a dragon, reptilian not humanoid",
+        "negative": "humanoid, human body, demon man, devil man, tiefling body, warrior torso, person, mammal face",
+    },
+    "elder brain": {
+        "identity": "unmistakably an elder brain, giant exposed brain mass with long wet tentacles and no humanoid body",
+        "negative": "humanoid, person, human body, torso, legs, arms, armor, demon, knight, warrior, giant man",
+    },
+    "brain": {
+        "identity": "unmistakably an exposed aberrant brain creature, not humanoid",
+        "negative": "humanoid, person, armor, torso, legs, demon warrior",
+    },
+    "beholder": {
+        "identity": "unmistakably a beholder, floating orb body with one giant eye and many eyestalks",
+        "negative": "humanoid, person, dragon, demon, warrior, torso, two creatures",
+    },
+    "mind flayer": {
+        "identity": "unmistakably a mind flayer, squid-faced aberration with face tentacles",
+        "negative": "normal human face, demon brute, dragon, beast, two creatures",
+    },
+    "lich": {
+        "identity": "unmistakably an undead lich, skeletal face and decayed sorcerer body",
+        "negative": "living healthy skin, handsome human, demon brute, dragon, two characters",
+    },
+    "death knight": {
+        "identity": "unmistakably an undead knight, cursed armor with skeletal or deathly face",
+        "negative": "two knights, living clean hero, angel, dragon",
+    },
+    "vampire": {
+        "identity": "unmistakably a vampire lord, pale aristocratic predator with fangs",
+        "negative": "normal hero, werewolf, demon brute, two characters",
+    },
+    "golem": {
+        "identity": "unmistakably a golem or construct, artificial body not flesh humanoid",
+        "negative": "human skin, demon flesh, normal person, superhero body, two creatures",
+    },
+    "hydra": {
+        "identity": "unmistakably one hydra, one shared body with many serpent heads",
+        "negative": "separate monsters, humanoid, dragon rider, two creatures",
+    },
+    "ooze": {
+        "identity": "unmistakably one ooze, amorphous slime body with no limbs",
+        "negative": "humanoid, person, demon, armored body, skeleton",
+    },
+    "spider": {
+        "identity": "unmistakably one giant spider, arachnid anatomy with eight legs",
+        "negative": "humanoid, woman, man, drider, demon warrior, two spiders",
+    },
+    "wolf": {
+        "identity": "unmistakably one dire wolf, lupine anatomy not humanoid",
+        "negative": "werewolf humanoid, person, demon, dog pack, rider",
+    },
+    "basilisk": {
+        "identity": "unmistakably one basilisk, low reptilian monster with petrifying gaze",
+        "negative": "humanoid, person, dragon knight, demon",
+    },
+    "cockatrice": {
+        "identity": "unmistakably one cockatrice, rooster-lizard hybrid monster",
+        "negative": "humanoid, person, dragon, demon warrior",
+    },
+    "ghost": {
+        "identity": "unmistakably one ghostly spirit, spectral figure made of ectoplasm",
+        "negative": "solid living hero, demon brute, two ghosts, crowd",
+    },
+    "wraith": {
+        "identity": "unmistakably one wraith, shadow spirit with flowing spectral form",
+        "negative": "solid armor knight, normal human, demon brute, crowd",
+    },
+    "skeleton": {
+        "identity": "unmistakably one animated skeleton warrior, visible bones",
+        "negative": "living body, demon brute, zombie flesh, two skeletons",
+    },
+    "zombie": {
+        "identity": "unmistakably one zombie, rotting corpse body",
+        "negative": "clean human, skeleton only, demon brute, crowd",
+    },
+    "mummy": {
+        "identity": "unmistakably one mummy, wrapped cursed corpse",
+        "negative": "clean human, demon brute, crowd",
+    },
+    "devil": {
+        "identity": "unmistakably one infernal devil creature",
+        "negative": "angel, dragon, normal human hero, multiple devils",
+    },
+    "demon": {
+        "identity": "unmistakably one abyssal demon creature",
+        "negative": "two demons, crowd, normal human, dragon unless named dragon",
+    },
+    "giant": {
+        "identity": "unmistakably one giant, enormous scale compared to the room",
+        "negative": "normal human size, crowd, duplicate giant",
+    },
+    "troll": {
+        "identity": "unmistakably one troll, lanky regenerating monster",
+        "negative": "orc warrior, demon brute, two creatures",
+    },
+    "hag": {
+        "identity": "unmistakably one hag, twisted witch-monster",
+        "negative": "beautiful heroine, young woman, crowd",
+    },
+    "mimic": {
+        "identity": "unmistakably one mimic, monstrous transformed chest with teeth and tongue",
+        "negative": "person, humanoid, simple treasure chest only, crowd",
+    },
+}
+
+ALLY_NAME_VISUAL_RULES = {
+    "drizzt": "dual scimitars, dark elf features, white hair, panther-like agility",
+    "elminster": "elder wizard beard, weathered archmage robes, staff and spellbook aura",
+    "bruenor": "dwarven kingly beard, heavy axe, battered plate and shield motifs",
+    "wulfgar": "massive barbarian with legendary war hammer mid-throw",
+    "cattie": "skilled archer with drawn bow and precise ranged focus",
+    "regis": "small halfling rogue with jeweled pendant and cunning stance",
+    "mordenkainen": "archwizard with layered robes, arcane sigils, and controlled spellcasting",
+    "tasha": "imperious witch queen with dangerous laughter magic",
+    "minsc": "muscular ranger hero with tiny hamster companion clearly visible",
+    "boo": "small heroic hamster companion clearly visible near the hero",
+}
+
+EQUIPMENT_NAME_VISUAL_RULES = {
+    "blackstaff": "black mystical staff topped with an ornate arcane headpiece",
+    "wand of orcus": "sinister necromantic wand with skull motifs and bone texture",
+    "vorpal sword": "long sword with impossibly sharp glowing edge and executioner aura",
+    "holy avenger": "blessed longsword radiating sacred golden light",
+    "robe of the archmagi": "luxurious archmage robe spread to show rich enchanted fabric",
+    "shield of the sentinel": "broad sentinel shield with vigilant eye-like crest",
+    "cloak of displacement": "cloak rippling with mirrored distortion around its edges",
+    "boots of speed": "pair of enchanted leather boots with speed runes and motion streaks",
+    "ring of regeneration": "single ring with vivid green healing gem and living energy",
+    "staff of power": "ornate staff crowned by a powerful crystal focus",
+}
+
+EQUIPMENT_TYPE_NEGATIVES = {
+    "boots": "staff, wand, pillar, totem, sword, spear, person wearing boots",
+    "ring": "boots, gloves, sword, staff, amulet, crown",
+    "amulet": "ring, staff, sword, boots, armor, person wearing necklace",
+    "staff": "person holding staff, spear, sword, wand-only, pillar",
+    "wand": "staff, sword, spear, person casting spell",
+    "sword": "staff, wand, spear, dagger cluster, person holding weapon",
+    "dagger": "sword, spear, staff, person holding weapon",
+    "cloak": "person wearing cloak, full body, cape on character",
+    "robe": "person wearing robe, full body, wizard portrait",
+    "shield": "person holding shield, knight portrait, full body",
+    "gauntlets": "person wearing gauntlets, hands attached to body, full body",
+    "gloves": "person wearing gloves, hands attached to body, full body",
+    "bracers": "person wearing bracers, arms attached to body, full body",
+    "vial": "staff, sword, orb, potion held in hand",
+    "powder": "staff, sword, potion bottle held in hand",
+    "circlet": "crown on person, portrait, head wearing circlet",
+    "mail": "person wearing armor, full body warrior",
+    "armor": "person wearing armor, full body warrior",
+}
+
+NON_HUMANOID_LITERAL_KEYWORDS = {
+    "dragon",
+    "elder brain",
+    "brain",
+    "beholder",
+    "golem",
+    "hydra",
+    "ooze",
+    "spider",
+    "wolf",
+    "basilisk",
+    "cockatrice",
+    "ghost",
+    "wraith",
+    "skeleton",
+    "zombie",
+    "mummy",
+    "mimic",
+}
+
+ROOM_VISUALS = {
+    "crypt": "funerary stone tombs, sarcophagi, and sepulchral gloom",
+    "forge": "molten channels, anvils, chains, and hot iron glow",
+    "chapel": "ruined altar, cracked icons, and desecrated sacred stone",
+    "library": "towering shelves, chained books, and arcane dust",
+    "cavern": "jagged natural rock, echoing darkness, and mineral glow",
+    "throne": "raised dais, broken throne, and ominous ceremonial layout",
+    "garden": "twisted roots, poisonous foliage, and overgrown ruins",
+    "arena": "combat pit, scattered weapons, and bloodstained stone",
+    "workshop": "alchemical devices, shattered glass, and unstable apparatus",
+    "observatory": "celestial machinery, lenses, and cosmic architecture",
+    "catacombs": "long bone-lined corridors and burial alcoves",
+    "hatchery": "eggs, nest debris, and draconic heat",
+    "rift": "reality tear, abyssal light, and fractured stone",
+    "web": "thick webs, cocoons, and clinging shadows",
+    "tunnel": "narrow collapsed stone passages and rubble",
+    "gate": "portcullis, iron bars, and choke-point corridor",
+}
+
 
 @dataclass
 class CardDefinition:
@@ -283,6 +609,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--style-guide", type=Path, default=STYLE_GUIDE_PATH)
     parser.add_argument("--seeds-root", type=Path, default=SEEDS_ROOT)
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_ROOT)
+    parser.add_argument("--overrides", type=Path, default=OVERRIDES_PATH)
     parser.add_argument("--base-url", default="http://127.0.0.1:7860")
     parser.add_argument("--set-code", help="Filter by set code, e.g. DND1 or DND2.")
     parser.add_argument("--card-type", choices=CARD_TYPE_ORDER)
@@ -458,6 +785,21 @@ def build_card_definition(set_code: str, card_type: str, values: dict[str, Any])
     return CardDefinition(**data)
 
 
+def card_override_key(card: CardDefinition) -> str:
+    return f"{card.set_code}:{card.card_type}:{card.name}".lower()
+
+
+def load_overrides(path: Path) -> dict[str, dict[str, Any]]:
+    if not path.exists():
+        return {}
+
+    data = json.loads(path.read_text(encoding="utf-8"))
+    loaded: dict[str, dict[str, Any]] = {}
+    for raw_key, value in data.items():
+        loaded[raw_key.lower()] = value
+    return loaded
+
+
 def parse_seed_cards(seeds_root: Path) -> list[CardDefinition]:
     cards: list[CardDefinition] = []
     typed_seed_files = sorted(seeds_root.glob("DND1_*.cs"))
@@ -537,12 +879,181 @@ def title_case_words(value: str) -> list[str]:
     return re.findall(r"[A-Za-z]+", value.lower())
 
 
+def extract_keywords(value: str) -> list[str]:
+    return title_case_words(value)
+
+
+def collect_matching_phrases(text: str, mapping: dict[str, str]) -> list[str]:
+    haystack = text.lower()
+    matches: list[str] = []
+    for keyword, phrase in mapping.items():
+        if keyword in haystack and phrase not in matches:
+            matches.append(phrase)
+    return matches
+
+
+def collect_identity_rules(text: str) -> list[dict[str, str]]:
+    haystack = text.lower()
+    matches: list[dict[str, str]] = []
+    for keyword, rule in MONSTER_IDENTITY_RULES.items():
+        if keyword in haystack:
+            matches.append(rule)
+    return matches
+
+
+def select_checkpoint(card: CardDefinition) -> str:
+    source = f"{card.name} {card.effect or ''}".lower()
+
+    if card.card_type in {"Equipment", "Trap", "DungeonRoom"}:
+        return CHECKPOINT_SD15
+
+    if card.card_type in {"Monster", "Boss"}:
+        if any(keyword in source for keyword in NON_HUMANOID_LITERAL_KEYWORDS):
+            return CHECKPOINT_SD15
+        return CHECKPOINT_DREAMSHAPER
+
+    return CHECKPOINT_DREAMSHAPER
+
+
+def build_equipment_type_negative(card: CardDefinition) -> str:
+    source = card.name.lower()
+    for keyword, negative in EQUIPMENT_TYPE_NEGATIVES.items():
+        if keyword in source:
+            return negative
+    return "wrong object type, unrelated object, person holding item"
+
+
+def join_phrases(phrases: list[str]) -> str:
+    unique: list[str] = []
+    for phrase in phrases:
+        cleaned = collapse_whitespace(phrase)
+        if cleaned and cleaned not in unique:
+            unique.append(cleaned)
+    return ", ".join(unique)
+
+
 def infer_ally_class(card: CardDefinition) -> str:
     haystack = f"{card.name} {card.effect or ''}".lower()
     for keyword, class_name in CLASS_HINTS.items():
         if keyword in haystack:
             return class_name
     return "adventurer"
+
+
+def build_ally_visual_profile(card: CardDefinition, hero_class: str) -> str:
+    source = f"{card.name} {card.effect or ''}"
+    phrases = collect_matching_phrases(source, RACE_VISUALS)
+    phrases.extend(collect_matching_phrases(source, ALLY_NAME_VISUAL_RULES))
+    class_phrase = CLASS_VISUALS.get(hero_class)
+    if class_phrase:
+        phrases.append(class_phrase)
+
+    if card.is_ambusher:
+        phrases.append("subtle stealth posture and hidden attack readiness")
+    if card.initiative and card.initiative >= 5:
+        phrases.append("quick agile movement frozen mid-action")
+    if card.strength and card.strength >= 6:
+        phrases.append("powerful athletic physique and forceful strike")
+    if card.hit_points and card.hit_points >= 7:
+        phrases.append("battle-worn resilience and heavy protective gear")
+
+    effect_text = (card.effect or "").lower()
+    if "wings" in effect_text:
+        phrases.append("spectral wings unfurling behind the hero")
+    if "lightning" in effect_text:
+        phrases.append("arcs of lightning around the weapon or hands")
+    if "heal" in effect_text or "restores" in effect_text:
+        phrases.append("holy or restorative energy gathering around one hand")
+    if "trap" in effect_text:
+        phrases.append("tools or tactical gear hinting at trap mastery")
+    if "shadow" in source.lower():
+        phrases.append("deep shadow magic curling around the figure")
+    if "fire" in effect_text:
+        phrases.append("embers and flame-lit highlights around the attack")
+
+    if not phrases:
+        phrases.append("distinctive race and class silhouette clearly readable at card size")
+
+    return join_phrases(phrases)
+
+
+def build_monster_visual_profile(card: CardDefinition) -> str:
+    source = f"{card.name} {card.effect or ''}".lower()
+    phrases = collect_matching_phrases(source, MONSTER_BASE_VISUALS)
+    identity_rules = collect_identity_rules(source)
+    phrases.extend(rule["identity"] for rule in identity_rules)
+    phrases.extend(collect_matching_phrases(source, MONSTER_ADJECTIVE_VISUALS))
+    phrases.extend(collect_matching_phrases(source, MONSTER_EFFECT_VISUALS))
+
+    if card.strength and card.strength >= 8:
+        phrases.append("extreme physical power and crushing presence")
+    if card.hit_points and card.hit_points >= 9:
+        phrases.append("thick armor, hide, or supernatural durability")
+    if card.initiative and card.initiative >= 5:
+        phrases.append("predatory speed and alert attack posture")
+
+    if "single" not in " ".join(phrases):
+        phrases.insert(0, "single monster only, one creature centered in frame")
+
+    return join_phrases(phrases)
+
+
+def build_boss_visual_profile(card: CardDefinition) -> str:
+    source = f"{card.name} {card.effect or ''}".lower()
+    phrases = collect_matching_phrases(source, MONSTER_BASE_VISUALS)
+    identity_rules = collect_identity_rules(source)
+    phrases.extend(rule["identity"] for rule in identity_rules)
+    phrases.extend(collect_matching_phrases(source, MONSTER_ADJECTIVE_VISUALS))
+    phrases.extend(collect_matching_phrases(source, MONSTER_EFFECT_VISUALS))
+    phrases.append("single boss only, one central subject dominating the entire image")
+    phrases.append("mythic scale with the environment dwarfed around it")
+    if card.strength and card.strength >= 12:
+        phrases.append("apocalyptic destructive power")
+    if card.hit_points and card.hit_points >= 20:
+        phrases.append("near-immortal resilience and overwhelming durability")
+    return join_phrases(phrases)
+
+
+def build_trap_visual_profile(card: CardDefinition) -> str:
+    effect_text = (card.effect or "").lower()
+    phrases: list[str] = []
+    if "acid" in effect_text or "acid" in card.name.lower():
+        phrases.append("corrosive acid jets spraying outward")
+    if "rune" in card.name.lower():
+        phrases.append("runic glyphs igniting across carved stone")
+    if "spike" in effect_text or "spike" in card.name.lower():
+        phrases.append("razor spikes thrusting from floor or walls")
+    if "fire" in effect_text or "flame" in effect_text:
+        phrases.append("blazing fire burst and molten sparks")
+    if "poison" in effect_text:
+        phrases.append("sickly toxic mist and venom glow")
+    if "chain" in effect_text:
+        phrases.append("enchanted chains snapping taut in mid-air")
+    if "alarm" in card.name.lower():
+        phrases.append("sonic rune pulse rippling through the chamber")
+    if "pit" in card.name.lower():
+        phrases.append("collapsing stone floor opening into darkness")
+    if not phrases:
+        phrases.append("one trap mechanism clearly readable with the magical effect frozen at activation")
+    return join_phrases(phrases)
+
+
+def build_room_visual_profile(card: CardDefinition) -> str:
+    source = f"{card.name} {card.effect or ''}".lower()
+    phrases = collect_matching_phrases(source, ROOM_VISUALS)
+    if card.room_order == 5:
+        phrases.append("endgame menace and climactic oppressive scale")
+    elif card.room_order == 1:
+        phrases.append("entry-level dungeon threshold with immediate danger")
+    if "fog" in source or "mist" in source:
+        phrases.append("thick low fog obscuring the floor")
+    if "lava" in source or "molten" in source:
+        phrases.append("molten light reflecting across stone surfaces")
+    if "shadow" in source or "darkness" in source:
+        phrases.append("deep shadow pools swallowing the edges of the room")
+    if not phrases:
+        phrases.append("unique environmental storytelling landmarks that identify this chamber instantly")
+    return join_phrases(phrases)
 
 
 def build_effect_hint(card: CardDefinition) -> str:
@@ -619,23 +1130,53 @@ def describe_equipment_item(name: str) -> str:
     return collapse_whitespace(f"{descriptor}{suffix}")
 
 
+def build_equipment_visual_profile(card: CardDefinition) -> str:
+    source = card.name.lower()
+    words = extract_keywords(card.name)
+    phrases: list[str] = []
+    phrases.extend(collect_matching_phrases(source, EQUIPMENT_NAME_VISUAL_RULES))
+    if "sword" in words or "dagger" in words or "axe" in words or "hammer" in words or "spear" in words:
+        phrases.append("weapon angled to show blade or striking head clearly")
+    if "wand" in words or "staff" in words:
+        phrases.append("arcane focus covered in glowing runes and magical focal gem")
+    if "boots" in words or "gloves" in words or "gauntlets" in words:
+        phrases.append("pair of matching items displayed cleanly and symmetrically")
+    if "robe" in words or "cloak" in words or "cape" in words or "mail" in words or "armor" in words:
+        phrases.append("fabric or armor surfaces fully visible with ornate trim and wear")
+    if "ring" in words or "amulet" in words or "circlet" in words:
+        phrases.append("jewelry centerpiece shown close enough to read engravings and gemstones")
+    if "vial" in words or "powder" in words:
+        phrases.append("alchemical contents visibly glowing inside the container")
+    if "shield" in words or "buckler" in words or "bracers" in words:
+        phrases.append("defensive surfaces facing the viewer with engraved symbols")
+    if "orb" in words:
+        phrases.append("floating object suspended above the pedestal")
+    if "lantern" in words:
+        phrases.append("internal magical flame illuminating the metal frame")
+    if not phrases:
+        phrases.append("item silhouette perfectly isolated and unmistakable at card size")
+    return join_phrases(phrases)
+
+
 def build_prompt(card: CardDefinition) -> str:
     effect_hint = build_effect_hint(card)
 
     if card.card_type == "Equipment":
         item_name = describe_equipment_item(card.name)
+        visual_profile = build_equipment_visual_profile(card)
         return collapse_whitespace(
-            f"a single {item_name}, fantasy magical item, {effect_hint}, "
+            f"a single {item_name}, object-only still life, fantasy magical item, unmistakably matching the card name, {visual_profile}, {effect_hint}, "
             "isolated on dark dungeon stone pedestal, dramatic underlighting from below, "
-            "glowing golden runes, antique gold and brown tones, deep purple magical glow, "
-            "highly detailed texture, no character, no person, no hands, trading card item art, "
+            "glowing golden runes, antique gold and brown tones, deep purple magical glow, centered composition, object fills most of frame, "
+            "highly detailed texture, no character, no person, no hands, no wearer, no model, trading card item art, "
             "dark fantasy digital painting"
         )
 
     if card.card_type == "Ally":
         hero_class = infer_ally_class(card)
+        visual_profile = build_ally_visual_profile(card, hero_class)
         return collapse_whitespace(
-            f"{card.name}, fantasy {hero_class} hero, heroic action pose, determined expression, "
+            f"{card.name}, fantasy {hero_class} hero, {visual_profile}, heroic action pose, determined expression, "
             "worn battle gear with golden trim, dramatic underlighting from dungeon torches below, "
             "epic low-angle perspective, dark dungeon background with stone arches, dominant brown "
             "and antique gold palette, deep purple accents, dark fantasy digital painting, "
@@ -643,31 +1184,35 @@ def build_prompt(card: CardDefinition) -> str:
         )
 
     if card.card_type == "Monster":
+        visual_profile = build_monster_visual_profile(card)
         return collapse_whitespace(
-            f"{card.name}, fearsome fantasy monster, aggressive threatening pose, massive imposing figure, "
+            f"{card.name}, fearsome fantasy monster, {visual_profile}, one monster only, centered single-subject composition, aggressive threatening pose, massive imposing figure, "
             "dramatic purple underlighting from below, ancient dungeon environment, dominant dark brown "
-            "and deep purple palette, glowing eyes, dark fantasy digital painting, trading card monster art"
+            "and deep purple palette, glowing eyes, no secondary figures, dark fantasy digital painting, trading card monster art"
         )
 
     if card.card_type == "Trap":
+        visual_profile = build_trap_visual_profile(card)
         return collapse_whitespace(
-            f"{card.name} trap activating, magical mechanism in motion, {effect_hint}, dark dungeon floor, "
+            f"{card.name} trap activating, magical mechanism in motion, {visual_profile}, {effect_hint}, dark dungeon floor, "
             "dramatic purple and gold energy effect, no character, no person, isolated magical effect, "
             "dark fantasy digital painting, trading card trap art"
         )
 
     if card.card_type == "DungeonRoom":
+        visual_profile = build_room_visual_profile(card)
         return collapse_whitespace(
-            f"{card.name} dungeon room, wide establishing shot, ancient stone architecture, dramatic "
+            f"{card.name} dungeon room, wide establishing shot, {visual_profile}, ancient stone architecture, dramatic "
             "underlighting from floor torches and runes, oppressive atmosphere, volumetric fog, dungeon "
             "crawl environment, dark fantasy digital painting, trading card location art"
         )
 
     if card.card_type == "Boss":
+        visual_profile = build_boss_visual_profile(card)
         return collapse_whitespace(
-            f"{card.name}, legendary boss creature, monumental scale filling entire frame, overwhelming "
+            f"{card.name}, legendary boss creature, {visual_profile}, one boss only, centered single-subject composition, monumental scale filling entire frame, overwhelming "
             "presence, dramatic purple and gold underlighting, ancient dungeon throne room, inevitable "
-            "power aura, dark fantasy digital painting, trading card boss art"
+            "power aura, no secondary figures, dark fantasy digital painting, trading card boss art"
         )
 
     raise ValueError(f"Unsupported card type for prompt building: {card.card_type}")
@@ -675,8 +1220,20 @@ def build_prompt(card: CardDefinition) -> str:
 
 def build_negative_prompt(card: CardDefinition) -> str:
     if card.card_type == "Equipment":
-        return EQUIPMENT_NEGATIVE_PROMPT
+        extra = "full body, portrait, model wearing item, fashion shot, hero pose"
+        source = card.name.lower()
+        if "boots" in source or "gloves" in source or "gauntlets" in source:
+            extra += ", feet in boots, person wearing boots, hands wearing gloves"
+        extra += f", {build_equipment_type_negative(card)}"
+        return f"{EQUIPMENT_NEGATIVE_PROMPT}, {extra}"
     if card.card_type in {"Ally", "Monster", "Boss"}:
+        if card.card_type in {"Monster", "Boss"}:
+            source = f"{card.name} {card.effect or ''}".lower()
+            rule_negatives = [rule["negative"] for rule in collect_identity_rules(source)]
+            extra = "multiple creatures, duplicate monster, crowd, extra heads, extra limbs, two subjects, group shot"
+            if rule_negatives:
+                extra = f"{extra}, {', '.join(rule_negatives)}"
+            return f"{CREATURE_NEGATIVE_PROMPT}, {extra}"
         return CREATURE_NEGATIVE_PROMPT
     if card.card_type in {"Trap", "DungeonRoom"}:
         return ENVIRONMENT_NEGATIVE_PROMPT
@@ -703,22 +1260,26 @@ def filter_cards(cards: list[CardDefinition], args: argparse.Namespace) -> list[
     return filtered
 
 
-def manifest_payload(cards: list[CardDefinition]) -> list[dict[str, Any]]:
+def manifest_payload(cards: list[CardDefinition], overrides: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     payload: list[dict[str, Any]] = []
 
     for card in cards:
+        override = overrides.get(card_override_key(card), {})
         row = asdict(card)
-        row["prompt"] = build_prompt(card)
-        row["negative_prompt"] = build_negative_prompt(card)
+        row["prompt"] = override.get("prompt", build_prompt(card))
+        row["negative_prompt"] = override.get("negative_prompt", build_negative_prompt(card))
+        row["checkpoint"] = override.get("checkpoint", select_checkpoint(card))
+        if "notes" in override:
+            row["override_notes"] = override["notes"]
         payload.append(row)
 
     return payload
 
 
-def write_manifest(output_dir: Path, cards: list[CardDefinition]) -> Path:
+def write_manifest(output_dir: Path, cards: list[CardDefinition], overrides: dict[str, dict[str, Any]]) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = output_dir / "manifest.json"
-    manifest = manifest_payload(cards)
+    manifest = manifest_payload(cards, overrides)
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     return manifest_path
 
@@ -753,11 +1314,13 @@ def save_generated_image(card: CardDefinition, image_data: str, output_dir: Path
 
 def generate_cards(
     cards: list[CardDefinition],
+    overrides: dict[str, dict[str, Any]],
     output_dir: Path,
     base_url: str,
     overwrite: bool,
 ) -> None:
     for card in cards:
+        override = overrides.get(card_override_key(card), {})
         target_path = output_dir / card.set_code / card.card_type.lower() / f"{slugify(card.name)}.png"
         if target_path.exists() and not overwrite:
             print(f"Skipping existing file: {target_path}")
@@ -765,8 +1328,12 @@ def generate_cards(
 
         payload = {
             **SD_PAYLOAD,
-            "prompt": build_prompt(card),
-            "negative_prompt": build_negative_prompt(card),
+            "prompt": override.get("prompt", build_prompt(card)),
+            "negative_prompt": override.get("negative_prompt", build_negative_prompt(card)),
+            "override_settings": {
+                "sd_model_checkpoint": override.get("checkpoint", select_checkpoint(card)),
+            },
+            "override_settings_restore_afterwards": True,
         }
         response = post_json(f"{base_url.rstrip('/')}/sdapi/v1/txt2img", payload)
         images = response.get("images") or []
@@ -783,6 +1350,7 @@ def main() -> int:
     # Keep validating the style guide path for compatibility with older workflow usage.
     if args.style_guide.exists():
         read_style_guide(args.style_guide)
+    overrides = load_overrides(args.overrides)
     cards = parse_seed_cards(args.seeds_root)
     selected_cards = filter_cards(cards, args)
 
@@ -790,16 +1358,17 @@ def main() -> int:
         print("No cards matched the provided filters.", file=sys.stderr)
         return 1
 
-    manifest_path = write_manifest(args.output_dir, selected_cards)
+    manifest_path = write_manifest(args.output_dir, selected_cards, overrides)
     print(f"Selected {len(selected_cards)} cards. Manifest written to {manifest_path}")
 
     if args.parse_only:
-        preview = manifest_payload(selected_cards[:3])
+        preview = manifest_payload(selected_cards[:3], overrides)
         print(json.dumps(preview, indent=2, ensure_ascii=False))
         return 0
 
     generate_cards(
         selected_cards,
+        overrides,
         args.output_dir,
         args.base_url,
         args.overwrite,

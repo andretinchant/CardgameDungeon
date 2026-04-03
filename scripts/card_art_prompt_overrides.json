@@ -1,0 +1,20 @@
+{
+  "dnd1:equipment:boots of speed": {
+    "checkpoint": "v1-5-pruned-emaonly.safetensors [6ce0161689]",
+    "prompt": "a single pair of enchanted leather boots, unmistakably boots and nothing else, ankle-high adventurer boots with glowing speed runes stitched along the sides, both boots visible together, symmetrical object-only still life, centered on a dark dungeon stone pedestal, golden motion trails spiraling around the boots, dramatic underlighting from below, antique gold and brown palette, deep purple magical accents, highly detailed leather texture, no wearer, no person, no body, dark fantasy item illustration",
+    "negative_prompt": "person, character, full body, portrait, fashion shot, model, feet, legs, hands, humanoid, staff, wand, sword, pillar, totem, jewelry, anime, cartoon, low detail",
+    "notes": "Force literal object read: pair of boots only."
+  },
+  "dnd1:monster:ancient red dragon": {
+    "checkpoint": "v1-5-pruned-emaonly.safetensors [6ce0161689]",
+    "prompt": "Ancient Red Dragon, one creature only, unmistakably a colossal quadrupedal dragon, gigantic reptilian body on four legs, enormous bat-like wings, horned dragon head, long tail, red scales, fire glowing in its throat and between its teeth, centered single-subject composition, dominating the frame alone inside an ancient dungeon cavern, dramatic underlighting from fire below, dark fantasy monster illustration",
+    "negative_prompt": "humanoid, person, demon man, devil man, warrior torso, armor on human body, two creatures, crowd, group shot, duplicate monster, mammal face, anime, cartoon, low detail",
+    "notes": "Force true dragon anatomy and forbid humanoid demon drift."
+  },
+  "dnd1:monster:elder brain": {
+    "checkpoint": "v1-5-pruned-emaonly.safetensors [6ce0161689]",
+    "prompt": "Elder Brain, one creature only, unmistakably a giant exposed alien brain floating in a briny fleshy tank, no humanoid body, pink-grey brain folds, many long wet tentacles hanging beneath it, psychic purple glow inside the tank, centered single-subject composition, dark dungeon laboratory or aberrant chamber, dramatic underlighting from below, grotesque aberration, dark fantasy monster illustration",
+    "negative_prompt": "humanoid, person, human body, torso, arms, legs, armor, giant man, demon brute, warrior, two creatures, crowd, group shot, duplicate monster, anime, cartoon, low detail",
+    "notes": "Force exposed brain in tank with tentacles and no humanoid silhouette."
+  }
+}
