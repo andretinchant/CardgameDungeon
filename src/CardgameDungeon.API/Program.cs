@@ -49,14 +49,14 @@ var app = builder.Build();
 // Seed command: dotnet run --project src/CardgameDungeon.API -- seed
 if (args.Contains("seed"))
 {
-    var set = CardSetSeeder.CreateDND1CoreSet();
-    Console.WriteLine($"Seeded '{set.Name}' ({set.Code}) with {set.TotalCards} cards.");
-    Console.WriteLine($"  Allies:     {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Ally)}");
-    Console.WriteLine($"  Equipment:  {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Equipment)}");
-    Console.WriteLine($"  Monsters:   {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Monster)}");
-    Console.WriteLine($"  Traps:      {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Trap)}");
-    Console.WriteLine($"  Rooms:      {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.DungeonRoom)}");
-    Console.WriteLine($"  Bosses:     {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Boss)}");
+    var sets = CardSetSeeder.CreateAllSets();
+    var totalCards = 0;
+    foreach (var set in sets)
+    {
+        Console.WriteLine($"  [{set.Code}] {set.Name} — {set.TotalCards} cards");
+        totalCards += set.TotalCards;
+    }
+    Console.WriteLine($"\nTotal: {sets.Count} sets, {totalCards} cards.");
     return;
 }
 
