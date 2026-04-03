@@ -78,6 +78,13 @@
   "equipment.consumable": "Uso Unico",
   "equipment.gear": "Equipamento",
 
+  "advantage.state.advantage": "Vantagem",
+  "advantage.state.disadvantage": "Desvantagem",
+  "advantage.state.neutral": "Neutro",
+  "advantage.description": "Superioridade numerica ativa efeitos das cartas",
+  "advantage.with_advantage": "Com Vantagem",
+  "advantage.with_disadvantage": "Com Desvantagem",
+
   "phase.setup": "Preparacao",
   "phase.room_reveal": "Revelacao da Sala",
   "phase.initiative": "Iniciativa",

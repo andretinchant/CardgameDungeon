@@ -12,11 +12,13 @@ public static partial class CardSetSeeder
             // ===== UNIQUE (2) — Gear =====
             new(new Guid("00000000-0000-0000-0002-000000000001"),
                 "Blackstaff of Waterdeep", Rarity.Unique, 5,
-                4, 2, 1, EquipmentSlot.Weapon),
+                4, 2, 1, EquipmentSlot.Weapon,
+                "With Advantage: wielder gains +2 STR. With Disadvantage: wielder gains +2 INIT"),
 
             new(new Guid("00000000-0000-0000-0002-000000000002"),
                 "Wand of Orcus", Rarity.Unique, 5,
-                5, 1, -1, EquipmentSlot.Weapon),
+                5, 1, -1, EquipmentSlot.Weapon,
+                "With Advantage: exiles one defeated enemy instead of discarding. With Disadvantage: wielder takes 2 self-damage"),
 
             // ===== RARE (8) — Gear =====
             new(new Guid("00000000-0000-0000-0002-000000000003"),

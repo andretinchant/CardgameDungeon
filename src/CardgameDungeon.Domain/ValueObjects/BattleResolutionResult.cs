@@ -10,6 +10,7 @@ public record BattleResolutionResult
     public int DamageToDefender { get; }
     public CombatOutcome Outcome { get; }
     public bool IsBossRoom { get; }
+    public CombatAdvantage Advantage { get; }
 
     /// <summary>
     /// The side that wins in case of simultaneous elimination.
@@ -24,7 +25,8 @@ public record BattleResolutionResult
         int damageToAttacker,
         int damageToDefender,
         CombatOutcome outcome,
-        bool isBossRoom)
+        bool isBossRoom,
+        CombatAdvantage? advantage = null)
     {
         AttackerStrength = attackerStrength;
         DefenderStrength = defenderStrength;
@@ -32,5 +34,6 @@ public record BattleResolutionResult
         DamageToDefender = damageToDefender;
         Outcome = outcome;
         IsBossRoom = isBossRoom;
+        Advantage = advantage ?? CombatAdvantage.Calculate(0, 0);
     }
 }

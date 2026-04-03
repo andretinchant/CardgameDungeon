@@ -35,12 +35,13 @@ public class CombatResolver
         IReadOnlyList<AllyCard> defenders,
         bool isBossRoom)
     {
+        var advantage = CombatAdvantage.Calculate(attackers.Count, defenders.Count);
         var atkStrength = attackers.Sum(a => a.Strength);
         var defStrength = defenders.Sum(a => a.Strength);
         var atkHp = attackers.Sum(a => a.HitPoints);
         var defHp = defenders.Sum(a => a.HitPoints);
 
-        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom);
+        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage);
     }
 
     public BattleResolutionResult ResolveCombat(
@@ -48,22 +49,24 @@ public class CombatResolver
         IReadOnlyList<MonsterCard> defenders,
         bool isBossRoom)
     {
+        var advantage = CombatAdvantage.Calculate(attackers.Count, defenders.Count);
         var atkStrength = attackers.Sum(a => a.Strength);
         var defStrength = defenders.Sum(m => m.Strength);
         var atkHp = attackers.Sum(a => a.HitPoints);
         var defHp = defenders.Sum(m => m.HitPoints);
 
-        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom);
+        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage);
     }
 
     public BattleResolutionResult ResolveCombat(
         IReadOnlyList<AllyCard> attackers,
         BossCard boss)
     {
+        var advantage = CombatAdvantage.Calculate(attackers.Count, 1);
         var atkStrength = attackers.Sum(a => a.Strength);
         var atkHp = attackers.Sum(a => a.HitPoints);
 
-        return ResolveCore(atkStrength, boss.Strength, atkHp, boss.HitPoints, isBossRoom: true);
+        return ResolveCore(atkStrength, boss.Strength, atkHp, boss.HitPoints, isBossRoom: true, advantage);
     }
 
     private static BattleResolutionResult ResolveCore(
@@ -71,7 +74,8 @@ public class CombatResolver
         int defenderStrength,
         int attackerHp,
         int defenderHp,
-        bool isBossRoom)
+        bool isBossRoom,
+        CombatAdvantage? advantage = null)
     {
         // Each side deals damage equal to their strength
         var damageToAttacker = defenderStrength;
@@ -96,7 +100,8 @@ public class CombatResolver
             damageToAttacker,
             damageToDefender,
             outcome,
-            isBossRoom);
+            isBossRoom,
+            advantage);
     }
 
     /// <summary>

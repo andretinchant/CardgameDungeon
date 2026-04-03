@@ -78,6 +78,13 @@
   "equipment.consumable": "Single-Use",
   "equipment.gear": "Gear",
 
+  "advantage.state.advantage": "Advantage",
+  "advantage.state.disadvantage": "Disadvantage",
+  "advantage.state.neutral": "Neutral",
+  "advantage.description": "Numerical superiority triggers card effects",
+  "advantage.with_advantage": "With Advantage",
+  "advantage.with_disadvantage": "With Disadvantage",
+
   "phase.setup": "Setup",
   "phase.room_reveal": "Room Reveal",
   "phase.initiative": "Initiative",

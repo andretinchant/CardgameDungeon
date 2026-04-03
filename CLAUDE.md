@@ -64,6 +64,16 @@ Unity client is a separate project that consumes the API.
 - Normal room: simultaneous elimination = defender wins.
 - Boss room: simultaneous elimination = attacking allies win.
 
+### Advantage & Disadvantage
+
+Numerical superiority in a combat group determines Advantage/Disadvantage **states**. These states have **no automatic STR bonus** — they only trigger effects described on cards.
+
+- **Advantage**: your side has more units in this combat group (e.g., 3v1, 2v1).
+- **Disadvantage**: your side has fewer units (e.g., 1v2, 1v3).
+- **Neutral**: equal unit counts (1v1, 2v2).
+
+Cards reference these states in their Effect text: "With Advantage: +2 STR", "With Disadvantage: gains Ambusher", etc. This creates tactical depth around combat assignment — concentrate forces for Advantage effects or spread to cover more targets.
+
 ### Initiative
 
 - Sum of initiative values. Tie → bid war (discard or exile from top).

@@ -20,7 +20,7 @@ public static partial class CardSetSeeder
             // ===== RARE (8) =====
             new(new Guid("00000000-0000-0000-0007-000000000003"),
                 "Scroll of Fireball", Rarity.Rare, 4, 5, 0, 0, EquipmentSlot.Scroll,
-                "Deal 5 damage split among all enemies in play"),
+                "Deal 5 damage split among all enemies in play. With Advantage: deal 7 damage instead"),
             new(new Guid("00000000-0000-0000-0007-000000000004"),
                 "Potion of Giant Strength", Rarity.Rare, 3, 4, 0, 0, EquipmentSlot.Potion,
                 "Target ally gains +4 STR for this combat round"),
@@ -35,7 +35,7 @@ public static partial class CardSetSeeder
                 "Restore 3 HP to all allies in play"),
             new(new Guid("00000000-0000-0000-0007-000000000008"),
                 "Totem of Ancestral Guard", Rarity.Rare, 3, 0, 3, 2, EquipmentSlot.Totem,
-                "All allies gain +3 HP and +2 INIT this round"),
+                "All allies gain +3 HP and +2 INIT this round. With Disadvantage: also grants +2 STR"),
             new(new Guid("00000000-0000-0000-0007-000000000009"),
                 "Scroll of Time Stop", Rarity.Rare, 4, 0, 0, 5, EquipmentSlot.Scroll,
                 "Your team acts first regardless of initiative this round"),

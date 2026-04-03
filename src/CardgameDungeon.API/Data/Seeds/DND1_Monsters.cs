@@ -21,7 +21,7 @@ public static partial class CardSetSeeder
                 hitPoints: 12,
                 initiative: 6,
                 treasure: 5,
-                effect: "When played, deals 3 fire damage to all enemy monsters on the board"),
+                effect: "With Advantage: Frightful Presence forces one attacker to flee combat. Breath Weapon deals 3 fire damage to all attacking allies"),
 
             new MonsterCard(
                 new Guid("00000000-0000-0000-0003-000000000002"),
@@ -32,7 +32,7 @@ public static partial class CardSetSeeder
                 hitPoints: 10,
                 initiative: 5,
                 treasure: 4,
-                effect: "At the start of each turn, takes control of one random enemy monster with 4 or less Strength"),
+                effect: "With Disadvantage: mind-controls one attacker (STR 4 or less) to fight for this side. With Advantage: immune to consumable effects"),
 
             // =====================
             // RARE (8)
