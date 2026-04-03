@@ -1,3 +1,4 @@
+using System.Text;
 using CardgameDungeon.API.Data.Seeds;
 using CardgameDungeon.API.Endpoints;
 using CardgameDungeon.API.Infrastructure;
@@ -8,6 +9,9 @@ using CardgameDungeon.Features.Collection.OpenBooster;
 using CardgameDungeon.Infrastructure;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,19 +24,70 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 // Domain services
 builder.Services.AddSingleton<CombatResolver>();
 
-// Infrastructure — PostgreSQL + EF Core repositories
+// Infrastructure — PostgreSQL + EF Core repositories + Auth services
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSingleton<IBoosterCardPool, RandomBoosterCardPool>();
 
-// Swagger
+// JWT Authentication
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var secret = jwtSection["Secret"] ?? throw new InvalidOperationException("JWT Secret not configured.");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSection["Issuer"] ?? "CardgameDungeon",
+        ValidAudience = jwtSection["Audience"] ?? "CardgameDungeon",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+        ClockSkew = TimeSpan.FromMinutes(1)
+    };
+});
+
+builder.Services.AddAuthorization();
+
+// Swagger with JWT support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "CardgameDungeon API",
         Version = "v1",
         Description = "Competitive card game dungeon crawler backend"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
 });
 
@@ -63,10 +118,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Health check
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Health check (public)
 app.MapGet("/health", () => Results.Ok("healthy")).WithTags("Health");
 
-// Feature endpoints
+// Auth endpoints (public)
+app.MapAuthEndpoints();
+
+// Protected feature endpoints
 app.MapDeckEndpoints();
 app.MapMatchEndpoints();
 app.MapCollectionEndpoints();

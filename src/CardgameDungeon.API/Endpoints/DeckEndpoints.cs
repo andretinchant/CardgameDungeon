@@ -10,7 +10,7 @@ public static class DeckEndpoints
 {
     public static void MapDeckEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/decks").WithTags("Deck");
+        var group = app.MapGroup("/api/decks").WithTags("Deck").RequireAuthorization();
 
         group.MapPost("/", async (CreateDeckCommand command, IMediator mediator) =>
         {

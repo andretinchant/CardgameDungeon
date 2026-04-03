@@ -10,7 +10,7 @@ public static class TournamentEndpoints
 {
     public static void MapTournamentEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/tournaments").WithTags("Tournament");
+        var group = app.MapGroup("/api/tournaments").WithTags("Tournament").RequireAuthorization();
 
         group.MapPost("/", async (CreateTournamentCommand command, IMediator mediator) =>
         {

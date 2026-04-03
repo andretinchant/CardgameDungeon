@@ -11,7 +11,7 @@ public static class MarketplaceEndpoints
 {
     public static void MapMarketplaceEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/marketplace").WithTags("Marketplace");
+        var group = app.MapGroup("/api/marketplace").WithTags("Marketplace").RequireAuthorization();
 
         group.MapGet("/", async (CardType? cardType, Rarity? rarity, IMediator mediator) =>
             Results.Ok(await mediator.Send(new GetMarketplaceQuery(cardType, rarity))));

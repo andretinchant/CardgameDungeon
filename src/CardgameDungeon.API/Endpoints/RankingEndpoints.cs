@@ -9,7 +9,7 @@ public static class RankingEndpoints
 {
     public static void MapRankingEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/ranking").WithTags("Ranking");
+        var group = app.MapGroup("/api/ranking").WithTags("Ranking").RequireAuthorization();
 
         group.MapGet("/{playerId:guid}", async (Guid playerId, IMediator mediator) =>
             Results.Ok(await mediator.Send(new GetPlayerRankQuery(playerId))));

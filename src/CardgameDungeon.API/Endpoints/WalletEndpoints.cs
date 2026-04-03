@@ -8,7 +8,7 @@ public static class WalletEndpoints
 {
     public static void MapWalletEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/wallet").WithTags("Wallet");
+        var group = app.MapGroup("/api/wallet").WithTags("Wallet").RequireAuthorization();
 
         group.MapGet("/{playerId:guid}", async (Guid playerId, IMediator mediator) =>
             Results.Ok(await mediator.Send(new GetBalanceQuery(playerId))));

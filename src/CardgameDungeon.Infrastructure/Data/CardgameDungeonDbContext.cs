@@ -20,6 +20,8 @@ public class CardgameDungeonDbContext : DbContext
     public DbSet<QueueEntry> QueueEntries => Set<QueueEntry>();
     public DbSet<PlayerRating> PlayerRatings => Set<PlayerRating>();
     public DbSet<Tournament> Tournaments => Set<Tournament>();
+    public DbSet<Player> Players => Set<Player>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     internal DbSet<DeckListEntity> DeckLists => Set<DeckListEntity>();
     internal DbSet<MatchStateEntity> MatchStates => Set<MatchStateEntity>();
 

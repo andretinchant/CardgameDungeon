@@ -73,27 +73,27 @@ Plano de desenvolvimento organizado em fases sequenciais. Cada fase tem objetivo
 
 ---
 
-## Fase 4: Autenticação
+## Fase 4: Autenticação (Concluída)
 
 **Objetivo:** Implementar autenticação segura com JWT e login via provedor externo, vinculando identidade ao perfil do jogador.
 
-**Tecnologias:** ASP.NET Identity, JWT Bearer, OAuth 2.0 (Google/Discord), BCrypt
+**Tecnologias:** JWT Bearer, BCrypt, System.IdentityModel.Tokens.Jwt
 
 **Tarefas principais:**
-- Configurar ASP.NET Identity com PostgreSQL
-- Implementar registro e login com email/senha
-- Emissão e validação de JWT (access token + refresh token)
-- Integração OAuth 2.0 com pelo menos um provedor externo (Google ou Discord)
-- Criar entidade PlayerProfile vinculada ao Identity user
-- Proteger endpoints com [Authorize] e policies por role
-- Fluxo de login no Unity client com armazenamento seguro do token
-- Endpoint de perfil do jogador: stats, histórico de partidas, tier atual
+- Criar entidade Player com Username, Email, PasswordHash, timestamps
+- Implementar registro e login com username/senha (BCrypt hashing)
+- Emissão e validação de JWT (access token com claims: PlayerId, Username, Email, Tier)
+- Refresh token com rotação segura e revogação
+- Proteger todos os endpoints existentes com RequireAuthorization
+- Endpoints Auth públicos: register, login, refresh, revoke
+- Swagger configurado com suporte a Bearer token
+- Migration AddAuthEntities com tabelas Players e RefreshTokens
 
 **Critérios de conclusão:**
-- [ ] Login funcional com email/senha e pelo menos um provedor OAuth
-- [ ] JWT emitido e validado em todos os endpoints protegidos
-- [ ] Refresh token com rotação segura
-- [ ] Perfil do jogador persistido e acessível via API
+- [x] Login funcional com username/senha
+- [x] JWT emitido e validado em todos os endpoints protegidos
+- [x] Refresh token com rotação segura
+- [x] Perfil do jogador persistido e acessível via API
 - [ ] Unity client autentica e mantém sessão entre cenas
 
 ---

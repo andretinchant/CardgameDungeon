@@ -18,7 +18,7 @@ public static class MatchEndpoints
 {
     public static void MapMatchEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/matches").WithTags("Match");
+        var group = app.MapGroup("/api/matches").WithTags("Match").RequireAuthorization();
 
         group.MapPost("/", async (CreateMatchCommand command, IMediator mediator) =>
         {

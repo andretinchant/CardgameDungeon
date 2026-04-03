@@ -8,7 +8,7 @@ public static class CollectionEndpoints
 {
     public static void MapCollectionEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/collection").WithTags("Collection");
+        var group = app.MapGroup("/api/collection").WithTags("Collection").RequireAuthorization();
 
         group.MapGet("/{playerId:guid}", async (Guid playerId, IMediator mediator) =>
             Results.Ok(await mediator.Send(new GetCollectionQuery(playerId))));

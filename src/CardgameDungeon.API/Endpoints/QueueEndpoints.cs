@@ -8,7 +8,7 @@ public static class QueueEndpoints
 {
     public static void MapQueueEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("/api/queue").WithTags("Queue");
+        var group = app.MapGroup("/api/queue").WithTags("Queue").RequireAuthorization();
 
         group.MapPost("/join", async (JoinQueueCommand command, IMediator mediator) =>
             Results.Ok(await mediator.Send(command)));

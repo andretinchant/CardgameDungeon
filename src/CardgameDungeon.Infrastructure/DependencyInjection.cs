@@ -1,4 +1,6 @@
 using CardgameDungeon.Domain.Repositories;
+using CardgameDungeon.Features.Auth;
+using CardgameDungeon.Infrastructure.Auth;
 using CardgameDungeon.Infrastructure.Data;
 using CardgameDungeon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ public static class DependencyInjection
         services.AddDbContext<CardgameDungeonDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+        // Repositories
         services.AddScoped<ICardRepository, EfCardRepository>();
         services.AddScoped<IDeckRepository, EfDeckRepository>();
         services.AddScoped<IMatchRepository, EfMatchRepository>();
@@ -23,6 +26,12 @@ public static class DependencyInjection
         services.AddScoped<IQueueRepository, EfQueueRepository>();
         services.AddScoped<IRatingRepository, EfRatingRepository>();
         services.AddScoped<ITournamentRepository, EfTournamentRepository>();
+        services.AddScoped<IPlayerRepository, EfPlayerRepository>();
+        services.AddScoped<IRefreshTokenRepository, EfRefreshTokenRepository>();
+
+        // Auth services
+        services.AddSingleton<IAuthTokenService, JwtTokenService>();
+        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 
         return services;
     }
