@@ -56,6 +56,8 @@ TYPE_FIELD_ORDER = {
         "strength_mod",
         "hit_points_mod",
         "initiative_mod",
+        "slot",
+        "effect",
     ],
     "MonsterCard": [
         "_guid",
@@ -164,6 +166,16 @@ THEME_ARRAY_TO_CARD_TYPE = {
     "Bosses": ("BossTheme", "Boss"),
 }
 
+TYPED_SEED_FILE_TO_CONSTRUCTOR = {
+    "DND1_Allies.cs": "AllyCard",
+    "DND1_Equipment.cs": "EquipmentCard",
+    "DND1_Consumables.cs": "EquipmentCard",
+    "DND1_Monsters.cs": "MonsterCard",
+    "DND1_Traps.cs": "TrapCard",
+    "DND1_Dungeon.cs": "DungeonRoomCard",
+    "DND1_Boss.cs": "BossCard",
+}
+
 SD_PAYLOAD = {
     "width": 512,
     "height": 896,
@@ -257,6 +269,78 @@ NAME_CLEANUP_PATTERN = re.compile(r"\+\d+|\bof\b|\bthe\b", flags=re.IGNORECASE)
 EQUIPMENT_NEGATIVE_PROMPT = "person, character, hands, body, humanoid, anime, cartoon, low detail"
 CREATURE_NEGATIVE_PROMPT = "anime, cartoon, low detail, flat lighting, pastel colors"
 ENVIRONMENT_NEGATIVE_PROMPT = "person, character, humanoid, anime, cartoon"
+
+CONSUMABLE_SLOTS = {"Scroll", "Potion", "Balm", "Bomb", "Totem"}
+
+CONSUMABLE_SLOT_KEYWORDS = {
+    "scroll": "Scroll",
+    "potion": "Potion",
+    "elixir": "Potion",
+    "spirits": "Potion",
+    "vial": "Bomb",
+    "flask": "Bomb",
+    "bomb": "Bomb",
+    "pellet": "Bomb",
+    "balm": "Balm",
+    "salve": "Balm",
+    "dressing": "Balm",
+    "totem": "Totem",
+}
+
+CONSUMABLE_SLOT_BASE_SUBJECT = {
+    "Scroll": "ancient spell scroll of aged parchment with wax seal",
+    "Potion": "glass potion bottle filled with luminous alchemical liquid",
+    "Bomb": "volatile alchemical bomb flask with reinforced stopper",
+    "Balm": "small ceramic balm jar filled with glowing herbal salve",
+    "Totem": "carved ritual totem idol wrapped with talisman cords",
+}
+
+CONSUMABLE_SLOT_NEGATIVES = {
+    "Scroll": "potion bottle, vial, flask, bomb, totem idol, weapon, armor, person holding scroll",
+    "Potion": "scroll parchment, bomb fuse, totem idol, weapon, armor, person drinking potion",
+    "Bomb": "scroll parchment, healing potion bottle, totem idol, weapon, armor, person throwing bomb",
+    "Balm": "scroll parchment, potion bottle, bomb flask, totem idol, weapon, armor, person applying balm",
+    "Totem": "scroll parchment, potion bottle, bomb flask, balm jar, weapon, armor, person holding idol",
+}
+
+CONSUMABLE_VISUAL_PATTERN_RULES = [
+    (r"\bfire(ball|bomb)?\b", "bright ember glow, heat distortion, and burning sigils"),
+    (r"\blightning\b", "branching lightning arcs wrapping around the item"),
+    (r"\bthunder(stone)?\b", "shockwave rings and crackling electric sparks"),
+    (r"\bfrost\b", "icy rime, cold mist, and frozen crystalline edges"),
+    (r"\bacid\b", "corrosive green fluid and smoking etched metal"),
+    (r"\bpoison\b", "venomous green fumes and toxic droplets"),
+    (r"\bsmoke\b", "dense swirling smoke plume around the object"),
+    (r"\bstink\b", "sickly yellow vapor cloud and nausea aura"),
+    (r"\btar\b", "thick black resin dripping with sticky texture"),
+    (r"\bheal(ing)?\b", "emerald restorative glow and gentle life sigils"),
+    (r"\brestor(ation|e)\b", "restorative runes pulsing around the item"),
+    (r"\bmending\b", "repair glyphs and stitched arcane seams"),
+    (r"\bresurrection\b", "golden revival halo and phoenix-like motes"),
+    (r"\bimmortality\b", "timeless aura and suspended glowing particles"),
+    (r"\bwish\b", "cosmic star-like runes and reality-bending shimmer"),
+    (r"\btime\s*stop\b", "clockwork sigils frozen in mid-air"),
+    (r"\binvisibility\b", "refractive distortion and translucent silhouette edges"),
+    (r"\bmirror\b", "mirrored afterimages orbiting the item"),
+    (r"\bcounterspell\b", "anti-magic runes canceling nearby glyphs"),
+    (r"\bdetect magic\b", "revealing glyph-lines and spectral detection rays"),
+    (r"\bshield\b", "protective barrier glyphs and layered ward sigils"),
+    (r"\bsanctuary\b", "sacred ward circle and protective halo"),
+    (r"\bprotection\b", "defensive runic lattice around the object"),
+    (r"\binvulnerability\b", "impenetrable shimmering shell around the item"),
+    (r"\bhaste\b", "speed streaks and spiraling kinetic runes"),
+    (r"\bspeed\b", "motion trails and wind-like arcane ribbons"),
+    (r"\bswiftness\b", "swift airflow glyphs and kinetic sparks"),
+    (r"\bfeather\b", "floating feathers and levitation-like weightlessness"),
+    (r"\brage\b", "crimson rage aura and jagged war sigils"),
+    (r"\bcourage\b", "steady golden courage glow and rally sigils"),
+    (r"\bwar\b", "martial runes and aggressive battle aura"),
+    (r"\bgiant strength\b", "massive strength glyphs carved in heavy strokes"),
+    (r"\bfortitude\b", "fortifying stone-like runes and endurance aura"),
+    (r"\btoughness\b", "dense protective glow emphasizing durability"),
+    (r"\bbless\b", "soft divine glow and blessing sigils"),
+    (r"\bholy\b", "radiant sacred light and sanctified glyphs"),
+]
 
 RACE_VISUALS = {
     "aasimar": "radiant celestial features and faint halo glow",
@@ -598,6 +682,7 @@ class CardDefinition:
     strength_mod: int | None = None
     hit_points_mod: int | None = None
     initiative_mod: int | None = None
+    slot: str | None = None
     room_order: int | None = None
     monster_cost_budget: int | None = None
 
@@ -727,6 +812,8 @@ def parse_scalar(raw_value: str) -> Any:
         return value == "true"
     if value.startswith("Rarity."):
         return value.split(".", 1)[1]
+    if value.startswith("EquipmentSlot."):
+        return value.split(".", 1)[1]
     if value.startswith('"') and value.endswith('"'):
         return value[1:-1].replace('\\"', '"')
     if re.fullmatch(r"-?\d+", value):
@@ -807,17 +894,23 @@ def parse_seed_cards(seeds_root: Path) -> list[CardDefinition]:
     for seed_file in typed_seed_files:
         set_code = "DND1"
         content = seed_file.read_text(encoding="utf-8")
+        constructor_type = TYPED_SEED_FILE_TO_CONSTRUCTOR.get(seed_file.name)
+        if not constructor_type:
+            continue
 
-        for constructor_type in TYPE_TO_CARD_KIND:
-            pattern = re.compile(rf"new\s+{constructor_type}\s*\(")
+        explicit_pattern = re.compile(rf"new\s+{constructor_type}\s*\(")
+        target_typed_pattern = re.compile(r"new\s*\(\s*new\s+Guid\s*\(")
+        seen_open_indices: set[int] = set()
 
+        for pattern in (explicit_pattern, target_typed_pattern):
             for match in pattern.finditer(content):
                 open_index = content.find("(", match.start())
+                if open_index in seen_open_indices:
+                    continue
+                seen_open_indices.add(open_index)
                 args_text, _ = extract_balanced(content, open_index, "(", ")")
                 parsed = parse_typed_constructor_args(constructor_type, args_text)
-                cards.append(
-                    build_card_definition(set_code, TYPE_TO_CARD_KIND[constructor_type], parsed)
-                )
+                cards.append(build_card_definition(set_code, TYPE_TO_CARD_KIND[constructor_type], parsed))
 
     for theme_file in sorted((seeds_root / "Themes").glob("*.cs")):
         content = theme_file.read_text(encoding="utf-8")
@@ -901,6 +994,14 @@ def collect_identity_rules(text: str) -> list[dict[str, str]]:
     return matches
 
 
+def collect_regex_phrases(text: str, pattern_rules: list[tuple[str, str]]) -> list[str]:
+    matches: list[str] = []
+    for pattern, phrase in pattern_rules:
+        if re.search(pattern, text, flags=re.IGNORECASE):
+            matches.append(phrase)
+    return matches
+
+
 def select_checkpoint(card: CardDefinition) -> str:
     source = f"{card.name} {card.effect or ''}".lower()
 
@@ -915,7 +1016,36 @@ def select_checkpoint(card: CardDefinition) -> str:
     return CHECKPOINT_DREAMSHAPER
 
 
+def infer_equipment_slot(card: CardDefinition) -> str | None:
+    if card.slot:
+        normalized = str(card.slot).strip()
+        if normalized.startswith("EquipmentSlot."):
+            normalized = normalized.split(".", 1)[1]
+        normalized = normalized[:1].upper() + normalized[1:].lower()
+        if normalized:
+            return normalized
+
+    source = f"{card.name} {card.effect or ''}".lower()
+    for keyword, slot in CONSUMABLE_SLOT_KEYWORDS.items():
+        if keyword in source:
+            return slot
+    return None
+
+
+def is_consumable_equipment(card: CardDefinition) -> bool:
+    if card.card_type != "Equipment":
+        return False
+    slot = infer_equipment_slot(card)
+    return slot in CONSUMABLE_SLOTS
+
+
 def build_equipment_type_negative(card: CardDefinition) -> str:
+    if is_consumable_equipment(card):
+        slot = infer_equipment_slot(card)
+        if slot in CONSUMABLE_SLOT_NEGATIVES:
+            return CONSUMABLE_SLOT_NEGATIVES[slot]
+        return "wrong consumable type, unrelated object, person holding item"
+
     source = card.name.lower()
     for keyword, negative in EQUIPMENT_TYPE_NEGATIVES.items():
         if keyword in source:
@@ -1085,6 +1215,30 @@ def build_effect_hint(card: CardDefinition) -> str:
     return collapse_whitespace(", ".join(parts))
 
 
+def build_consumable_item_subject(card: CardDefinition, slot: str) -> str:
+    base = CONSUMABLE_SLOT_BASE_SUBJECT.get(slot, "single-use magical consumable item")
+    name = card.name.lower()
+    traits: list[str] = []
+
+    if "healing" in name or "restoration" in name:
+        traits.append("etched with restorative sigils")
+    if "fire" in name:
+        traits.append("radiating volatile fire runes")
+    if "lightning" in name or "thunder" in name:
+        traits.append("wrapped in electric rune bands")
+    if "acid" in name or "poison" in name:
+        traits.append("containing corrosive toxic compounds")
+    if "invisibility" in name or "mirror" in name:
+        traits.append("surrounded by refractive illusion shimmer")
+    if "time stop" in name:
+        traits.append("marked by frozen clockwork glyphs")
+    if "wish" in name or "immortality" in name:
+        traits.append("engraved with mythic legendary iconography")
+
+    suffix = f" {', '.join(traits)}" if traits else ""
+    return collapse_whitespace(f"{base}{suffix}")
+
+
 def describe_equipment_item(name: str) -> str:
     lowered = NAME_CLEANUP_PATTERN.sub(" ", name.lower())
     words = [word for word in title_case_words(lowered) if word not in {"a", "an"}]
@@ -1130,6 +1284,36 @@ def describe_equipment_item(name: str) -> str:
     return collapse_whitespace(f"{descriptor}{suffix}")
 
 
+def build_consumable_visual_profile(card: CardDefinition, slot: str) -> str:
+    source = f"{card.name} {card.effect or ''}".lower()
+    phrases: list[str] = []
+
+    if slot == "Scroll":
+        phrases.append("rolled parchment body, wax seal, and visible arcane script lines")
+    elif slot == "Potion":
+        phrases.append("thick glass bottle, cork stopper, and swirling luminous liquid level")
+    elif slot == "Bomb":
+        phrases.append("throwable flask silhouette with reinforced stopper and unstable pressure glow")
+    elif slot == "Balm":
+        phrases.append("apothecary jar form with textured salve and healer marks")
+    elif slot == "Totem":
+        phrases.append("upright carved idol silhouette with ritual carvings and hanging charms")
+
+    phrases.extend(collect_regex_phrases(source, CONSUMABLE_VISUAL_PATTERN_RULES))
+
+    if (card.strength_mod or 0) > 0:
+        phrases.append("offensive battle runes pulsing from the item core")
+    if (card.hit_points_mod or 0) > 0:
+        phrases.append("protective restorative aura wrapping the object")
+    if (card.initiative_mod or 0) > 0:
+        phrases.append("swift kinetic glyph trails orbiting the object")
+    if (card.initiative_mod or 0) < 0:
+        phrases.append("hindering debuff sigils with heavy slowing energy")
+
+    phrases.append("single object only, centered, fully visible silhouette with no secondary subject")
+    return join_phrases(phrases)
+
+
 def build_equipment_visual_profile(card: CardDefinition) -> str:
     source = card.name.lower()
     words = extract_keywords(card.name)
@@ -1162,6 +1346,18 @@ def build_prompt(card: CardDefinition) -> str:
     effect_hint = build_effect_hint(card)
 
     if card.card_type == "Equipment":
+        if is_consumable_equipment(card):
+            slot = infer_equipment_slot(card) or "Consumable"
+            item_subject = build_consumable_item_subject(card, slot)
+            visual_profile = build_consumable_visual_profile(card, slot)
+            return collapse_whitespace(
+                f"{card.name}, a single {item_subject}, single-use fantasy {slot.lower()} consumable, unmistakably matching the card name, {visual_profile}, {effect_hint}, "
+                "isolated on dark dungeon stone pedestal, dramatic underlighting from below, glowing golden runes, "
+                "antique gold and brown tones, deep purple magical glow, centered composition, object fills most of frame, "
+                "highly detailed texture, no character, no person, no hands, no wearer, no model, no secondary object, "
+                "trading card item art, dark fantasy digital painting"
+            )
+
         item_name = describe_equipment_item(card.name)
         visual_profile = build_equipment_visual_profile(card)
         return collapse_whitespace(
@@ -1224,6 +1420,8 @@ def build_negative_prompt(card: CardDefinition) -> str:
         source = card.name.lower()
         if "boots" in source or "gloves" in source or "gauntlets" in source:
             extra += ", feet in boots, person wearing boots, hands wearing gloves"
+        if is_consumable_equipment(card):
+            extra += ", hand holding item, drinking pose, throwing pose, multiple items, item bundle, inventory layout, tabletop clutter"
         extra += f", {build_equipment_type_negative(card)}"
         return f"{EQUIPMENT_NEGATIVE_PROMPT}, {extra}"
     if card.card_type in {"Ally", "Monster", "Boss"}:
