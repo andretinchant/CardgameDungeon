@@ -42,6 +42,13 @@
   "card_type.dungeon_room": "Sala da Dungeon",
   "card_type.boss": "Chefe",
 
+  "class.warrior": "Guerreiro",
+  "class.rogue": "Ladino",
+  "class.mage": "Mago",
+  "class.cleric": "Clerigo",
+  "class.ranger": "Patrulheiro",
+  "class.paladin": "Paladino",
+
   "rarity.common": "Comum",
   "rarity.uncommon": "Incomum",
   "rarity.rare": "Raro",

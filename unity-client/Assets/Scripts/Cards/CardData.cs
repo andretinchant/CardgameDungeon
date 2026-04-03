@@ -26,6 +26,11 @@ namespace CardgameDungeon.Unity.Cards
         Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon
     }
 
+    public enum AllyClass
+    {
+        Warrior, Rogue, Mage, Cleric, Ranger, Paladin
+    }
+
     public enum EquipmentSlot
     {
         // Gear — 1 per slot per ally
@@ -64,6 +69,7 @@ namespace CardgameDungeon.Unity.Cards
     public class AllyCardData : CardData
     {
         [Header("Ally Properties")]
+        [SerializeField] private AllyClass allyClass;
         [SerializeField] private Race race;
         [SerializeField] private int strength;
         [SerializeField] private int hitPoints;
@@ -72,6 +78,7 @@ namespace CardgameDungeon.Unity.Cards
         [SerializeField] private bool isAmbusher;
         [SerializeField, TextArea] private string effect;
 
+        public AllyClass AllyClass => allyClass;
         public Race Race => race;
         public int Strength => strength;
         public int HitPoints => hitPoints;

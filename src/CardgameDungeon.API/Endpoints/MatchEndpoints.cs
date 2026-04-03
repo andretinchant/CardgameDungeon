@@ -1,3 +1,4 @@
+using CardgameDungeon.Features.Match.ChooseRole;
 using CardgameDungeon.Features.Match.Combat.AdvanceRoom;
 using CardgameDungeon.Features.Match.Combat.AssignCombat;
 using CardgameDungeon.Features.Match.Combat.ConcedeRoom;
@@ -39,6 +40,9 @@ public static class MatchEndpoints
             Results.Ok(await mediator.Send(new ResolveInitiativeCommand(id))));
 
         group.MapPost("/{id:guid}/place-bet", async (Guid id, PlaceBetCommand command, IMediator mediator) =>
+            Results.Ok(await mediator.Send(command with { MatchId = id })));
+
+        group.MapPost("/{id:guid}/choose-role", async (Guid id, ChooseRoleCommand command, IMediator mediator) =>
             Results.Ok(await mediator.Send(command with { MatchId = id })));
 
         group.MapPost("/{id:guid}/assign-combat", async (Guid id, AssignCombatCommand command, IMediator mediator) =>

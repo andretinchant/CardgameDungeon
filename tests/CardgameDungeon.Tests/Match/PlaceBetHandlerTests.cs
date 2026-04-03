@@ -121,7 +121,7 @@ public class PlaceBetHandlerTests
             new PlaceBetCommand(match.Id, match.Player1.PlayerId, Amount: 1, Exile: false),
             CancellationToken.None);
 
-        Assert.Equal(MatchPhase.Combat, match.Phase);
+        Assert.Equal(MatchPhase.RoleSelection, match.Phase);
     }
 
     [Fact]

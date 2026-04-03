@@ -5,6 +5,7 @@ namespace CardgameDungeon.Domain.Entities;
 public class AllyCard : Card
 {
     public override CardType Type => CardType.Ally;
+    public AllyClass Class { get; private set; }
     public Race Race { get; private set; }
     public int Strength { get; private set; }
     public int HitPoints { get; private set; }
@@ -26,7 +27,8 @@ public class AllyCard : Card
         bool isAmbusher = false,
         int treasure = 0,
         string? effect = null,
-        Race race = Race.Human)
+        Race race = Race.Human,
+        AllyClass allyClass = AllyClass.Warrior)
         : base(id, name, rarity, cost)
     {
         if (strength < 0)
@@ -36,6 +38,7 @@ public class AllyCard : Card
         if (initiative < 0)
             throw new ArgumentOutOfRangeException(nameof(initiative));
 
+        Class = allyClass;
         Race = race;
         Strength = strength;
         HitPoints = hitPoints;

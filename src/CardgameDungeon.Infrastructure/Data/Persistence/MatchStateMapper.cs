@@ -15,6 +15,7 @@ internal static class MatchStateMapper
             Phase = (int)match.Phase,
             CurrentRoom = GetCurrentRoom(match),
             InitiativeWinnerId = match.InitiativeWinnerId,
+            AttackerId = match.AttackerId,
             WinnerId = match.WinnerId,
             DungeonRooms = match.DungeonRooms.Select(ToCardDto).ToList(),
             Boss = ToCardDto(match.Boss),
@@ -76,6 +77,7 @@ internal static class MatchStateMapper
         SetPrivateProperty(match, nameof(MatchState.Phase), (MatchPhase)dto.Phase);
         SetPrivateField(match, "CurrentRoom", dto.CurrentRoom);
         SetPrivateProperty(match, nameof(MatchState.InitiativeWinnerId), dto.InitiativeWinnerId);
+        SetPrivateProperty(match, nameof(MatchState.AttackerId), dto.AttackerId);
         SetPrivateProperty(match, nameof(MatchState.WinnerId), dto.WinnerId);
         SetPrivateProperty(match, nameof(MatchState.Player1BetTotal), dto.Player1BetTotal);
         SetPrivateProperty(match, nameof(MatchState.Player2BetTotal), dto.Player2BetTotal);
@@ -147,6 +149,7 @@ internal static class MatchStateMapper
         switch (card)
         {
             case AllyCard a:
+                dto.AllyClass = (int)a.Class;
                 dto.Race = (int)a.Race;
                 dto.Strength = a.Strength;
                 dto.HitPoints = a.HitPoints;
@@ -202,7 +205,7 @@ internal static class MatchStateMapper
             "Ally" => new AllyCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Strength ?? 0, dto.HitPoints ?? 1, dto.Initiative ?? 0,
                 dto.IsAmbusher ?? false, dto.Treasure ?? 0, dto.Effect,
-                (Race)(dto.Race ?? 0)),
+                (Race)(dto.Race ?? 0), (AllyClass)(dto.AllyClass ?? 0)),
 
             "Equipment" => new EquipmentCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.StrengthModifier ?? 0, dto.HitPointsModifier ?? 0, dto.InitiativeModifier ?? 0,

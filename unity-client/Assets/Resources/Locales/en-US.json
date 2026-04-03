@@ -42,6 +42,13 @@
   "card_type.dungeon_room": "Dungeon Room",
   "card_type.boss": "Boss",
 
+  "class.warrior": "Warrior",
+  "class.rogue": "Rogue",
+  "class.mage": "Mage",
+  "class.cleric": "Cleric",
+  "class.ranger": "Ranger",
+  "class.paladin": "Paladin",
+
   "rarity.common": "Common",
   "rarity.uncommon": "Uncommon",
   "rarity.rare": "Rare",

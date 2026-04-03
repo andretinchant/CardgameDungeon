@@ -38,6 +38,8 @@ Unity client is a separate project that consumes the API.
 
 **Rarities:** Unique (1 per deck), Rare, Uncommon, Common.
 
+**Ally Classes:** Warrior (controls combat, redirects damage), Rogue (Advantage bonuses, evasion), Mage (conditional multi-combat effects), Cleric (heals, anti-Undead, conditional buffs), Ranger (reveals hand/deck/traps, favored enemy), Paladin (combat+support hybrid, sacrifice for effects). Each ally has exactly one class.
+
 **Races:** Human, Elf, Dwarf, Orc, Halfling, Dragonborn, Tiefling, Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon. Allies, Monsters, and Bosses each have a Race.
 
 **Equipment Slots (Gear):** Weapon, Armor, Shield, Helmet, Boots, Accessory. Limited to 1 per slot per ally (e.g., no 2 boots, no 2 armors).
@@ -77,6 +79,7 @@ Cards reference these states in their Effect text: "With Advantage: +2 STR", "Wi
 ### Initiative
 
 - Sum of initiative values. Tie → bid war (discard or exile from top).
+- **Winner chooses role:** The initiative winner decides whether to be the **attacker** or **defender**. This makes high initiative a tactical advantage — you control the tempo.
 - **Retarget:** After initiative sequence resolves, paying a cost lets a unit reposition to participate in two combats but deal damage in only one.
 
 ### Field & Targeting

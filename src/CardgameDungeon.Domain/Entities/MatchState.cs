@@ -13,6 +13,7 @@ public class MatchState
     public MatchPhase Phase { get; private set; }
     public int CurrentRoom { get; private set; }
     public Guid? InitiativeWinnerId { get; private set; }
+    public Guid? AttackerId { get; private set; }
     public Guid? WinnerId { get; private set; }
 
     private readonly List<DungeonRoomCard> _dungeonRooms;
@@ -41,16 +42,16 @@ public class MatchState
 
     public PlayerState GetAttacker()
     {
-        if (InitiativeWinnerId is null)
-            throw new InvalidOperationException("Initiative has not been resolved.");
-        return GetPlayer(InitiativeWinnerId.Value);
+        if (AttackerId is null)
+            throw new InvalidOperationException("Role has not been chosen yet.");
+        return GetPlayer(AttackerId.Value);
     }
 
     public PlayerState GetDefender()
     {
-        if (InitiativeWinnerId is null)
-            throw new InvalidOperationException("Initiative has not been resolved.");
-        return GetOpponent(InitiativeWinnerId.Value);
+        if (AttackerId is null)
+            throw new InvalidOperationException("Role has not been chosen yet.");
+        return GetOpponent(AttackerId.Value);
     }
 
     public MatchState(
@@ -160,9 +161,32 @@ public class MatchState
                 : Player2.PlayerId;
             Player1BetTotal = 0;
             Player2BetTotal = 0;
-            Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
+            Phase = MatchPhase.RoleSelection;
         }
         // Tie: callers must handle the bid war externally, then call again
+    }
+
+    /// <summary>
+    /// Initiative winner chooses whether to be the attacker or defender.
+    /// </summary>
+    public void ChooseRole(Guid playerId, bool choosesToAttack)
+    {
+        EnsurePhase(MatchPhase.RoleSelection);
+
+        if (InitiativeWinnerId != playerId)
+            throw new InvalidOperationException("Only the initiative winner can choose the role.");
+
+        if (choosesToAttack)
+        {
+            AttackerId = playerId;
+        }
+        else
+        {
+            // Winner chose to defend — opponent becomes the attacker
+            AttackerId = GetOpponent(playerId).PlayerId;
+        }
+
+        Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
     }
 
     public void PlaceBet(Guid playerId, int amount, bool exile)
@@ -194,7 +218,7 @@ public class MatchState
 
         Player1BetTotal = 0;
         Player2BetTotal = 0;
-        Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
+        Phase = MatchPhase.RoleSelection;
         return true;
     }
 

@@ -147,6 +147,9 @@ public static class MatchTestHelper
             player1.AlliesInPlay.Sum(a => a.Initiative),
             player2.AlliesInPlay.Sum(a => a.Initiative));
 
+        // Winner chooses to attack
+        match.ChooseRole(match.InitiativeWinnerId!.Value, choosesToAttack: true);
+
         return match;
     }
 
@@ -197,6 +200,9 @@ public static class MatchTestHelper
         match.ResolveInitiative(
             player1.AlliesInPlay.Sum(a => a.Initiative),
             player2.AlliesInPlay.Sum(a => a.Initiative));
+
+        // Winner chooses to attack
+        match.ChooseRole(match.InitiativeWinnerId!.Value, choosesToAttack: true);
 
         return match;
     }

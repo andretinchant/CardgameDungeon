@@ -38,6 +38,7 @@ internal class AllyCardConfiguration : IEntityTypeConfiguration<AllyCard>
 {
     public void Configure(EntityTypeBuilder<AllyCard> builder)
     {
+        builder.Property(a => a.Class).HasConversion<string>().HasMaxLength(20);
         builder.Property(a => a.Race).HasColumnName("Race").HasConversion<string>().HasMaxLength(20);
         builder.Property(a => a.Strength).HasColumnName("Strength");
         builder.Property(a => a.HitPoints).HasColumnName("HitPoints");

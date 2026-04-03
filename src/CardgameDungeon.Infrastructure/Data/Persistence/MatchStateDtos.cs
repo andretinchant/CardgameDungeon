@@ -8,6 +8,7 @@ internal class MatchStateDto
     public int Phase { get; set; }
     public int CurrentRoom { get; set; }
     public Guid? InitiativeWinnerId { get; set; }
+    public Guid? AttackerId { get; set; }
     public Guid? WinnerId { get; set; }
     public List<CardDto> DungeonRooms { get; set; } = [];
     public CardDto Boss { get; set; } = null!;
@@ -50,6 +51,7 @@ internal class CardDto
     public int Rarity { get; set; }
     public int Cost { get; set; }
     // Ally / Monster / Boss
+    public int? AllyClass { get; set; }
     public int? Race { get; set; }
     public int? Strength { get; set; }
     public int? HitPoints { get; set; }
