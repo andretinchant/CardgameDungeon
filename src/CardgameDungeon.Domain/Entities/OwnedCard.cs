@@ -7,6 +7,8 @@ public class OwnedCard
     public Guid PlayerId { get; private set; }
     public bool IsReserved { get; private set; }
 
+    private OwnedCard() { } // EF Core
+
     public OwnedCard(Guid id, Guid cardId, Guid playerId)
     {
         Id = id;

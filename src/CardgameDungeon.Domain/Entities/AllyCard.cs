@@ -12,6 +12,8 @@ public class AllyCard : Card
     public bool IsAmbusher { get; private set; }
     public string? Effect { get; private set; }
 
+    private AllyCard() { } // EF Core
+
     public AllyCard(
         Guid id,
         string name,

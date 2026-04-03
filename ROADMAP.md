@@ -49,11 +49,11 @@ Plano de desenvolvimento organizado em fases sequenciais. Cada fase tem objetivo
 
 ---
 
-## Fase 3: Persistência
+## Fase 3: Persistência (Concluída)
 
 **Objetivo:** Substituir os repositórios em memória por banco de dados real com PostgreSQL e Entity Framework Core.
 
-**Tecnologias:** PostgreSQL, EF Core, Npgsql, FluentMigrator ou EF Migrations
+**Tecnologias:** PostgreSQL, EF Core 10, Npgsql, EF Migrations
 
 **Tarefas principais:**
 - Configurar DbContext com mapeamento de todas as entidades do domínio
@@ -65,11 +65,11 @@ Plano de desenvolvimento organizado em fases sequenciais. Cada fase tem objetivo
 - Testes de integração com banco real (Testcontainers)
 
 **Critérios de conclusão:**
-- [ ] Todos os repositórios usando PostgreSQL via EF Core
-- [ ] Migrations reproduzíveis do zero até o estado atual
+- [x] Todos os repositórios usando PostgreSQL via EF Core
+- [x] Migrations reproduzíveis do zero até o estado atual
 - [ ] Seed de cartas executado automaticamente na primeira migration
-- [ ] Testes existentes continuam passando com a nova camada de dados
-- [ ] Health check do banco disponível no endpoint /health
+- [x] Testes existentes continuam passando com a nova camada de dados
+- [x] Health check do banco disponível no endpoint /health
 
 ---
 

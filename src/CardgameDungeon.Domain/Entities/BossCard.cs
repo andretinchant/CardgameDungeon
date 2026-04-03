@@ -10,6 +10,8 @@ public class BossCard : Card
     public int Initiative { get; private set; }
     public string? Effect { get; private set; }
 
+    private BossCard() { } // EF Core
+
     public BossCard(
         Guid id,
         string name,

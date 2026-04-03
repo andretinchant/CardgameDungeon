@@ -2,10 +2,10 @@ using CardgameDungeon.API.Data.Seeds;
 using CardgameDungeon.API.Endpoints;
 using CardgameDungeon.API.Infrastructure;
 using CardgameDungeon.API.Middleware;
-using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Domain.Services;
 using CardgameDungeon.Features.Behaviors;
 using CardgameDungeon.Features.Collection.OpenBooster;
+using CardgameDungeon.Infrastructure;
 using FluentValidation;
 using MediatR;
 
@@ -20,16 +20,8 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 // Domain services
 builder.Services.AddSingleton<CombatResolver>();
 
-// Repositories (in-memory for development)
-builder.Services.AddSingleton<IDeckRepository, InMemoryDeckRepository>();
-builder.Services.AddSingleton<ICardRepository, InMemoryCardRepository>();
-builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
-builder.Services.AddSingleton<ICollectionRepository, InMemoryCollectionRepository>();
-builder.Services.AddSingleton<IWalletRepository, InMemoryWalletRepository>();
-builder.Services.AddSingleton<IMarketplaceRepository, InMemoryMarketplaceRepository>();
-builder.Services.AddSingleton<IQueueRepository, InMemoryQueueRepository>();
-builder.Services.AddSingleton<IRatingRepository, InMemoryRatingRepository>();
-builder.Services.AddSingleton<ITournamentRepository, InMemoryTournamentRepository>();
+// Infrastructure — PostgreSQL + EF Core repositories
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSingleton<IBoosterCardPool, RandomBoosterCardPool>();
 
 // Swagger

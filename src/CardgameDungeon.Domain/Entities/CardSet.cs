@@ -11,6 +11,8 @@ public class CardSet
 
     private readonly List<Card> _cards;
 
+    private CardSet() { Name = null!; Code = null!; Description = null!; _cards = []; } // EF Core
+
     public CardSet(
         Guid id,
         string name,

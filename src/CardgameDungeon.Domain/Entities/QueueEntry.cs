@@ -10,6 +10,8 @@ public class QueueEntry
     public int Elo { get; private set; }
     public DateTime JoinedAt { get; private set; }
 
+    private QueueEntry() { } // EF Core
+
     public QueueEntry(Guid playerId, Guid deckId, QueueType queueType, int elo)
     {
         PlayerId = playerId;

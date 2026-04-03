@@ -16,6 +16,8 @@ public class DungeonRoomCard : Card
     private readonly List<Guid> _monsterIds;
     private readonly List<Guid> _trapIds;
 
+    private DungeonRoomCard() { _monsterIds = []; _trapIds = []; } // EF Core
+
     public DungeonRoomCard(
         Guid id,
         string name,

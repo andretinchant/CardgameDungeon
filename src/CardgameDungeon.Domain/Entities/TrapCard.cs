@@ -8,6 +8,8 @@ public class TrapCard : Card
     public int Damage { get; private set; }
     public string Effect { get; private set; }
 
+    private TrapCard() { Effect = null!; } // EF Core
+
     public TrapCard(
         Guid id,
         string name,

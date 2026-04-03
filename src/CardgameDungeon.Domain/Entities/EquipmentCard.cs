@@ -9,6 +9,8 @@ public class EquipmentCard : Card
     public int HitPointsModifier { get; private set; }
     public int InitiativeModifier { get; private set; }
 
+    private EquipmentCard() { } // EF Core
+
     public EquipmentCard(
         Guid id,
         string name,

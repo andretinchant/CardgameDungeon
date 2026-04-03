@@ -11,6 +11,8 @@ public class MonsterCard : Card
     public int Treasure { get; private set; }
     public string? Effect { get; private set; }
 
+    private MonsterCard() { } // EF Core
+
     public MonsterCard(
         Guid id,
         string name,

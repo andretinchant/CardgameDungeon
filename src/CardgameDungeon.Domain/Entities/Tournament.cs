@@ -20,6 +20,8 @@ public class Tournament
 
     private readonly List<TournamentParticipant> _participants = [];
 
+    private Tournament() { } // EF Core
+
     public Tournament(Guid id, Tier requiredTier, int entryFee)
     {
         if (entryFee <= 0)
@@ -115,6 +117,8 @@ public class TournamentParticipant
     public Guid DeckId { get; private set; }
     public bool IsEliminated { get; private set; }
     public int? EliminatedInRound { get; private set; }
+
+    private TournamentParticipant() { } // EF Core
 
     public TournamentParticipant(Guid playerId, Guid deckId)
     {

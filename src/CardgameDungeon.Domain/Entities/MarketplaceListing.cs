@@ -12,6 +12,8 @@ public class MarketplaceListing
     public bool IsActive { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
+    private MarketplaceListing() { } // EF Core
+
     public MarketplaceListing(Guid id, Guid sellerId, Guid ownedCardId, Guid cardId, int price)
     {
         if (price <= 0)

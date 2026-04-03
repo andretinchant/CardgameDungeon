@@ -3,6 +3,7 @@
     <Project Path="src/CardgameDungeon.API/CardgameDungeon.API.csproj" />
     <Project Path="src/CardgameDungeon.Domain/CardgameDungeon.Domain.csproj" />
     <Project Path="src/CardgameDungeon.Features/CardgameDungeon.Features.csproj" />
+    <Project Path="src/CardgameDungeon.Infrastructure/CardgameDungeon.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CardgameDungeon.Tests/CardgameDungeon.Tests.csproj" />

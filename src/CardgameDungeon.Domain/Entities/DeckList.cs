@@ -22,6 +22,26 @@ public class DeckList
     private readonly List<Card> _enemyCards;
     private readonly List<DungeonRoomCard> _dungeonRooms;
 
+    // Used by persistence layer to reconstruct without re-validation
+    internal DeckList(
+        Guid id,
+        Guid playerId,
+        IEnumerable<Card> adventurerCards,
+        IEnumerable<Card> enemyCards,
+        IEnumerable<DungeonRoomCard> dungeonRooms,
+        BossCard boss,
+        bool skipValidation)
+    {
+        _adventurerCards = adventurerCards.ToList();
+        _enemyCards = enemyCards.ToList();
+        _dungeonRooms = dungeonRooms.OrderBy(r => r.Order).ToList();
+        Boss = boss ?? throw new ArgumentNullException(nameof(boss));
+        Id = id;
+        PlayerId = playerId;
+
+        if (!skipValidation) Validate();
+    }
+
     public DeckList(
         Guid id,
         Guid playerId,

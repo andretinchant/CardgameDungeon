@@ -11,6 +11,8 @@ public class PlayerWallet
     public DateOnly LastDailyRewardDate { get; private set; }
     public int DailyRewardsClaimedToday { get; private set; }
 
+    private PlayerWallet() { } // EF Core
+
     public PlayerWallet(Guid playerId, int balance = 0)
     {
         PlayerId = playerId;

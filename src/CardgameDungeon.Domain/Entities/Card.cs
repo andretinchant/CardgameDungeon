@@ -10,6 +10,8 @@ public abstract class Card
     public Rarity Rarity { get; private set; }
     public int Cost { get; private set; }
 
+    protected Card() { Name = null!; } // EF Core
+
     protected Card(Guid id, string name, Rarity rarity, int cost)
     {
         if (string.IsNullOrWhiteSpace(name))

@@ -15,6 +15,8 @@ public class PlayerRating
 
     public int TotalGames => Wins + Losses;
 
+    private PlayerRating() { } // EF Core
+
     public PlayerRating(Guid playerId, int elo = DefaultElo)
     {
         PlayerId = playerId;
