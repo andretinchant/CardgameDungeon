@@ -145,6 +145,11 @@ app.UseAuthorization();
 // Health check (public)
 app.MapGet("/health", () => Results.Ok("healthy")).WithTags("Health");
 
+// Locale endpoint (public)
+app.MapGet("/api/locale", (CardgameDungeon.Features.Localization.ILocalizer localizer) =>
+    Results.Ok(new { Locale = localizer.CurrentLocale, Supported = new[] { "en-US", "pt-BR" } }))
+    .WithTags("Locale").AllowAnonymous();
+
 // Auth endpoints (public)
 app.MapAuthEndpoints();
 

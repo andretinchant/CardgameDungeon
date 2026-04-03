@@ -1,7 +1,9 @@
 using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Features.Auth;
+using CardgameDungeon.Features.Localization;
 using CardgameDungeon.Infrastructure.Auth;
 using CardgameDungeon.Infrastructure.Data;
+using CardgameDungeon.Infrastructure.Localization;
 using CardgameDungeon.Infrastructure.Redis;
 using CardgameDungeon.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +36,10 @@ public static class DependencyInjection
         // Auth services
         services.AddSingleton<IAuthTokenService, JwtTokenService>();
         services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+
+        // Localization
+        services.AddHttpContextAccessor();
+        services.AddScoped<ILocalizer, RequestLocalizer>();
 
         // Redis (optional — falls back to EF if not configured)
         var redisConnectionString = configuration["Redis:ConnectionString"];

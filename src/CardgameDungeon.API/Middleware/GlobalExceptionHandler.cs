@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CardgameDungeon.Features.Localization;
 using FluentValidation;
 
 namespace CardgameDungeon.API.Middleware;
@@ -19,11 +20,14 @@ public class GlobalExceptionHandler(RequestDelegate next)
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
+        var localizer = context.RequestServices.GetService<ILocalizer>();
+
         var (statusCode, body) = exception switch
         {
             ValidationException validationEx => (
                 StatusCodes.Status400BadRequest,
-                new ErrorResponse("Validation failed",
+                new ErrorResponse(
+                    localizer?["error.validation_failed"] ?? "Validation failed.",
                     validationEx.Errors.Select(e => e.ErrorMessage).ToList())),
 
             KeyNotFoundException notFoundEx => (
@@ -40,7 +44,7 @@ public class GlobalExceptionHandler(RequestDelegate next)
 
             _ => (
                 StatusCodes.Status500InternalServerError,
-                new ErrorResponse("An unexpected error occurred."))
+                new ErrorResponse(localizer?["error.unexpected"] ?? "An unexpected error occurred."))
         };
 
         context.Response.ContentType = "application/json";
