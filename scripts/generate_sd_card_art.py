@@ -16,6 +16,8 @@ STYLE_GUIDE_PATH = ROOT / "STYLE_GUIDE_DND_DUNGEON.md"
 SEEDS_ROOT = ROOT / "src" / "CardgameDungeon.API" / "Data" / "Seeds"
 OUTPUT_ROOT = ROOT / "art-output" / "stable-diffusion"
 
+CARD_TYPE_ORDER = ["Equipment", "Ally", "Monster", "Trap", "DungeonRoom", "Boss"]
+
 RARITY_DISTRIBUTION_60 = (
     ["Unique"] * 2
     + ["Rare"] * 8
@@ -170,6 +172,88 @@ SD_PAYLOAD = {
     "batch_size": 1,
 }
 
+CLASS_HINTS = {
+    "paladin": "paladin",
+    "ranger": "ranger",
+    "cleric": "cleric",
+    "rogue": "rogue",
+    "artificer": "artificer",
+    "warlock": "warlock",
+    "fighter": "fighter",
+    "barbarian": "barbarian",
+    "monk": "monk",
+    "druid": "druid",
+    "berserker": "berserker",
+    "swashbuckler": "swashbuckler",
+    "spy": "spy",
+    "bladesinger": "bladesinger",
+    "stormcaller": "stormcaller",
+    "shaman": "shaman",
+    "warlord": "warlord",
+    "wizard": "wizard",
+    "mage": "mage",
+    "healer": "healer",
+    "medic": "healer",
+    "merchant": "merchant",
+    "cook": "cook",
+    "handler": "beast handler",
+    "teller": "oracle",
+    "hunter": "hunter",
+    "guardian": "guardian",
+    "exorcist": "exorcist",
+    "acrobat": "acrobat",
+    "knight": "knight",
+    "witch": "witch",
+    "queen": "witch queen",
+    "ringmaster": "ringmaster",
+    "priest": "priest",
+    "mystic": "mystic",
+}
+
+EQUIPMENT_BASE_DESCRIPTIONS = {
+    "boots": "enchanted leather boots",
+    "sword": "ancient runed sword",
+    "staff": "ornate magical staff",
+    "wand": "arcane wand",
+    "robe": "mystic ceremonial robe",
+    "shield": "heavy engraved shield",
+    "cloak": "shadowy enchanted cloak",
+    "ring": "glowing enchanted ring",
+    "amulet": "ornate magical amulet",
+    "belt": "massive enchanted belt",
+    "bracers": "engraved defensive bracers",
+    "buckler": "reinforced iron buckler",
+    "caltrops": "spiked iron caltrops",
+    "cape": "luxurious enchanted cape",
+    "mail": "enchanted chain mail armor",
+    "circlet": "glowing jeweled circlet",
+    "club": "brutal carved war club",
+    "dagger": "razor sharp ritual dagger",
+    "powder": "volatile flash powder vial",
+    "gauntlets": "massive runed gauntlets",
+    "gloves": "enchanted dueling gloves",
+    "helm": "ancient iron battle helm",
+    "helmet": "ancient iron battle helm",
+    "lance": "ceremonial war lance",
+    "armor": "enchanted plate armor",
+    "plate": "enchanted plate armor",
+    "bow": "finely crafted longbow",
+    "crossbow": "mechanical crossbow",
+    "spear": "barbed war spear",
+    "hammer": "rune-carved war hammer",
+    "axe": "heavy battle axe",
+    "vial": "glowing alchemical vial",
+    "orb": "floating magical orb",
+    "tome": "ancient spell tome",
+    "lantern": "enchanted brass lantern",
+    "mask": "ominous enchanted mask",
+}
+
+NAME_CLEANUP_PATTERN = re.compile(r"\+\d+|\bof\b|\bthe\b", flags=re.IGNORECASE)
+EQUIPMENT_NEGATIVE_PROMPT = "person, character, hands, body, humanoid, anime, cartoon, low detail"
+CREATURE_NEGATIVE_PROMPT = "anime, cartoon, low detail, flat lighting, pastel colors"
+ENVIRONMENT_NEGATIVE_PROMPT = "person, character, humanoid, anime, cartoon"
+
 
 @dataclass
 class CardDefinition:
@@ -201,7 +285,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_ROOT)
     parser.add_argument("--base-url", default="http://127.0.0.1:7860")
     parser.add_argument("--set-code", help="Filter by set code, e.g. DND1 or DND2.")
-    parser.add_argument("--card-type", choices=sorted(set(TYPE_TO_CARD_KIND.values())))
+    parser.add_argument("--card-type", choices=CARD_TYPE_ORDER)
     parser.add_argument("--name", help="Case-insensitive substring match on card name.")
     parser.add_argument("--limit", type=int, help="Maximum number of cards to process.")
     parser.add_argument("--overwrite", action="store_true")
@@ -332,7 +416,12 @@ def parse_typed_constructor_args(card_type_name: str, args_text: str) -> dict[st
     raw_args = split_top_level_arguments(args_text)
     ordered_fields = TYPE_FIELD_ORDER[card_type_name]
     parsed: dict[str, Any] = {}
-    positional_index = 0
+
+    def next_positional_field() -> str:
+        for field_name in ordered_fields:
+            if field_name not in parsed:
+                return field_name
+        raise ValueError(f"Too many positional arguments while parsing {card_type_name}.")
 
     for raw_arg in raw_args:
         named_field, raw_value = strip_named_argument(raw_arg)
@@ -340,8 +429,7 @@ def parse_typed_constructor_args(card_type_name: str, args_text: str) -> dict[st
             parsed[normalise_field_name(named_field)] = parse_scalar(raw_value)
             continue
 
-        field_name = ordered_fields[positional_index]
-        positional_index += 1
+        field_name = next_positional_field()
         parsed[field_name] = parse_scalar(raw_value)
 
     return parsed
@@ -445,6 +533,156 @@ def slugify(value: str) -> str:
     return slug or "card"
 
 
+def title_case_words(value: str) -> list[str]:
+    return re.findall(r"[A-Za-z]+", value.lower())
+
+
+def infer_ally_class(card: CardDefinition) -> str:
+    haystack = f"{card.name} {card.effect or ''}".lower()
+    for keyword, class_name in CLASS_HINTS.items():
+        if keyword in haystack:
+            return class_name
+    return "adventurer"
+
+
+def build_effect_hint(card: CardDefinition) -> str:
+    parts: list[str] = []
+
+    if card.effect:
+        first_sentence = re.split(r"[.!?]", card.effect, maxsplit=1)[0]
+        if first_sentence.strip():
+            parts.append(collapse_whitespace(first_sentence.strip()))
+
+    if card.card_type == "Equipment":
+        if (card.strength_mod or 0) > 0:
+            parts.append("glowing with offensive battle enchantment")
+        if (card.hit_points_mod or 0) > 0:
+            parts.append("radiating protective ward magic")
+        if (card.initiative_mod or 0) > 0:
+            parts.append("surrounded by swift kinetic runes")
+        if not parts:
+            parts.append("radiating ancient magical power")
+    elif card.card_type == "Trap":
+        if card.damage is not None:
+            parts.append(f"dealing {card.damage} damage in a burst of arcane force")
+        if card.effect and not parts:
+            parts.append("dangerous magical energy discharging")
+    elif card.card_type == "DungeonRoom":
+        if card.monster_cost_budget is not None:
+            parts.append(f"built for deadly encounters with looming danger in every shadow")
+
+    return collapse_whitespace(", ".join(parts))
+
+
+def describe_equipment_item(name: str) -> str:
+    lowered = NAME_CLEANUP_PATTERN.sub(" ", name.lower())
+    words = [word for word in title_case_words(lowered) if word not in {"a", "an"}]
+    if not words:
+        return "enchanted magical item"
+
+    base_word = next(
+        (word for word in reversed(words) if word in EQUIPMENT_BASE_DESCRIPTIONS),
+        words[-1],
+    )
+    descriptor = EQUIPMENT_BASE_DESCRIPTIONS.get(base_word)
+
+    if descriptor is None:
+        descriptor = f"enchanted {' '.join(words)}"
+
+    extra_traits: list[str] = []
+    if "speed" in words:
+        extra_traits.append("with speed runes")
+    if "elvenkind" in words:
+        extra_traits.append("with elegant elven filigree")
+    if "displacement" in words:
+        extra_traits.append("with distortion shimmer")
+    if "health" in words:
+        extra_traits.append("with restorative life sigils")
+    if "giant" in words or "ogre" in words:
+        extra_traits.append("with strength glyphs")
+    if "defense" in words:
+        extra_traits.append("with protective ward engravings")
+    if "blasting" in words:
+        extra_traits.append("with explosive fire sigils")
+    if "waterdeep" in words:
+        extra_traits.append("with arcane city glyphs")
+    if "orcus" in words:
+        extra_traits.append("with sinister necromantic carvings")
+    if "mountebank" in words:
+        extra_traits.append("with teleportation sigils")
+    if "antidote" in words:
+        extra_traits.append("filled with glowing antidote liquid")
+    if "flash" in words:
+        extra_traits.append("releasing blinding alchemical sparks")
+
+    suffix = f" {' '.join(extra_traits)}" if extra_traits else ""
+    return collapse_whitespace(f"{descriptor}{suffix}")
+
+
+def build_prompt(card: CardDefinition) -> str:
+    effect_hint = build_effect_hint(card)
+
+    if card.card_type == "Equipment":
+        item_name = describe_equipment_item(card.name)
+        return collapse_whitespace(
+            f"a single {item_name}, fantasy magical item, {effect_hint}, "
+            "isolated on dark dungeon stone pedestal, dramatic underlighting from below, "
+            "glowing golden runes, antique gold and brown tones, deep purple magical glow, "
+            "highly detailed texture, no character, no person, no hands, trading card item art, "
+            "dark fantasy digital painting"
+        )
+
+    if card.card_type == "Ally":
+        hero_class = infer_ally_class(card)
+        return collapse_whitespace(
+            f"{card.name}, fantasy {hero_class} hero, heroic action pose, determined expression, "
+            "worn battle gear with golden trim, dramatic underlighting from dungeon torches below, "
+            "epic low-angle perspective, dark dungeon background with stone arches, dominant brown "
+            "and antique gold palette, deep purple accents, dark fantasy digital painting, "
+            "trading card character art"
+        )
+
+    if card.card_type == "Monster":
+        return collapse_whitespace(
+            f"{card.name}, fearsome fantasy monster, aggressive threatening pose, massive imposing figure, "
+            "dramatic purple underlighting from below, ancient dungeon environment, dominant dark brown "
+            "and deep purple palette, glowing eyes, dark fantasy digital painting, trading card monster art"
+        )
+
+    if card.card_type == "Trap":
+        return collapse_whitespace(
+            f"{card.name} trap activating, magical mechanism in motion, {effect_hint}, dark dungeon floor, "
+            "dramatic purple and gold energy effect, no character, no person, isolated magical effect, "
+            "dark fantasy digital painting, trading card trap art"
+        )
+
+    if card.card_type == "DungeonRoom":
+        return collapse_whitespace(
+            f"{card.name} dungeon room, wide establishing shot, ancient stone architecture, dramatic "
+            "underlighting from floor torches and runes, oppressive atmosphere, volumetric fog, dungeon "
+            "crawl environment, dark fantasy digital painting, trading card location art"
+        )
+
+    if card.card_type == "Boss":
+        return collapse_whitespace(
+            f"{card.name}, legendary boss creature, monumental scale filling entire frame, overwhelming "
+            "presence, dramatic purple and gold underlighting, ancient dungeon throne room, inevitable "
+            "power aura, dark fantasy digital painting, trading card boss art"
+        )
+
+    raise ValueError(f"Unsupported card type for prompt building: {card.card_type}")
+
+
+def build_negative_prompt(card: CardDefinition) -> str:
+    if card.card_type == "Equipment":
+        return EQUIPMENT_NEGATIVE_PROMPT
+    if card.card_type in {"Ally", "Monster", "Boss"}:
+        return CREATURE_NEGATIVE_PROMPT
+    if card.card_type in {"Trap", "DungeonRoom"}:
+        return ENVIRONMENT_NEGATIVE_PROMPT
+    raise ValueError(f"Unsupported card type for negative prompt: {card.card_type}")
+
+
 def filter_cards(cards: list[CardDefinition], args: argparse.Namespace) -> list[CardDefinition]:
     filtered = cards
 
@@ -465,69 +703,22 @@ def filter_cards(cards: list[CardDefinition], args: argparse.Namespace) -> list[
     return filtered
 
 
-def build_equipment_flair(card: CardDefinition) -> str:
-    cues: list[str] = []
-
-    if (card.strength_mod or 0) > 0:
-        cues.append("powerful weapon aura")
-    if (card.hit_points_mod or 0) > 0:
-        cues.append("protective warding glow")
-    if (card.initiative_mod or 0) > 0:
-        cues.append("swift kinetic energy")
-    if not cues:
-        cues.append("ancient magical relic")
-
-    return ", ".join(cues)
-
-
-def build_subject(card: CardDefinition) -> str:
-    effect = collapse_whitespace(card.effect or "")
-
-    if card.card_type == "Ally":
-        stance = "stealthy ambusher pose" if card.is_ambusher else "heroic adventurer pose"
-        return f"{card.name}, {card.rarity.lower()} ally, {stance}, worn fantasy gear, determined expression, {effect}"
-
-    if card.card_type == "Monster":
-        return f"{card.name}, terrifying dungeon monster, menacing silhouette, brutal fantasy anatomy, {effect}"
-
-    if card.card_type == "Boss":
-        return f"{card.name}, final dungeon boss, colossal threat, climactic confrontation scene, {effect}"
-
-    if card.card_type == "Equipment":
-        return f"{card.name}, fantasy equipment relic on a rune-carved altar, close-up showcase, {build_equipment_flair(card)}"
-
-    if card.card_type == "Trap":
-        return f"{card.name}, activated dungeon trap in the instant it triggers, lethal mechanism and magical hazard, {effect}"
-
-    if card.card_type == "DungeonRoom":
-        return f"{card.name}, ancient dungeon room environment, environmental storytelling scene, {effect}"
-
-    return f"{card.name}, fantasy card illustration, {effect}"
-
-
-def build_prompt(card: CardDefinition, base_prompt: str) -> str:
-    subject = build_subject(card)
-    if "[subject]" in base_prompt:
-        return collapse_whitespace(base_prompt.replace("[subject]", subject))
-    return collapse_whitespace(f"{base_prompt}, {subject}")
-
-
-def manifest_payload(cards: list[CardDefinition], base_prompt: str, negative_prompt: str) -> list[dict[str, Any]]:
+def manifest_payload(cards: list[CardDefinition]) -> list[dict[str, Any]]:
     payload: list[dict[str, Any]] = []
 
     for card in cards:
         row = asdict(card)
-        row["prompt"] = build_prompt(card, base_prompt)
-        row["negative_prompt"] = negative_prompt
+        row["prompt"] = build_prompt(card)
+        row["negative_prompt"] = build_negative_prompt(card)
         payload.append(row)
 
     return payload
 
 
-def write_manifest(output_dir: Path, cards: list[CardDefinition], base_prompt: str, negative_prompt: str) -> Path:
+def write_manifest(output_dir: Path, cards: list[CardDefinition]) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = output_dir / "manifest.json"
-    manifest = manifest_payload(cards, base_prompt, negative_prompt)
+    manifest = manifest_payload(cards)
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     return manifest_path
 
@@ -562,8 +753,6 @@ def save_generated_image(card: CardDefinition, image_data: str, output_dir: Path
 
 def generate_cards(
     cards: list[CardDefinition],
-    base_prompt: str,
-    negative_prompt: str,
     output_dir: Path,
     base_url: str,
     overwrite: bool,
@@ -576,8 +765,8 @@ def generate_cards(
 
         payload = {
             **SD_PAYLOAD,
-            "prompt": build_prompt(card, base_prompt),
-            "negative_prompt": negative_prompt,
+            "prompt": build_prompt(card),
+            "negative_prompt": build_negative_prompt(card),
         }
         response = post_json(f"{base_url.rstrip('/')}/sdapi/v1/txt2img", payload)
         images = response.get("images") or []
@@ -591,7 +780,9 @@ def generate_cards(
 
 def main() -> int:
     args = parse_args()
-    base_prompt, negative_prompt = read_style_guide(args.style_guide)
+    # Keep validating the style guide path for compatibility with older workflow usage.
+    if args.style_guide.exists():
+        read_style_guide(args.style_guide)
     cards = parse_seed_cards(args.seeds_root)
     selected_cards = filter_cards(cards, args)
 
@@ -599,18 +790,16 @@ def main() -> int:
         print("No cards matched the provided filters.", file=sys.stderr)
         return 1
 
-    manifest_path = write_manifest(args.output_dir, selected_cards, base_prompt, negative_prompt)
+    manifest_path = write_manifest(args.output_dir, selected_cards)
     print(f"Selected {len(selected_cards)} cards. Manifest written to {manifest_path}")
 
     if args.parse_only:
-        preview = manifest_payload(selected_cards[:3], base_prompt, negative_prompt)
+        preview = manifest_payload(selected_cards[:3])
         print(json.dumps(preview, indent=2, ensure_ascii=False))
         return 0
 
     generate_cards(
         selected_cards,
-        base_prompt,
-        negative_prompt,
         args.output_dir,
         args.base_url,
         args.overwrite,
