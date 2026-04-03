@@ -37,6 +37,7 @@ public static partial class CardSetSeeder
 
         var allies = CreateAllies();
         var equipment = CreateEquipment();
+        var consumables = CreateConsumables();
         var monsters = CreateMonsters();
         var traps = CreateTraps();
         var rooms = CreateDungeonRooms();
@@ -44,6 +45,7 @@ public static partial class CardSetSeeder
 
         foreach (var card in allies) set.AddCard(card);
         foreach (var card in equipment) set.AddCard(card);
+        foreach (var card in consumables) set.AddCard(card);
         foreach (var card in monsters) set.AddCard(card);
         foreach (var card in traps) set.AddCard(card);
         foreach (var card in rooms) set.AddCard(card);

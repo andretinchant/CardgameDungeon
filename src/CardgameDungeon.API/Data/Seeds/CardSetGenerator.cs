@@ -34,7 +34,7 @@ public static class CardSetGenerator
             var rarity = RarityDistribution60[i];
             set.AddCard(new EquipmentCard(
                 MakeGuid(theme.GuidPrefix, 2, i + 1),
-                e.Name, rarity, e.Cost, e.StrMod, e.HpMod, e.InitMod));
+                e.Name, rarity, e.Cost, e.StrMod, e.HpMod, e.InitMod, e.Slot, e.Effect));
         }
 
         for (var i = 0; i < theme.Monsters.Length; i++)
