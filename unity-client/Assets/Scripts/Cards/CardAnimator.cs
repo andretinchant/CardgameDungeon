@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 namespace CardgameDungeon.Unity.Cards
 {
@@ -9,80 +11,50 @@ namespace CardgameDungeon.Unity.Cards
         [SerializeField] private AnimationCurve moveCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
         [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
         [SerializeField] private AnimationCurve flipCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
-        [SerializeField] private AnimationCurve combatLungeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
         [Header("Timing")]
         [SerializeField] private float drawDuration = 0.5f;
         [SerializeField] private float playDuration = 0.4f;
         [SerializeField] private float discardDuration = 0.3f;
         [SerializeField] private float exileDuration = 0.6f;
-        [SerializeField] private float combatDuration = 0.5f;
         [SerializeField] private float flipDuration = 0.4f;
-        [SerializeField] private float hoverDuration = 0.15f;
+        [SerializeField] private float shakeDuration = 0.3f;
 
-        [Header("Combat Settings")]
-        [SerializeField] private float lungeDistance = 0.6f;
+        [Header("Draw Settings")]
+        [SerializeField] private float drawArcHeight = 1.5f;
 
-        [Header("Hover Settings")]
-        [SerializeField] private float hoverScaleMultiplier = 1.15f;
+        [Header("Play Glow")]
+        [SerializeField] private Color playGlowColor = new Color(1f, 0.9f, 0.5f, 0.8f);
+        [SerializeField] private float playGlowDuration = 0.3f;
 
-        [Header("Exile Effects")]
+        [Header("Exile Dissolve")]
+        [SerializeField] private Color exileDissolveColor = new Color(0.5f, 0f, 0.8f, 1f);
         [SerializeField] private ParticleSystem exileParticles;
 
+        [Header("Combat Shake")]
+        [SerializeField] private float shakeIntensity = 0.15f;
+
+        [Header("Floating Damage")]
+        [SerializeField] private GameObject damageNumberPrefab;
+        [SerializeField] private float damageRiseSpeed = 1.5f;
+        [SerializeField] private float damageLifetime = 1.0f;
+
         private Vector3 originalScale;
+        private Vector3 originalLocalPosition;
         private Coroutine activeCoroutine;
 
         private void Awake()
         {
             originalScale = transform.localScale;
+            originalLocalPosition = transform.localPosition;
         }
+
+        // ── DrawCard: arc from deck to hand ──
 
         public Coroutine AnimateDraw(Transform target)
         {
-            StopActiveCoroutine();
+            StopActive();
             activeCoroutine = StartCoroutine(DrawCoroutine(target));
-            return activeCoroutine;
-        }
-
-        public Coroutine AnimatePlay(Transform target)
-        {
-            StopActiveCoroutine();
-            activeCoroutine = StartCoroutine(PlayCoroutine(target));
-            return activeCoroutine;
-        }
-
-        public Coroutine AnimateDiscard(Transform target)
-        {
-            StopActiveCoroutine();
-            activeCoroutine = StartCoroutine(DiscardCoroutine(target));
-            return activeCoroutine;
-        }
-
-        public Coroutine AnimateExile(Transform target)
-        {
-            StopActiveCoroutine();
-            activeCoroutine = StartCoroutine(ExileCoroutine(target));
-            return activeCoroutine;
-        }
-
-        public Coroutine AnimateCombat(Transform attacker, Transform defender)
-        {
-            StopActiveCoroutine();
-            activeCoroutine = StartCoroutine(CombatCoroutine(attacker, defender));
-            return activeCoroutine;
-        }
-
-        public Coroutine AnimateFlip(bool faceUp)
-        {
-            StopActiveCoroutine();
-            activeCoroutine = StartCoroutine(FlipCoroutine(faceUp));
-            return activeCoroutine;
-        }
-
-        public Coroutine AnimateHover(bool hovering)
-        {
-            StopActiveCoroutine();
-            activeCoroutine = StartCoroutine(HoverCoroutine(hovering));
             return activeCoroutine;
         }
 
@@ -92,40 +64,41 @@ namespace CardgameDungeon.Unity.Cards
             Vector3 endPos = target.position;
             Quaternion startRot = transform.rotation;
             Quaternion endRot = target.rotation;
-            Vector3 startScale = transform.localScale * 0.5f;
-            Vector3 endScale = originalScale;
+            Vector3 startScale = originalScale * 0.3f;
 
             transform.localScale = startScale;
             float elapsed = 0f;
-
-            // Arc height for a nice draw animation
-            float arcHeight = 1.5f;
 
             while (elapsed < drawDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / drawDuration);
-                float curveT = moveCurve.Evaluate(t);
+                float ct = moveCurve.Evaluate(t);
 
-                // Position with arc
-                Vector3 currentPos = Vector3.Lerp(startPos, endPos, curveT);
-                currentPos.y += Mathf.Sin(t * Mathf.PI) * arcHeight;
-                transform.position = currentPos;
+                // Smooth arc trajectory
+                Vector3 pos = Vector3.Lerp(startPos, endPos, ct);
+                pos.y += Mathf.Sin(t * Mathf.PI) * drawArcHeight;
+                transform.position = pos;
 
-                // Rotation
-                transform.rotation = Quaternion.Slerp(startRot, endRot, curveT);
-
-                // Scale up from small to normal
-                float scaleT = scaleCurve.Evaluate(t);
-                transform.localScale = Vector3.Lerp(startScale, endScale, scaleT);
+                transform.rotation = Quaternion.Slerp(startRot, endRot, ct);
+                transform.localScale = Vector3.Lerp(startScale, originalScale, scaleCurve.Evaluate(t));
 
                 yield return null;
             }
 
             transform.position = endPos;
             transform.rotation = endRot;
-            transform.localScale = endScale;
+            transform.localScale = originalScale;
             activeCoroutine = null;
+        }
+
+        // ── PlayCard: hand to field with glow burst ──
+
+        public Coroutine AnimatePlay(Transform target)
+        {
+            StopActive();
+            activeCoroutine = StartCoroutine(PlayCoroutine(target));
+            return activeCoroutine;
         }
 
         private IEnumerator PlayCoroutine(Transform target)
@@ -136,21 +109,63 @@ namespace CardgameDungeon.Unity.Cards
             Quaternion endRot = target.rotation;
             float elapsed = 0f;
 
+            // Get glow renderer for flash effect
+            SpriteRenderer glowRenderer = GetGlowRenderer();
+
             while (elapsed < playDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / playDuration);
-                float curveT = moveCurve.Evaluate(t);
+                float ct = moveCurve.Evaluate(t);
 
-                transform.position = Vector3.Lerp(startPos, endPos, curveT);
-                transform.rotation = Quaternion.Slerp(startRot, endRot, curveT);
+                transform.position = Vector3.Lerp(startPos, endPos, ct);
+                transform.rotation = Quaternion.Slerp(startRot, endRot, ct);
+
+                // Scale punch: briefly enlarge at midpoint
+                float scalePunch = 1f + 0.15f * Mathf.Sin(t * Mathf.PI);
+                transform.localScale = originalScale * scalePunch;
 
                 yield return null;
             }
 
             transform.position = endPos;
             transform.rotation = endRot;
+            transform.localScale = originalScale;
+
+            // Glow burst on arrival
+            if (glowRenderer != null)
+            {
+                yield return GlowBurst(glowRenderer, playGlowColor, playGlowDuration);
+            }
+
             activeCoroutine = null;
+        }
+
+        private IEnumerator GlowBurst(SpriteRenderer renderer, Color color, float duration)
+        {
+            Color original = renderer.color;
+            float elapsed = 0f;
+
+            renderer.color = color;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                renderer.color = Color.Lerp(color, original, t);
+                yield return null;
+            }
+
+            renderer.color = original;
+        }
+
+        // ── DiscardCard: move to discard pile with fade ──
+
+        public Coroutine AnimateDiscard(Transform target)
+        {
+            StopActive();
+            activeCoroutine = StartCoroutine(DiscardCoroutine(target));
+            return activeCoroutine;
         }
 
         private IEnumerator DiscardCoroutine(Transform target)
@@ -158,135 +173,93 @@ namespace CardgameDungeon.Unity.Cards
             Vector3 startPos = transform.position;
             Vector3 endPos = target.position;
             Vector3 startScale = transform.localScale;
-            Vector3 endScale = originalScale * 0.7f;
+            Vector3 endScale = originalScale * 0.6f;
             float elapsed = 0f;
+
+            SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
+            Color[] origColors = CaptureColors(renderers);
 
             while (elapsed < discardDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / discardDuration);
-                float curveT = moveCurve.Evaluate(t);
+                float ct = moveCurve.Evaluate(t);
 
-                transform.position = Vector3.Lerp(startPos, endPos, curveT);
+                transform.position = Vector3.Lerp(startPos, endPos, ct);
+                transform.localScale = Vector3.Lerp(startScale, endScale, scaleCurve.Evaluate(t));
 
-                float scaleT = scaleCurve.Evaluate(t);
-                transform.localScale = Vector3.Lerp(startScale, endScale, scaleT);
+                // Fade out
+                float alpha = Mathf.Lerp(1f, 0.2f, t);
+                ApplyAlpha(renderers, origColors, alpha);
 
                 yield return null;
             }
 
             transform.position = endPos;
             transform.localScale = endScale;
+            RestoreColors(renderers, origColors);
             activeCoroutine = null;
         }
 
-        private IEnumerator ExileCoroutine(Transform target)
+        // ── ExileCard: purple dissolve effect ──
+
+        public Coroutine AnimateExile()
         {
-            Vector3 startPos = transform.position;
-            Vector3 endPos = target.position;
+            StopActive();
+            activeCoroutine = StartCoroutine(ExileCoroutine());
+            return activeCoroutine;
+        }
+
+        private IEnumerator ExileCoroutine()
+        {
             Vector3 startScale = transform.localScale;
             float elapsed = 0f;
 
-            // Trigger particle effect
             if (exileParticles != null)
             {
                 exileParticles.transform.position = transform.position;
+                var main = exileParticles.main;
+                main.startColor = exileDissolveColor;
                 exileParticles.Play();
             }
 
-            // Get all renderers for fade
             SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
-            Color[] originalColors = new Color[renderers.Length];
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                originalColors[i] = renderers[i].color;
-            }
+            Color[] origColors = CaptureColors(renderers);
 
             while (elapsed < exileDuration)
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / exileDuration);
-                float curveT = moveCurve.Evaluate(t);
 
-                // Move toward exile position
-                transform.position = Vector3.Lerp(startPos, endPos, curveT);
+                // Shrink with slight upward drift
+                transform.localScale = Vector3.Lerp(startScale, Vector3.zero, scaleCurve.Evaluate(t));
+                transform.position += Vector3.up * Time.deltaTime * 0.5f;
 
-                // Shrink
-                float scaleT = scaleCurve.Evaluate(t);
-                transform.localScale = Vector3.Lerp(startScale, Vector3.zero, scaleT);
-
-                // Fade out all renderers
+                // Tint purple and fade
                 float alpha = Mathf.Lerp(1f, 0f, t);
                 for (int i = 0; i < renderers.Length; i++)
                 {
-                    if (renderers[i] != null)
-                    {
-                        Color c = originalColors[i];
-                        c.a = alpha;
-                        renderers[i].color = c;
-                    }
+                    if (renderers[i] == null) continue;
+                    Color tinted = Color.Lerp(origColors[i], exileDissolveColor, t * 0.7f);
+                    tinted.a = alpha;
+                    renderers[i].color = tinted;
                 }
 
                 yield return null;
             }
 
-            transform.position = endPos;
             transform.localScale = Vector3.zero;
-
-            // Restore colors for potential reuse
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                if (renderers[i] != null)
-                {
-                    renderers[i].color = originalColors[i];
-                }
-            }
-
+            RestoreColors(renderers, origColors);
             activeCoroutine = null;
         }
 
-        private IEnumerator CombatCoroutine(Transform attacker, Transform defender)
+        // ── FlipCard: 3D Y-axis rotation ──
+
+        public Coroutine AnimateFlip(bool faceUp)
         {
-            Vector3 startPos = attacker.position;
-            Vector3 defenderPos = defender.position;
-
-            // Calculate lunge target (move toward defender but not all the way)
-            Vector3 direction = (defenderPos - startPos).normalized;
-            Vector3 lungeTarget = Vector3.Lerp(startPos, defenderPos, lungeDistance);
-
-            float halfDuration = combatDuration * 0.5f;
-
-            // Phase 1: Lunge toward defender
-            float elapsed = 0f;
-            while (elapsed < halfDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / halfDuration);
-                float curveT = combatLungeCurve.Evaluate(t);
-
-                attacker.position = Vector3.Lerp(startPos, lungeTarget, curveT);
-                yield return null;
-            }
-
-            attacker.position = lungeTarget;
-
-            // Brief pause at impact
-            yield return new WaitForSeconds(0.05f);
-
-            // Phase 2: Return to original position
-            elapsed = 0f;
-            while (elapsed < halfDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / halfDuration);
-                float curveT = moveCurve.Evaluate(t);
-
-                attacker.position = Vector3.Lerp(lungeTarget, startPos, curveT);
-                yield return null;
-            }
-
-            attacker.position = startPos;
-            activeCoroutine = null;
+            StopActive();
+            activeCoroutine = StartCoroutine(FlipCoroutine(faceUp));
+            return activeCoroutine;
         }
 
         private IEnumerator FlipCoroutine(bool faceUp)
@@ -294,9 +267,7 @@ namespace CardgameDungeon.Unity.Cards
             float startAngle = transform.localEulerAngles.y;
             float targetAngle = faceUp ? 0f : 180f;
 
-            // If already at target, no-op
-            float angleDiff = Mathf.Abs(Mathf.DeltaAngle(startAngle, targetAngle));
-            if (angleDiff < 1f)
+            if (Mathf.Abs(Mathf.DeltaAngle(startAngle, targetAngle)) < 1f)
             {
                 activeCoroutine = null;
                 yield break;
@@ -308,9 +279,8 @@ namespace CardgameDungeon.Unity.Cards
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / flipDuration);
-                float curveT = flipCurve.Evaluate(t);
+                float angle = Mathf.Lerp(startAngle, targetAngle, flipCurve.Evaluate(t));
 
-                float angle = Mathf.Lerp(startAngle, targetAngle, curveT);
                 Vector3 euler = transform.localEulerAngles;
                 euler.y = angle;
                 transform.localEulerAngles = euler;
@@ -318,41 +288,154 @@ namespace CardgameDungeon.Unity.Cards
                 yield return null;
             }
 
-            Vector3 finalEuler = transform.localEulerAngles;
-            finalEuler.y = targetAngle;
-            transform.localEulerAngles = finalEuler;
-
+            Vector3 final = transform.localEulerAngles;
+            final.y = targetAngle;
+            transform.localEulerAngles = final;
             activeCoroutine = null;
         }
 
-        private IEnumerator HoverCoroutine(bool hovering)
-        {
-            Vector3 startScale = transform.localScale;
-            Vector3 targetScale = hovering ? originalScale * hoverScaleMultiplier : originalScale;
+        // ── CombatShake: shake on the unit receiving damage ──
 
+        public Coroutine AnimateCombatShake()
+        {
+            StopActive();
+            activeCoroutine = StartCoroutine(CombatShakeCoroutine());
+            return activeCoroutine;
+        }
+
+        private IEnumerator CombatShakeCoroutine()
+        {
+            Vector3 basePos = transform.localPosition;
             float elapsed = 0f;
 
-            while (elapsed < hoverDuration)
+            while (elapsed < shakeDuration)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / hoverDuration);
-                float curveT = scaleCurve.Evaluate(t);
+                float t = elapsed / shakeDuration;
+                float decay = 1f - t;
 
-                transform.localScale = Vector3.Lerp(startScale, targetScale, curveT);
+                float offsetX = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity) * decay;
+                float offsetY = UnityEngine.Random.Range(-shakeIntensity, shakeIntensity) * decay;
+                transform.localPosition = basePos + new Vector3(offsetX, offsetY, 0f);
+
                 yield return null;
             }
 
-            transform.localScale = targetScale;
+            transform.localPosition = basePos;
             activeCoroutine = null;
         }
 
-        private void StopActiveCoroutine()
+        // ── FloatingDamage: number rising above the hit unit ──
+
+        public void ShowFloatingDamage(int amount, Color color)
+        {
+            StartCoroutine(FloatingDamageCoroutine(amount, color));
+        }
+
+        public void ShowFloatingDamage(int amount)
+        {
+            Color color = amount > 0 ? Color.red : Color.green;
+            ShowFloatingDamage(amount, color);
+        }
+
+        private IEnumerator FloatingDamageCoroutine(int amount, Color color)
+        {
+            GameObject numObj;
+            TextMeshPro tmp;
+
+            if (damageNumberPrefab != null)
+            {
+                numObj = Instantiate(damageNumberPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+                tmp = numObj.GetComponent<TextMeshPro>() ?? numObj.GetComponentInChildren<TextMeshPro>();
+            }
+            else
+            {
+                numObj = new GameObject("FloatingDamage");
+                numObj.transform.position = transform.position + Vector3.up * 0.5f;
+                tmp = numObj.AddComponent<TextMeshPro>();
+                tmp.fontSize = 8f;
+                tmp.alignment = TextAlignmentOptions.Center;
+                tmp.fontStyle = FontStyles.Bold;
+                tmp.sortingOrder = 100;
+            }
+
+            if (tmp == null) { Destroy(numObj); yield break; }
+
+            tmp.text = amount > 0 ? $"-{amount}" : $"+{Mathf.Abs(amount)}";
+            tmp.color = color;
+
+            // Punch scale on spawn
+            numObj.transform.localScale = Vector3.one * 1.5f;
+
+            Vector3 startPos = numObj.transform.position;
+            float xOffset = UnityEngine.Random.Range(-0.2f, 0.2f);
+            float elapsed = 0f;
+
+            while (elapsed < damageLifetime)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / damageLifetime;
+
+                // Rise
+                numObj.transform.position = startPos + new Vector3(xOffset * t, damageRiseSpeed * t, 0f);
+
+                // Scale down from punch in first 20%
+                if (t < 0.2f)
+                    numObj.transform.localScale = Vector3.Lerp(Vector3.one * 1.5f, Vector3.one, t / 0.2f);
+
+                // Fade in last 40%
+                if (t > 0.6f)
+                {
+                    float fadeT = (t - 0.6f) / 0.4f;
+                    tmp.color = new Color(color.r, color.g, color.b, Mathf.Lerp(1f, 0f, fadeT));
+                }
+
+                yield return null;
+            }
+
+            Destroy(numObj);
+        }
+
+        // ── Helpers ──
+
+        private void StopActive()
         {
             if (activeCoroutine != null)
             {
                 StopCoroutine(activeCoroutine);
                 activeCoroutine = null;
             }
+        }
+
+        private SpriteRenderer GetGlowRenderer()
+        {
+            Transform glow = transform.Find("Glow");
+            return glow != null ? glow.GetComponent<SpriteRenderer>() : null;
+        }
+
+        private static Color[] CaptureColors(SpriteRenderer[] renderers)
+        {
+            Color[] colors = new Color[renderers.Length];
+            for (int i = 0; i < renderers.Length; i++)
+                colors[i] = renderers[i] != null ? renderers[i].color : Color.white;
+            return colors;
+        }
+
+        private static void ApplyAlpha(SpriteRenderer[] renderers, Color[] originals, float alpha)
+        {
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                if (renderers[i] == null) continue;
+                Color c = originals[i];
+                c.a = alpha;
+                renderers[i].color = c;
+            }
+        }
+
+        private static void RestoreColors(SpriteRenderer[] renderers, Color[] originals)
+        {
+            for (int i = 0; i < renderers.Length; i++)
+                if (renderers[i] != null) renderers[i].color = originals[i];
         }
     }
 }

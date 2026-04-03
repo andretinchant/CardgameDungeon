@@ -48,9 +48,13 @@ Unity client is a separate project that consumes the API.
 
 **Room without monsters:** Attacker wins without combat.
 
+### Victory Condition
+
+**Players do NOT have HP.** Victory is achieved by conquering all 5 dungeon rooms and defeating the Boss. Allies and Monsters have individual HP. Exile is the central pressure/punishment mechanic — exiled cards are permanently removed from the game.
+
 ### Combat
 
-- Sum of strength determines damage to HP. Tie → both sides take damage.
+- Sum of strength determines damage to individual unit HP. Tie → both sides take damage.
 - Normal room: simultaneous elimination = defender wins.
 - Boss room: simultaneous elimination = attacking allies win.
 
