@@ -363,7 +363,8 @@ public static partial class SetThemes
             new("Vladimir Horngaard", 13, 23, 4, 6, "Revenant commander wielding a +3 greatsword dealing 7 damage per hit. Undying rage: cannot be permanently killed until his vengeance is fulfilled. Commands phantom warriors."),
             new("Morgantha the Night Hag", 10, 18, 5, 5, "Dream pastry addiction forces one ally to skip their turn each round. Coven magic with her daughters deals 4 damage to all allies. Ethereal escape allows fleeing to the Border Ethereal."),
             new("Exethanter the Lich", 12, 20, 4, 6, "Ancient lich casting Power Word Kill on allies below 8 HP. Paralyzing touch immobilizes one ally for 2 rounds. Phylactery must be found and destroyed or the lich regenerates fully.")
-        }
+        },
+        Consumables: RavenloftConsumables()
     );
 
     public static SetTheme ForgottenRealms() => new(
@@ -725,7 +726,8 @@ public static partial class SetThemes
             new("Klauth the Old Snarl", 14, 23, 4, 6, "Ancient red dragon of terrifying power. Fire breath deals 7 damage to all allies. Wing buffet pushes all allies back dealing 3 damage. Frightful presence causes -2 to all ally stats."),
             new("Dendar the Night Serpent's Avatar", 13, 22, 5, 6, "Manifestation of the world-ending serpent that feeds on nightmares. Fear aura deals 2 psychic damage per round to all allies. Swallow whole removes one ally from combat for 2 rounds dealing 4 damage per round."),
             new("Tarul Var the Thayan Lich", 11, 19, 4, 5, "Undead Red Wizard whose soul cage traps the strongest ally for 2 rounds. Disintegrate deals 6 damage to one target. Fire shield deals 3 damage to any melee attacker.")
-        }
+        },
+        Consumables: ForgottenRealmsConsumables()
     );
 
     public static SetTheme Underdark() => new(
@@ -1087,6 +1089,7 @@ public static partial class SetThemes
             new("Duergar Deepking Horgar", 13, 23, 4, 6, "Enlarged grey dwarf monarch standing twenty feet tall. Massive warhammer deals 7 damage and creates shockwaves dealing 2 damage to all adjacent. Invisibility grants surprise round. Psionic resistance negates mind effects."),
             new("The Pudding King", 10, 20, 3, 5, "Mad svirfneblin commanding an army of oozes. Princess Ebonmire and Prince Livid fight alongside with 8 HP each. Dissolving touch deals 4 acid damage and destroys equipment. Ooze minions reform each round."),
             new("Graz'zt the Dark Prince", 14, 24, 6, 6, "Demon lord of pleasure and pain. Acid-coated blade deals 6 damage with each elegant strike. Charm gaze dominates the highest Strength ally. Teleportation allows repositioning after every attack. Resistance to all non-magical damage.")
-        }
+        },
+        Consumables: UnderdarkConsumables()
     );
 }

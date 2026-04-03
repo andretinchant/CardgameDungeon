@@ -10,7 +10,8 @@ public record SetTheme(
     MonsterTheme[] Monsters,
     TrapTheme[] Traps,
     RoomTheme[] Rooms,
-    BossTheme[] Bosses);
+    BossTheme[] Bosses,
+    EquipmentTheme[]? Consumables = null);
 
 public record AllyTheme(string Name, int Strength, int HitPoints, int Initiative, int Cost, int Treasure, bool IsAmbusher, string Effect);
 public record EquipmentTheme(string Name, int Cost, int StrMod, int HpMod, int InitMod,

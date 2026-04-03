@@ -37,6 +37,18 @@ public static class CardSetGenerator
                 e.Name, rarity, e.Cost, e.StrMod, e.HpMod, e.InitMod, e.Slot, e.Effect));
         }
 
+        if (theme.Consumables is not null)
+        {
+            for (var i = 0; i < theme.Consumables.Length; i++)
+            {
+                var c = theme.Consumables[i];
+                var rarity = RarityDistribution60[i];
+                set.AddCard(new EquipmentCard(
+                    MakeGuid(theme.GuidPrefix, 7, i + 1),
+                    c.Name, rarity, c.Cost, c.StrMod, c.HpMod, c.InitMod, c.Slot, c.Effect));
+            }
+        }
+
         for (var i = 0; i < theme.Monsters.Length; i++)
         {
             var m = theme.Monsters[i];

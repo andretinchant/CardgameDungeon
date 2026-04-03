@@ -347,7 +347,8 @@ public static partial class SetThemes
             new("Dracart, Aurak Commander", 11, 17, 5, 5, "Shapeshifting sorcerer; copies the strongest ally's stats and abilities"),
             new("Toede the Despicable", 8, 15, 3, 5, "Fewmaster turned Highlord; cowardly but summons endless goblin reinforcements"),
             new("Skie, Blue Dragon Ancient", 14, 23, 5, 6, "Ancient blue wyrm; lightning breath deals 5 damage to all allies, flies out of melee range"),
-        }
+        },
+        Consumables: DragonlanceConsumables()
     );
 
     public static SetTheme Planescape() => new(
@@ -693,7 +694,8 @@ public static partial class SetThemes
             new("Harbinger of the Apocalypse", 14, 23, 5, 6, "Entropy incarnate; each round one piece of equipment is permanently destroyed"),
             new("Prismatic Slaad Lord", 13, 21, 5, 6, "Lord of chaos; changes elemental type each round, immune to previous round's damage type"),
             new("Rule-of-Three the Cambion", 8, 15, 6, 5, "Everything in threes; attacks three times, summons three allies, has three phases"),
-        }
+        },
+        Consumables: PlanescapeConsumables()
     );
 
     public static SetTheme Eberron() => new(
@@ -1039,6 +1041,7 @@ public static partial class SetThemes
             new("Dyrrn the Corruptor", 12, 20, 5, 6, "Daelkyr fleshwarper; mutates one ally per round into an aberration fighting for the enemy"),
             new("The Lord of Eyes", 10, 18, 6, 5, "Beholder daelkyr; eye rays disable one ally ability each round, anti-magic cone"),
             new("Haze-of-Death", 8, 15, 4, 5, "Mournland living spell amalgam; absorbs all spell damage to grow stronger, +1 Str per spell absorbed"),
-        }
+        },
+        Consumables: EberronConsumables()
     );
 }

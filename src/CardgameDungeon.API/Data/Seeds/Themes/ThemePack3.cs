@@ -347,7 +347,8 @@ public static partial class SetThemes
             new("Alrrem, Fire Cult High Priest", 11, 18, 5, 5, "Wall of Fire deals 3 damage per round to all melee allies; flame shield reflects 2 damage to attackers"),
             new("Deggum, Air Cult Champion", 9, 17, 6, 5, "Chain Lightning hits 3 allies for 3 damage each; fly ability avoids melee for 2 rounds"),
             new("Falrinth, Arcane Guardian", 10, 19, 5, 5, "Casts Maze banishing strongest ally for 2 rounds; contingency spell heals 5 HP when below half health"),
-        }
+        },
+        Consumables: GreyhawkConsumables()
     );
 
     public static SetTheme Spelljammer() => new(
@@ -693,7 +694,8 @@ public static partial class SetThemes
             new("Star Spawn Larva Mage", 10, 19, 5, 5, "Eldritch blast deals 4 damage; on death explodes dealing 5 damage to all allies"),
             new("Megapede Brood Mother", 10, 20, 3, 5, "Spawns 2 megapede swarms per round; acidic blood deals 2 damage to melee attackers"),
             new("The Spelljammer's Guardian", 12, 21, 5, 6, "Ship's defenses deal 3 damage per round; regenerates 2 HP; can redirect one ally attack"),
-        }
+        },
+        Consumables: SpelljammerConsumables()
     );
 
     public static SetTheme DarkSun() => new(
@@ -1039,6 +1041,7 @@ public static partial class SetThemes
             new("Lalali-Puy, Forest Queen of Gulg", 11, 20, 5, 5, "Nature magic entangles all allies reducing Initiative by 2; thorn wall deals 2 damage per round to melee attackers"),
             new("Daskinor of Eldaarich, Mad King", 10, 19, 6, 5, "Paranoid psionic lash deals 3 damage to random targets each round; madness aura confuses one ally per round"),
             new("The Cerulean Storm", 12, 22, 5, 6, "Elemental psionic tempest deals 3 damage to all allies per round; lightning strikes deal 5 damage to the highest Initiative ally"),
-        }
+        },
+        Consumables: DarkSunConsumables()
     );
 }
