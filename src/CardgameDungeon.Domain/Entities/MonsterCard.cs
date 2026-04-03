@@ -8,6 +8,8 @@ public class MonsterCard : Card
     public int Strength { get; private set; }
     public int HitPoints { get; private set; }
     public int Initiative { get; private set; }
+    public int Treasure { get; private set; }
+    public string? Effect { get; private set; }
 
     public MonsterCard(
         Guid id,
@@ -16,7 +18,9 @@ public class MonsterCard : Card
         int cost,
         int strength,
         int hitPoints,
-        int initiative)
+        int initiative,
+        int treasure = 0,
+        string? effect = null)
         : base(id, name, rarity, cost)
     {
         if (strength < 0)
@@ -29,5 +33,7 @@ public class MonsterCard : Card
         Strength = strength;
         HitPoints = hitPoints;
         Initiative = initiative;
+        Treasure = treasure;
+        Effect = effect;
     }
 }

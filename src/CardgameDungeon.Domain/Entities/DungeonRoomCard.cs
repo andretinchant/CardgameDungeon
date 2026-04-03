@@ -8,6 +8,8 @@ public class DungeonRoomCard : Card
 
     public override CardType Type => CardType.DungeonRoom;
     public int Order { get; private set; }
+    public int MonsterCostBudget { get; private set; }
+    public string? Effect { get; private set; }
     public IReadOnlyList<Guid> MonsterIds => _monsterIds.AsReadOnly();
     public IReadOnlyList<Guid> TrapIds => _trapIds.AsReadOnly();
 
@@ -20,13 +22,17 @@ public class DungeonRoomCard : Card
         Rarity rarity,
         int order,
         IEnumerable<Guid>? monsterIds = null,
-        IEnumerable<Guid>? trapIds = null)
+        IEnumerable<Guid>? trapIds = null,
+        int monsterCostBudget = 0,
+        string? effect = null)
         : base(id, name, rarity, cost: 0)
     {
         if (order < 1 || order > TotalRooms)
             throw new ArgumentOutOfRangeException(nameof(order), $"Order must be between 1 and {TotalRooms}.");
 
         Order = order;
+        MonsterCostBudget = monsterCostBudget;
+        Effect = effect;
         _monsterIds = monsterIds?.ToList() ?? [];
         _trapIds = trapIds?.ToList() ?? [];
     }

@@ -1,3 +1,4 @@
+using CardgameDungeon.API.Data.Seeds;
 using CardgameDungeon.API.Endpoints;
 using CardgameDungeon.API.Infrastructure;
 using CardgameDungeon.API.Middleware;
@@ -44,6 +45,20 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// Seed command: dotnet run --project src/CardgameDungeon.API -- seed
+if (args.Contains("seed"))
+{
+    var set = CardSetSeeder.CreateDND1CoreSet();
+    Console.WriteLine($"Seeded '{set.Name}' ({set.Code}) with {set.TotalCards} cards.");
+    Console.WriteLine($"  Allies:     {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Ally)}");
+    Console.WriteLine($"  Equipment:  {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Equipment)}");
+    Console.WriteLine($"  Monsters:   {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Monster)}");
+    Console.WriteLine($"  Traps:      {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Trap)}");
+    Console.WriteLine($"  Rooms:      {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.DungeonRoom)}");
+    Console.WriteLine($"  Bosses:     {set.Cards.Count(c => c.Type == CardgameDungeon.Domain.Enums.CardType.Boss)}");
+    return;
+}
 
 // Middleware
 app.UseMiddleware<GlobalExceptionHandler>();
