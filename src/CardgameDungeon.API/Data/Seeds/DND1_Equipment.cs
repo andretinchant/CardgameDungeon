@@ -42,8 +42,8 @@ public static partial class CardSetSeeder
                 0, 2, 3, EquipmentSlot.Accessory),
 
             new(new Guid("00000000-0000-0000-0002-000000000008"),
-                "Boots of Speed", Rarity.Rare, 3,
-                1, 0, 4, EquipmentSlot.Boots),
+                "Boots of Speed", Rarity.Rare, 4,
+                1, 0, 3, EquipmentSlot.Boots),
 
             new(new Guid("00000000-0000-0000-0002-000000000009"),
                 "Ring of Regeneration", Rarity.Rare, 4,

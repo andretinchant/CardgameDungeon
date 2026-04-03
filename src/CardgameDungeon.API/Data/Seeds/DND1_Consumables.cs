@@ -12,10 +12,10 @@ public static partial class CardSetSeeder
             // ===== UNIQUE (2) =====
             new(new Guid("00000000-0000-0000-0007-000000000001"),
                 "Scroll of Wish", Rarity.Unique, 5, 0, 0, 0, EquipmentSlot.Scroll,
-                "Choose any effect: full heal one ally, eliminate one enemy, or draw 5 cards"),
+                "Choose ONE: restore all HP to one ally, OR deal 5 damage to one enemy, OR draw 3 cards. Exile this scroll and 2 cards from your deck after use"),
             new(new Guid("00000000-0000-0000-0007-000000000002"),
                 "Elixir of Immortality", Rarity.Unique, 5, 0, 6, 0, EquipmentSlot.Potion,
-                "Target ally cannot be eliminated this round and gains +6 HP"),
+                "Target ally cannot be eliminated this round and gains +4 HP. At end of round: lose 2 HP (side effects)"),
 
             // ===== RARE (8) =====
             new(new Guid("00000000-0000-0000-0007-000000000003"),

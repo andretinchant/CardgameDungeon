@@ -148,8 +148,8 @@ public static partial class CardSetSeeder
                 "Sphere of Annihilation Trap",
                 Rarity.Unique,
                 cost: 6,
-                damage: 8,
-                "Exiles the target ally permanently. The ally's equipped gear is also exiled"),
+                damage: 6,
+                "Exiles the target ally permanently. Equipped gear is returned to owner's hand"),
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000002"),
                 "Demiplane Prison",
