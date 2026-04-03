@@ -1,64 +1,75 @@
+using CardgameDungeon.API.Endpoints;
+using CardgameDungeon.API.Infrastructure;
+using CardgameDungeon.API.Middleware;
+using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Domain.Services;
 using CardgameDungeon.Features.Behaviors;
-using CardgameDungeon.Features.Deck.CreateDeck;
-using CardgameDungeon.Features.Deck.GetDeck;
-using CardgameDungeon.Features.Deck.UpdateDeck;
-using CardgameDungeon.Features.Deck.ValidateDeck;
-using CardgameDungeon.Features.Match.CreateMatch;
-using CardgameDungeon.Features.Match.GetMatchState;
-using CardgameDungeon.Features.Match.PlaceBet;
-using CardgameDungeon.Features.Match.ResolveInitiative;
-using CardgameDungeon.Features.Match.RevealInitialTeams;
-using CardgameDungeon.Features.Match.SetupInitialTeam;
+using CardgameDungeon.Features.Collection.OpenBooster;
 using FluentValidation;
 using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// MediatR + FluentValidation
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<CardgameDungeon.Features.AssemblyReference>());
-
 builder.Services.AddValidatorsFromAssemblyContaining<CardgameDungeon.Features.AssemblyReference>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+// Domain services
 builder.Services.AddSingleton<CombatResolver>();
+
+// Repositories (in-memory for development)
+builder.Services.AddSingleton<IDeckRepository, InMemoryDeckRepository>();
+builder.Services.AddSingleton<ICardRepository, InMemoryCardRepository>();
+builder.Services.AddSingleton<IMatchRepository, InMemoryMatchRepository>();
+builder.Services.AddSingleton<ICollectionRepository, InMemoryCollectionRepository>();
+builder.Services.AddSingleton<IWalletRepository, InMemoryWalletRepository>();
+builder.Services.AddSingleton<IMarketplaceRepository, InMemoryMarketplaceRepository>();
+builder.Services.AddSingleton<IQueueRepository, InMemoryQueueRepository>();
+builder.Services.AddSingleton<IRatingRepository, InMemoryRatingRepository>();
+builder.Services.AddSingleton<ITournamentRepository, InMemoryTournamentRepository>();
+builder.Services.AddSingleton<IBoosterCardPool, RandomBoosterCardPool>();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "CardgameDungeon API",
+        Version = "v1",
+        Description = "Competitive card game dungeon crawler backend"
+    });
+});
 
 var app = builder.Build();
 
+// Middleware
+app.UseMiddleware<GlobalExceptionHandler>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "CardgameDungeon v1"));
+}
+
 app.UseHttpsRedirection();
 
-app.MapGet("/health", () => Results.Ok("healthy"));
+// Health check
+app.MapGet("/health", () => Results.Ok("healthy")).WithTags("Health");
 
-// Deck endpoints
-app.MapPost("/api/decks", async (CreateDeckCommand command, IMediator mediator) =>
-    Results.Created($"/api/decks/{command.PlayerId}", await mediator.Send(command)));
-
-app.MapGet("/api/decks/{id:guid}", async (Guid id, IMediator mediator) =>
-    Results.Ok(await mediator.Send(new GetDeckQuery(id))));
-
-app.MapPut("/api/decks/{id:guid}", async (Guid id, UpdateDeckCommand command, IMediator mediator) =>
-    Results.Ok(await mediator.Send(command with { DeckId = id })));
-
-app.MapPost("/api/decks/{id:guid}/validate", async (Guid id, IMediator mediator) =>
-    Results.Ok(await mediator.Send(new ValidateDeckCommand(id))));
-
-// Match endpoints
-app.MapPost("/api/matches", async (CreateMatchCommand command, IMediator mediator) =>
-    Results.Created($"/api/matches", await mediator.Send(command)));
-
-app.MapGet("/api/matches/{id:guid}", async (Guid id, IMediator mediator) =>
-    Results.Ok(await mediator.Send(new GetMatchStateQuery(id))));
-
-app.MapPost("/api/matches/{id:guid}/setup-team", async (Guid id, SetupInitialTeamCommand command, IMediator mediator) =>
-    Results.Ok(await mediator.Send(command with { MatchId = id })));
-
-app.MapPost("/api/matches/{id:guid}/reveal-teams", async (Guid id, IMediator mediator) =>
-    Results.Ok(await mediator.Send(new RevealInitialTeamsCommand(id))));
-
-app.MapPost("/api/matches/{id:guid}/resolve-initiative", async (Guid id, IMediator mediator) =>
-    Results.Ok(await mediator.Send(new ResolveInitiativeCommand(id))));
-
-app.MapPost("/api/matches/{id:guid}/place-bet", async (Guid id, PlaceBetCommand command, IMediator mediator) =>
-    Results.Ok(await mediator.Send(command with { MatchId = id })));
+// Feature endpoints
+app.MapDeckEndpoints();
+app.MapMatchEndpoints();
+app.MapCollectionEndpoints();
+app.MapWalletEndpoints();
+app.MapMarketplaceEndpoints();
+app.MapQueueEndpoints();
+app.MapTournamentEndpoints();
+app.MapRankingEndpoints();
 
 app.Run();
+
+// Required for WebApplicationFactory in integration tests
+public partial class Program;
