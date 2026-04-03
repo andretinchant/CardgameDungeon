@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CardgameDungeon.API/CardgameDungeon.API.csproj" />
+    <Project Path="src/CardgameDungeon.Domain/CardgameDungeon.Domain.csproj" />
+    <Project Path="src/CardgameDungeon.Features/CardgameDungeon.Features.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CardgameDungeon.Tests/CardgameDungeon.Tests.csproj" />
+  </Folder>
+</Solution>
