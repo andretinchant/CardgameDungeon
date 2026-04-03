@@ -1,4 +1,5 @@
 using CardgameDungeon.Domain.Enums;
+using CardgameDungeon.Domain.ValueObjects;
 
 namespace CardgameDungeon.Domain.Entities;
 
@@ -17,12 +18,40 @@ public class MatchState
     private readonly List<DungeonRoomCard> _dungeonRooms;
     private readonly BossCard _boss;
 
+    // Setup tracking: hidden teams until both submitted
+    private readonly HashSet<Guid> _setupSubmitted = [];
+    private List<AllyCard>? _player1PendingTeam;
+    private List<AllyCard>? _player2PendingTeam;
+
+    // Bet tracking for initiative ties
+    public int Player1BetTotal { get; private set; }
+    public int Player2BetTotal { get; private set; }
+
+    // Combat board
+    public CombatBoard CombatBoard { get; } = new();
+
     public IReadOnlyList<DungeonRoomCard> DungeonRooms => _dungeonRooms.AsReadOnly();
     public BossCard Boss => _boss;
     public bool IsFinished => Phase == MatchPhase.Finished;
     public bool IsBossRoom => CurrentRoom > _dungeonRooms.Count;
+    public bool BothTeamsSubmitted => _setupSubmitted.Count == 2;
+
     public DungeonRoomCard? CurrentDungeonRoom =>
         CurrentRoom <= _dungeonRooms.Count ? _dungeonRooms[CurrentRoom - 1] : null;
+
+    public PlayerState GetAttacker()
+    {
+        if (InitiativeWinnerId is null)
+            throw new InvalidOperationException("Initiative has not been resolved.");
+        return GetPlayer(InitiativeWinnerId.Value);
+    }
+
+    public PlayerState GetDefender()
+    {
+        if (InitiativeWinnerId is null)
+            throw new InvalidOperationException("Initiative has not been resolved.");
+        return GetOpponent(InitiativeWinnerId.Value);
+    }
 
     public MatchState(
         Guid id,
@@ -57,27 +86,51 @@ public class MatchState
         throw new ArgumentException($"Player {playerId} is not in this match.");
     }
 
+    public bool HasPlayerSubmittedTeam(Guid playerId) => _setupSubmitted.Contains(playerId);
+
     public void SubmitSetupTeam(Guid playerId, IReadOnlyList<AllyCard> team)
     {
         EnsurePhase(MatchPhase.Setup);
 
+        if (_setupSubmitted.Contains(playerId))
+            throw new InvalidOperationException("This player has already submitted their team.");
+
         var totalCost = team.Sum(a => a.Cost);
-        if (totalCost > SetupMaxCost)
+        if (totalCost != SetupMaxCost)
             throw new InvalidOperationException(
-                $"Setup team cost ({totalCost}) exceeds maximum of {SetupMaxCost}.");
+                $"Setup team cost must be exactly {SetupMaxCost}, got {totalCost}.");
+
+        if (team.Any(a => a.Cost == 0))
+            throw new InvalidOperationException("Setup team cannot include cards with cost 0.");
 
         if (team.Count > PlayerState.MaxAlliesInPlay)
             throw new InvalidOperationException(
                 $"Setup team size ({team.Count}) exceeds ally limit of {PlayerState.MaxAlliesInPlay}.");
 
-        var player = GetPlayer(playerId);
-        foreach (var ally in team)
-            player.PlayAlly(ally);
+        // Store pending — don't play to field yet (hidden until reveal)
+        if (Player1.PlayerId == playerId)
+            _player1PendingTeam = team.ToList();
+        else
+            _player2PendingTeam = team.ToList();
+
+        _setupSubmitted.Add(playerId);
     }
 
-    public void AdvanceToRoomReveal()
+    public void RevealTeams()
     {
         EnsurePhase(MatchPhase.Setup);
+
+        if (!BothTeamsSubmitted)
+            throw new InvalidOperationException("Both players must submit their teams before revealing.");
+
+        foreach (var ally in _player1PendingTeam!)
+            Player1.PlayAlly(ally);
+        foreach (var ally in _player2PendingTeam!)
+            Player2.PlayAlly(ally);
+
+        _player1PendingTeam = null;
+        _player2PendingTeam = null;
+
         Phase = MatchPhase.RoomReveal;
     }
 
@@ -105,9 +158,44 @@ public class MatchState
             InitiativeWinnerId = player1Total > player2Total
                 ? Player1.PlayerId
                 : Player2.PlayerId;
+            Player1BetTotal = 0;
+            Player2BetTotal = 0;
             Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
         }
         // Tie: callers must handle the bid war externally, then call again
+    }
+
+    public void PlaceBet(Guid playerId, int amount, bool exile)
+    {
+        EnsurePhase(MatchPhase.Initiative);
+
+        if (amount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Bet amount must be positive.");
+
+        var player = GetPlayer(playerId);
+        player.PayCostFromDeck(amount, exile);
+
+        if (Player1.PlayerId == playerId)
+            Player1BetTotal += amount;
+        else
+            Player2BetTotal += amount;
+    }
+
+    public bool TryResolveBets()
+    {
+        EnsurePhase(MatchPhase.Initiative);
+
+        if (Player1BetTotal == Player2BetTotal)
+            return false; // Still tied, need more bets
+
+        InitiativeWinnerId = Player1BetTotal > Player2BetTotal
+            ? Player1.PlayerId
+            : Player2.PlayerId;
+
+        Player1BetTotal = 0;
+        Player2BetTotal = 0;
+        Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
+        return true;
     }
 
     public void ResolveCombat(int attackerDamage, int defenderDamage, bool simultaneousElimination)
@@ -129,6 +217,16 @@ public class MatchState
             Player2.TakeDamage(attackerDamage);
         }
 
+        CombatBoard.Clear();
+        Phase = MatchPhase.RoomResolution;
+    }
+
+    public void ConcedeRoom()
+    {
+        EnsurePhase(MatchPhase.Combat);
+
+        // Defender concedes — attacker wins room without combat
+        CombatBoard.Clear();
         Phase = MatchPhase.RoomResolution;
     }
 

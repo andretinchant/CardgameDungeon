@@ -138,4 +138,25 @@ public class PlayerState
         else
             DiscardFromTop(cost);
     }
+
+    public void EliminateAlly(AllyCard ally)
+    {
+        if (!_alliesInPlay.Remove(ally))
+            throw new InvalidOperationException($"Ally '{ally.Name}' is not in play.");
+
+        _discard.Add(ally);
+    }
+
+    public void ShuffleDiscardIntoDeck()
+    {
+        _deck.AddRange(_discard);
+        _discard.Clear();
+
+        var rng = Random.Shared;
+        for (var i = _deck.Count - 1; i > 0; i--)
+        {
+            var j = rng.Next(i + 1);
+            (_deck[i], _deck[j]) = (_deck[j], _deck[i]);
+        }
+    }
 }
