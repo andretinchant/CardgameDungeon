@@ -5,9 +5,142 @@ namespace CardgameDungeon.API.Data.Seeds;
 
 public static partial class CardSetSeeder
 {
+    private static readonly IReadOnlyDictionary<string, string> TrapActivationConditions =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Sphere of Annihilation Trap"] =
+                "Activation condition: triggers only if the attacker has 12 or more cards in exile.",
+            ["Demiplane Prison"] =
+                "Activation condition: triggers only if the attacker played a consumable this round.",
+            ["Prismatic Wall Trap"] =
+                "Activation condition: triggers only if the attacker changed target this round.",
+            ["Symbol of Death"] =
+                "Activation condition: triggers only if the attacker has 10 or more cards in exile.",
+            ["Reverse Gravity Chamber"] =
+                "Activation condition: triggers only if the attacker has Initiative 3 or lower.",
+            ["Crushing Walls Room"] =
+                "Activation condition: triggers only if 3 or more allies are currently in play.",
+            ["Vorpal Blade Pendulum"] =
+                "Activation condition: triggers only if the attacker took damage earlier this room.",
+            ["Disintegration Ray"] =
+                "Activation condition: triggers only if the attacker has at least 1 equipment attached.",
+            ["Banishment Sigil"] =
+                "Activation condition: triggers only from room 3 onward.",
+            ["Power Word Kill Glyph"] =
+                "Activation condition: triggers only if the attacker has 11 or more cards in exile.",
+            ["Poison Dart Trap"] =
+                "Activation condition: triggers only if the attacker has no Shield-slot equipment.",
+            ["Spiked Pit"] =
+                "Activation condition: triggers only if the attacker has Initiative 4 or higher.",
+            ["Explosive Rune"] =
+                "Activation condition: triggers only if a Scroll was played this round.",
+            ["Flame Jet"] =
+                "Activation condition: triggers only if any fire source is active in the room.",
+            ["Collapsing Ceiling"] =
+                "Activation condition: triggers only if the attacker controls 3 or more allies.",
+            ["Swinging Blade"] =
+                "Activation condition: triggers only if the attacker used retarget this round.",
+            ["Lightning Bolt Trap"] =
+                "Activation condition: triggers only if there are at least 2 allies in play.",
+            ["Acid Spray Trap"] =
+                "Activation condition: triggers only if the target has at least 1 equipment attached.",
+            ["Freezing Glyph"] =
+                "Activation condition: triggers only if the attacker has Initiative 3 or higher.",
+            ["Sleep Gas Vent"] =
+                "Activation condition: triggers only if the attacker has no active Potion or Balm.",
+            ["Web Trap"] =
+                "Activation condition: triggers only if the target is not Ambusher.",
+            ["Alarm Rune"] =
+                "Activation condition: triggers only if the attacker attempted to ambush this room.",
+            ["Teleportation Circle"] =
+                "Activation condition: triggers only if 2 or more allies are currently in play.",
+            ["Illusion Wall"] =
+                "Activation condition: triggers only if no trap was revealed earlier this room.",
+            ["Gravity Well"] =
+                "Activation condition: triggers only if 3 or more total creatures are in combat.",
+            ["Sonic Shriek Trap"] =
+                "Activation condition: triggers only if the target has Initiative 4 or higher.",
+            ["Blindness Trap"] =
+                "Activation condition: triggers only if the target has ranged weapon equipment.",
+            ["Fear Totem"] =
+                "Activation condition: triggers only if the target has current Strength 4 or higher.",
+            ["Necrotic Drain"] =
+                "Activation condition: triggers only if an Undead or Fiend monster is in play.",
+            ["Petrification Beam"] =
+                "Activation condition: triggers only if the target has current Strength 5 or higher.",
+            ["Tripwire"] =
+                "Activation condition: triggers only if the attacker has Initiative 3 or higher.",
+            ["Caltrops Field"] =
+                "Activation condition: triggers only if the attacker changed lane or target this round.",
+            ["Hidden Pit"] =
+                "Activation condition: triggers only if no light source is active in the room.",
+            ["Rolling Boulder"] =
+                "Activation condition: triggers only if 2 or more allies share the same lane.",
+            ["Net Trap"] =
+                "Activation condition: triggers only if the target is Ambusher.",
+            ["Bear Trap"] =
+                "Activation condition: triggers only against the first attacking ally of the round.",
+            ["Loose Flagstone"] =
+                "Activation condition: triggers only if the attacker has cost 2 or lower.",
+            ["Falling Rubble"] =
+                "Activation condition: triggers only from room 2 onward.",
+            ["Rusty Spikes"] =
+                "Activation condition: triggers only if the target has metal equipment attached.",
+            ["Oil Slick"] =
+                "Activation condition: triggers only if any fire effect was used this room.",
+            ["Noisemaker"] =
+                "Activation condition: triggers only if the attacker declared an ambush.",
+            ["Snare Loop"] =
+                "Activation condition: triggers only if the attacker has Initiative 4 or higher.",
+            ["Pressure Plate"] =
+                "Activation condition: triggers only if the attacker has 2 or more cards in hand.",
+            ["Sliding Floor"] =
+                "Activation condition: triggers only if 3 or more allies are in play.",
+            ["Tipping Bridge"] =
+                "Activation condition: triggers only if the attacker has current Strength 5 or higher.",
+            ["Sand Trap"] =
+                "Activation condition: triggers only if the attacker has no Boots-slot equipment.",
+            ["Smoke Vent"] =
+                "Activation condition: triggers only if no torch or lantern effect is active.",
+            ["Grease Trap"] =
+                "Activation condition: triggers only if the target has Weapon-slot equipment.",
+            ["Mirror Trap"] =
+                "Activation condition: triggers only if a Scroll or spell effect was used this round.",
+            ["Water Trap"] =
+                "Activation condition: triggers only if a fire source is active in the room.",
+            ["Sticky Floor"] =
+                "Activation condition: triggers only if the attacker has cost 2 or lower.",
+            ["Rotating Wall"] =
+                "Activation condition: triggers only if 3 or more allies are in play.",
+            ["False Door"] =
+                "Activation condition: triggers only when the attacker attempts to loot this room.",
+            ["Trapped Chest"] =
+                "Activation condition: triggers only when a Treasure gain is about to resolve.",
+            ["Trapped Lock"] =
+                "Activation condition: triggers only if the target has Accessory-slot equipment.",
+            ["Needle Trap"] =
+                "Activation condition: triggers only if the attacker has no Balm equipped.",
+            ["Spring Blade"] =
+                "Activation condition: triggers only if the attacker has Initiative 4 or higher.",
+            ["Falling Net"] =
+                "Activation condition: triggers only if the target has current Strength 4 or higher.",
+            ["Swinging Log"] =
+                "Activation condition: triggers only against a front-line attacker.",
+            ["Crossbow Trap"] =
+                "Activation condition: triggers only if the target has no shield equipped.",
+        };
+
+    private static string BuildRestrictedTrapEffect(string trapName, string baseEffect)
+    {
+        if (!TrapActivationConditions.TryGetValue(trapName, out var condition))
+            return baseEffect;
+
+        return $"{condition} {baseEffect}";
+    }
+
     private static List<TrapCard> CreateTraps()
     {
-        return new List<TrapCard>
+        var traps = new List<TrapCard>
         {
             // ── UNIQUE (2) ──────────────────────────────────────────────────
             new TrapCard(
@@ -437,5 +570,20 @@ public static partial class CardSetSeeder
                 damage: 2,
                 "A hidden crossbow fires a bolt at the first creature to cross its line of sight, bypassing armor bonuses"),
         };
+
+        var restrictedTraps = new List<TrapCard>(traps.Count);
+        foreach (var trap in traps)
+        {
+            restrictedTraps.Add(
+                new TrapCard(
+                    trap.Id,
+                    trap.Name,
+                    trap.Rarity,
+                    trap.Cost,
+                    trap.Damage,
+                    BuildRestrictedTrapEffect(trap.Name, trap.Effect)));
+        }
+
+        return restrictedTraps;
     }
 }
