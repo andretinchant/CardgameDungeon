@@ -38,6 +38,7 @@ internal class AllyCardConfiguration : IEntityTypeConfiguration<AllyCard>
 {
     public void Configure(EntityTypeBuilder<AllyCard> builder)
     {
+        builder.Property(a => a.Race).HasColumnName("Race").HasConversion<string>().HasMaxLength(20);
         builder.Property(a => a.Strength).HasColumnName("Strength");
         builder.Property(a => a.HitPoints).HasColumnName("HitPoints");
         builder.Property(a => a.Initiative).HasColumnName("Initiative");
@@ -51,6 +52,7 @@ internal class EquipmentCardConfiguration : IEntityTypeConfiguration<EquipmentCa
 {
     public void Configure(EntityTypeBuilder<EquipmentCard> builder)
     {
+        builder.Property(e => e.Slot).HasConversion<string>().HasMaxLength(20);
         builder.Property(e => e.StrengthModifier);
         builder.Property(e => e.HitPointsModifier);
         builder.Property(e => e.InitiativeModifier);
@@ -61,7 +63,7 @@ internal class MonsterCardConfiguration : IEntityTypeConfiguration<MonsterCard>
 {
     public void Configure(EntityTypeBuilder<MonsterCard> builder)
     {
-        // Shares Strength/HitPoints/Initiative/Treasure/Effect columns with AllyCard via TPH
+        builder.Property(m => m.Race).HasColumnName("Race").HasConversion<string>().HasMaxLength(20);
         builder.Property(m => m.Strength).HasColumnName("Strength");
         builder.Property(m => m.HitPoints).HasColumnName("HitPoints");
         builder.Property(m => m.Initiative).HasColumnName("Initiative");
@@ -104,6 +106,7 @@ internal class BossCardConfiguration : IEntityTypeConfiguration<BossCard>
 {
     public void Configure(EntityTypeBuilder<BossCard> builder)
     {
+        builder.Property(b => b.Race).HasColumnName("Race").HasConversion<string>().HasMaxLength(20);
         builder.Property(b => b.Strength).HasColumnName("Strength");
         builder.Property(b => b.HitPoints).HasColumnName("HitPoints");
         builder.Property(b => b.Initiative).HasColumnName("Initiative");

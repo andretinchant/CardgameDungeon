@@ -147,6 +147,7 @@ internal static class MatchStateMapper
         switch (card)
         {
             case AllyCard a:
+                dto.Race = (int)a.Race;
                 dto.Strength = a.Strength;
                 dto.HitPoints = a.HitPoints;
                 dto.Initiative = a.Initiative;
@@ -155,11 +156,13 @@ internal static class MatchStateMapper
                 dto.Effect = a.Effect;
                 break;
             case EquipmentCard e:
+                dto.EquipmentSlot = (int)e.Slot;
                 dto.StrengthModifier = e.StrengthModifier;
                 dto.HitPointsModifier = e.HitPointsModifier;
                 dto.InitiativeModifier = e.InitiativeModifier;
                 break;
             case MonsterCard m:
+                dto.Race = (int)m.Race;
                 dto.Strength = m.Strength;
                 dto.HitPoints = m.HitPoints;
                 dto.Initiative = m.Initiative;
@@ -178,6 +181,7 @@ internal static class MatchStateMapper
                 dto.TrapIds = d.TrapIds.ToList();
                 break;
             case BossCard b:
+                dto.Race = (int)b.Race;
                 dto.Strength = b.Strength;
                 dto.HitPoints = b.HitPoints;
                 dto.Initiative = b.Initiative;
@@ -196,14 +200,17 @@ internal static class MatchStateMapper
         {
             "Ally" => new AllyCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Strength ?? 0, dto.HitPoints ?? 1, dto.Initiative ?? 0,
-                dto.IsAmbusher ?? false, dto.Treasure ?? 0, dto.Effect),
+                dto.IsAmbusher ?? false, dto.Treasure ?? 0, dto.Effect,
+                (Race)(dto.Race ?? 0)),
 
             "Equipment" => new EquipmentCard(dto.Id, dto.Name, rarity, dto.Cost,
-                dto.StrengthModifier ?? 0, dto.HitPointsModifier ?? 0, dto.InitiativeModifier ?? 0),
+                dto.StrengthModifier ?? 0, dto.HitPointsModifier ?? 0, dto.InitiativeModifier ?? 0,
+                (EquipmentSlot)(dto.EquipmentSlot ?? 5)),
 
             "Monster" => new MonsterCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Strength ?? 0, dto.HitPoints ?? 1, dto.Initiative ?? 0,
-                dto.Treasure ?? 0, dto.Effect),
+                dto.Treasure ?? 0, dto.Effect,
+                (Race)(dto.Race ?? 10)),
 
             "Trap" => new TrapCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Damage ?? 0, dto.Effect ?? ""),
@@ -213,7 +220,8 @@ internal static class MatchStateMapper
                 dto.MonsterCostBudget ?? 0, dto.Effect),
 
             "Boss" => new BossCard(dto.Id, dto.Name, rarity, dto.Cost,
-                dto.Strength ?? 1, dto.HitPoints ?? 1, dto.Initiative ?? 0, dto.Effect),
+                dto.Strength ?? 1, dto.HitPoints ?? 1, dto.Initiative ?? 0, dto.Effect,
+                (Race)(dto.Race ?? 15)),
 
             _ => throw new InvalidOperationException($"Unknown card type: {dto.CardType}")
         };

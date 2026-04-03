@@ -5,6 +5,7 @@ namespace CardgameDungeon.Domain.Entities;
 public class EquipmentCard : Card
 {
     public override CardType Type => CardType.Equipment;
+    public EquipmentSlot Slot { get; private set; }
     public int StrengthModifier { get; private set; }
     public int HitPointsModifier { get; private set; }
     public int InitiativeModifier { get; private set; }
@@ -18,9 +19,11 @@ public class EquipmentCard : Card
         int cost,
         int strengthModifier,
         int hitPointsModifier,
-        int initiativeModifier)
+        int initiativeModifier,
+        EquipmentSlot slot = EquipmentSlot.Accessory)
         : base(id, name, rarity, cost)
     {
+        Slot = slot;
         StrengthModifier = strengthModifier;
         HitPointsModifier = hitPointsModifier;
         InitiativeModifier = initiativeModifier;

@@ -20,6 +20,17 @@ namespace CardgameDungeon.Unity.Cards
         Unique
     }
 
+    public enum Race
+    {
+        Human, Elf, Dwarf, Orc, Halfling, Dragonborn, Tiefling,
+        Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon
+    }
+
+    public enum EquipmentSlot
+    {
+        Weapon, Armor, Shield, Helmet, Boots, Accessory
+    }
+
     [CreateAssetMenu(fileName = "NewCard", menuName = "CardgameDungeon/Cards/CardData")]
     public class CardData : ScriptableObject
     {
@@ -50,6 +61,7 @@ namespace CardgameDungeon.Unity.Cards
     public class AllyCardData : CardData
     {
         [Header("Ally Properties")]
+        [SerializeField] private Race race;
         [SerializeField] private int strength;
         [SerializeField] private int hitPoints;
         [SerializeField] private int initiative;
@@ -57,6 +69,7 @@ namespace CardgameDungeon.Unity.Cards
         [SerializeField] private bool isAmbusher;
         [SerializeField, TextArea] private string effect;
 
+        public Race Race => race;
         public int Strength => strength;
         public int HitPoints => hitPoints;
         public int Initiative => initiative;
@@ -69,10 +82,12 @@ namespace CardgameDungeon.Unity.Cards
     public class EquipmentCardData : CardData
     {
         [Header("Equipment Properties")]
+        [SerializeField] private EquipmentSlot slot;
         [SerializeField] private int strengthModifier;
         [SerializeField] private int hitPointsModifier;
         [SerializeField] private int initiativeModifier;
 
+        public EquipmentSlot Slot => slot;
         public int StrengthModifier => strengthModifier;
         public int HitPointsModifier => hitPointsModifier;
         public int InitiativeModifier => initiativeModifier;
@@ -82,12 +97,14 @@ namespace CardgameDungeon.Unity.Cards
     public class MonsterCardData : CardData
     {
         [Header("Monster Properties")]
+        [SerializeField] private Race race;
         [SerializeField] private int strength;
         [SerializeField] private int hitPoints;
         [SerializeField] private int initiative;
         [SerializeField] private int treasure;
         [SerializeField, TextArea] private string effect;
 
+        public Race Race => race;
         public int Strength => strength;
         public int HitPoints => hitPoints;
         public int Initiative => initiative;
@@ -124,11 +141,13 @@ namespace CardgameDungeon.Unity.Cards
     public class BossCardData : CardData
     {
         [Header("Boss Properties")]
+        [SerializeField] private Race race;
         [SerializeField] private int strength;
         [SerializeField] private int hitPoints;
         [SerializeField] private int initiative;
         [SerializeField, TextArea] private string effect;
 
+        public Race Race => race;
         public int Strength => strength;
         public int HitPoints => hitPoints;
         public int Initiative => initiative;

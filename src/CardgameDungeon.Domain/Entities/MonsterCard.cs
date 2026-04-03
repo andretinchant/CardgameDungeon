@@ -5,6 +5,7 @@ namespace CardgameDungeon.Domain.Entities;
 public class MonsterCard : Card
 {
     public override CardType Type => CardType.Monster;
+    public Race Race { get; private set; }
     public int Strength { get; private set; }
     public int HitPoints { get; private set; }
     public int Initiative { get; private set; }
@@ -22,7 +23,8 @@ public class MonsterCard : Card
         int hitPoints,
         int initiative,
         int treasure = 0,
-        string? effect = null)
+        string? effect = null,
+        Race race = Race.Beast)
         : base(id, name, rarity, cost)
     {
         if (strength < 0)
@@ -32,6 +34,7 @@ public class MonsterCard : Card
         if (initiative < 0)
             throw new ArgumentOutOfRangeException(nameof(initiative));
 
+        Race = race;
         Strength = strength;
         HitPoints = hitPoints;
         Initiative = initiative;

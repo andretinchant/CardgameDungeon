@@ -38,6 +38,10 @@ Unity client is a separate project that consumes the API.
 
 **Rarities:** Unique (1 per deck), Rare, Uncommon, Common.
 
+**Races:** Human, Elf, Dwarf, Orc, Halfling, Dragonborn, Tiefling, Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon. Allies, Monsters, and Bosses each have a Race.
+
+**Equipment Slots:** Weapon, Armor, Shield, Helmet, Boots, Accessory. Each equipment card occupies one slot. An ally cannot equip two items in the same slot (e.g., no 2 boots, no 2 armors).
+
 ### Match Flow
 
 **Setup:** Each player fields a starting team with total cost ≤ 5, revealed simultaneously.

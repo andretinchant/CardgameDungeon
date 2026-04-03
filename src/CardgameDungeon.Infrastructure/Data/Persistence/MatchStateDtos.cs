@@ -50,6 +50,7 @@ internal class CardDto
     public int Rarity { get; set; }
     public int Cost { get; set; }
     // Ally / Monster / Boss
+    public int? Race { get; set; }
     public int? Strength { get; set; }
     public int? HitPoints { get; set; }
     public int? Initiative { get; set; }
@@ -57,6 +58,7 @@ internal class CardDto
     public bool? IsAmbusher { get; set; }
     public string? Effect { get; set; }
     // Equipment
+    public int? EquipmentSlot { get; set; }
     public int? StrengthModifier { get; set; }
     public int? HitPointsModifier { get; set; }
     public int? InitiativeModifier { get; set; }
