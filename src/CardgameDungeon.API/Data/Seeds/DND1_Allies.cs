@@ -39,12 +39,12 @@ public static partial class CardSetSeeder
                 effect: "Her light mends what darkness breaks. At start of each round: restore 2 HP to all allies. +3 STR against Undead and Demon. Exile 8 cards from deck: fully restore all allies to max HP and remove all negative effects",
                 race: Race.Human, allyClass: AllyClass.Cleric),
 
-            // Irvne the Opportunist: Rogue, Halfling — Cost 5, Unique Budget = 26
+            // Irvine the Opportunist: Rogue, Halfling — Cost 5, Unique Budget = 26
             // STR5(5) + HP4(4) + INIT3(4.5) + Ambusher(2) + Treasure1(1) = 16.5. Effect = 8 ✓
             // The ONLY Unique at cost 5 — can enter the field earlier than other Uniques
-            new AllyCard(new Guid("00000000-0000-0000-0001-000000000063"), "Irvne the Opportunist", Rarity.Unique, 5, 5, 4, 3,
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000063"), "Irvine the Opportunist", Rarity.Unique, 5, 5, 4, 3,
                 isAmbusher: true, treasure: 1,
-                effect: "Every opening is a death sentence. This ally's opportunity attacks deal double STR damage. When any enemy flees or changes combat group: Irvne automatically performs an opportunity attack against them (does not count toward the 1-per-round limit). With Advantage: +3 STR",
+                effect: "Every opening is a death sentence. This ally's opportunity attacks deal double STR damage. When any enemy flees or changes combat group: Irvine automatically performs an opportunity attack against them (does not count toward the 1-per-round limit). With Advantage: +3 STR",
                 race: Race.Halfling, allyClass: AllyClass.Rogue),
 
             // Aldric the Oathbound: Paladin, Human — Cost 6, Unique Budget = 30
