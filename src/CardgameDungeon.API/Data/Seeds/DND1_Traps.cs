@@ -156,7 +156,8 @@ public static partial class CardSetSeeder
                 Rarity.Unique,
                 cost: 6,
                 damage: 5,
-                "Exiles the target ally permanently. Equipped gear is exiled with them. This trap is exiled after use (single use)"),
+                "Exiles the target ally permanently. Equipped gear is exiled with them. This trap is exiled after use (single use)",
+                effectTags: "ON_ACTIVATE|EXILE_TARGET|EXILE_EQUIPMENT|EXILE_SELF"),
 
             // Budget 15: Damage5 + Effect10 = 15 (Cost 5, Unique)
             new TrapCard(
@@ -165,7 +166,8 @@ public static partial class CardSetSeeder
                 Rarity.Unique,
                 cost: 5,
                 damage: 5,
-                "Target ally is removed from combat for 2 rounds and cannot be targeted or deal damage. Returns with -2 STR permanently"),
+                "Target ally is removed from combat for 2 rounds and cannot be targeted or deal damage. Returns with -2 STR permanently",
+                effectTags: "ON_ACTIVATE|REMOVE_FROM_COMBAT:2:ENEMY|-STR:2:ENEMY"),
 
             // ═══════════════════════════════════════════════════════════════
             //  RARE (8) — Cost 3→8, Cost 4→10, Cost 5→12
@@ -178,7 +180,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 5,
                 damage: 4,
-                "Deals 2 damage to each attacking ally at the start of combat for the remainder of this room"),
+                "Deals 2 damage to each attacking ally at the start of combat for the remainder of this room",
+                effectTags: "ON_COMBAT_START|DAMAGE:2:ALL_ENEMIES"),
 
             // Budget 12: Damage5 + Effect7 = 12 (Cost 5)
             new TrapCard(
@@ -187,7 +190,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 5,
                 damage: 5,
-                "All attacking allies with current HP equal to or below 5 are reduced to 1 HP"),
+                "All attacking allies with current HP equal to or below 5 are reduced to 1 HP",
+                effectTags: "ON_ACTIVATE|IF_HP_BELOW:5|SET_HP:1:ALL_ENEMIES"),
 
             // Budget 10: Damage4 + Effect6 = 10 (Cost 4)
             new TrapCard(
@@ -196,7 +200,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 4,
                 damage: 4,
-                "All attacking allies lose their INIT bonus this round. Allies with Boots equipment are immune"),
+                "All attacking allies lose their INIT bonus this round. Allies with Boots equipment are immune",
+                effectTags: "ON_ACTIVATE|SET_INIT:0:ALL_ENEMIES|IF_HAS_BOOTS|IMMUNE"),
 
             // Budget 10: Damage3 + Effect7 = 10 (Cost 4)
             new TrapCard(
@@ -205,7 +210,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 4,
                 damage: 3,
-                "Each round this trap remains active, deal 1 additional damage to all allies. Discard 3 cards from your deck to disable it"),
+                "Each round this trap remains active, deal 1 additional damage to all allies. Discard 3 cards from your deck to disable it",
+                effectTags: "ON_ROUND_START|DAMAGE:1:ALL_ENEMIES\nCOST:DISCARD_HAND:3|DISABLE_TRAP"),
 
             // Budget 10: Damage5 + Effect5 = 10 (Cost 4)
             new TrapCard(
@@ -214,7 +220,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 4,
                 damage: 5,
-                "Target the ally with the lowest HP. If defeated, that ally is exiled instead of discarded"),
+                "Target the ally with the lowest HP. If defeated, that ally is exiled instead of discarded",
+                effectTags: "ON_ACTIVATE|TARGET_LOWEST_HP|ON_KILL|EXILE_TARGET"),
 
             // Budget 12: Damage6 + Effect6 = 12 (Cost 5)
             new TrapCard(
@@ -223,7 +230,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 5,
                 damage: 6,
-                "Target ally permanently loses HP equal to half this damage for the rest of the dungeon. Equipment cannot prevent this"),
+                "Target ally permanently loses HP equal to half this damage for the rest of the dungeon. Equipment cannot prevent this",
+                effectTags: "ON_ACTIVATE|-HP:3:ENEMY|UNPREVENTABLE"),
 
             // Budget 8: Damage2 + Effect6 = 8 (Cost 3)
             new TrapCard(
@@ -232,7 +240,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 3,
                 damage: 2,
-                "Target ally is returned to the owner's hand. The owner must pay its cost again to replay it"),
+                "Target ally is returned to the owner's hand. The owner must pay its cost again to replay it",
+                effectTags: "ON_ACTIVATE|RETURN_TO_HAND:ENEMY"),
 
             // Budget 12: Damage7 + Effect5 = 12 (Cost 5)
             new TrapCard(
@@ -241,7 +250,8 @@ public static partial class CardSetSeeder
                 Rarity.Rare,
                 cost: 5,
                 damage: 7,
-                "If the target ally has 3 or fewer HP remaining after damage, it is immediately exiled"),
+                "If the target ally has 3 or fewer HP remaining after damage, it is immediately exiled",
+                effectTags: "ON_ACTIVATE|IF_HP_BELOW:3|EXILE_TARGET"),
 
             // ═══════════════════════════════════════════════════════════════
             //  UNCOMMON (20) — Cost 2→6, Cost 3→8
@@ -254,7 +264,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 2,
-                "Deals damage and reduces target ally's STR by 1 for the next 2 rounds"),
+                "Deals damage and reduces target ally's STR by 1 for the next 2 rounds",
+                effectTags: "ON_ACTIVATE|-STR:1:ENEMY"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -263,7 +274,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 3,
-                "Target ally cannot participate in combat next round while climbing out"),
+                "Target ally cannot participate in combat next round while climbing out",
+                effectTags: "ON_ACTIVATE|STUN:ENEMY"),
 
             // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
             new TrapCard(
@@ -272,7 +284,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 4,
-                "Deals damage to the target and half damage (rounded down) to all other attacking allies"),
+                "Deals damage to the target and half damage (rounded down) to all other attacking allies",
+                effectTags: "ON_ACTIVATE|DAMAGE:2:ALL_ENEMIES"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -281,7 +294,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 3,
-                "Deals damage and 1 additional damage at the start of the next round"),
+                "Deals damage and 1 additional damage at the start of the next round",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY"),
 
             // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
             new TrapCard(
@@ -290,7 +304,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 4,
-                "Deals damage to the target. The attacker cannot use opportunity attacks this room"),
+                "Deals damage to the target. The attacker cannot use opportunity attacks this room",
+                effectTags: "ON_ACTIVATE|DISABLE_OPP_ATTACK:OPPONENT"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -299,7 +314,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 3,
-                "Deals damage and destroys one Armor-slot equipment on the target ally"),
+                "Deals damage and destroys one Armor-slot equipment on the target ally",
+                effectTags: "ON_ACTIVATE|DESTROY_ARMOR:ENEMY"),
 
             // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
             new TrapCard(
@@ -308,7 +324,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 4,
-                "Deals damage to the target ally and 2 damage to one adjacent ally in play"),
+                "Deals damage to the target ally and 2 damage to one adjacent ally in play",
+                effectTags: "ON_ACTIVATE|DAMAGE:2:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -317,7 +334,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 2,
-                "Deals damage and destroys one random equipment card attached to the target ally"),
+                "Deals damage and destroys one random equipment card attached to the target ally",
+                effectTags: "ON_ACTIVATE|DESTROY_EQUIPMENT:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -326,7 +344,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 2,
-                "Deals damage and reduces target ally's INIT by 3 for the remainder of this room"),
+                "Deals damage and reduces target ally's INIT by 3 for the remainder of this room",
+                effectTags: "ON_ACTIVATE|-INIT:3:ENEMY"),
 
             // Budget 8: Damage3 + Effect5 = 8 (Cost 3)
             new TrapCard(
@@ -335,7 +354,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 3,
-                "Target ally cannot attack or use consumables next round. A Potion or Balm can wake them early"),
+                "Target ally cannot attack or use consumables next round. A Potion or Balm can wake them early",
+                effectTags: "ON_ACTIVATE|STUN:ENEMY|DISABLE_CONSUMABLE:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -344,7 +364,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 2,
-                "Target ally cannot retarget or use opportunity attacks this round"),
+                "Target ally cannot retarget or use opportunity attacks this round",
+                effectTags: "ON_ACTIVATE|DISABLE_RETARGET:ENEMY|DISABLE_OPP_ATTACK:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -353,7 +374,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 2,
-                "Deals damage and the defender draws 2 additional cards from their enemy deck for this room"),
+                "Deals damage and the defender draws 2 additional cards from their enemy deck for this room",
+                effectTags: "ON_ACTIVATE|DEFENDER_DRAW:2"),
 
             // Budget 8: Damage3 + Effect5 = 8 (Cost 3)
             new TrapCard(
@@ -362,7 +384,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 3,
-                "Target ally is returned to the owner's hand without refunding its cost"),
+                "Target ally is returned to the owner's hand without refunding its cost",
+                effectTags: "ON_ACTIVATE|RETURN_TO_HAND:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -371,7 +394,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 2,
-                "The next attack against the target ally deals +2 bonus damage"),
+                "The next attack against the target ally deals +2 bonus damage",
+                effectTags: "ON_ACTIVATE|VULNERABILITY:2:ENEMY"),
 
             // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
             new TrapCard(
@@ -380,7 +404,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 4,
-                "All attacking allies are forced into a single combat group, sharing damage from one defender"),
+                "All attacking allies are forced into a single combat group, sharing damage from one defender",
+                effectTags: "ON_ACTIVATE|FORCE_GROUP:ALL_ENEMIES"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -389,7 +414,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 3,
-                "Deals damage and prevents the target ally from using Scroll consumables this round"),
+                "Deals damage and prevents the target ally from using Scroll consumables this round",
+                effectTags: "ON_ACTIVATE|DISABLE_SCROLL:ENEMY"),
 
             // Budget 8: Damage3 + Effect5 = 8 (Cost 3)
             new TrapCard(
@@ -398,7 +424,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 3,
-                "Target ally's STR is halved (rounded down) for their next attack"),
+                "Target ally's STR is halved (rounded down) for their next attack",
+                effectTags: "ON_ACTIVATE|HALVE_STR:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -407,7 +434,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 2,
                 damage: 2,
-                "Target ally is forced to abandon combat. The attacker may use an opportunity attack"),
+                "Target ally is forced to abandon combat. The attacker may use an opportunity attack",
+                effectTags: "ON_ACTIVATE|FORCE_ABANDON:ENEMY"),
 
             // Budget 8: Damage5 + Effect3 = 8 (Cost 3)
             new TrapCard(
@@ -416,7 +444,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 5,
-                "Deals damage to the target ally and restores HP equal to half damage dealt to one defending monster"),
+                "Deals damage to the target ally and restores HP equal to half damage dealt to one defending monster",
+                effectTags: "ON_ACTIVATE|HEAL:2:ALLY"),
 
             // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
             new TrapCard(
@@ -425,7 +454,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 4,
-                "Target ally's STR is reduced by 1 permanently for the rest of the dungeon"),
+                "Target ally's STR is reduced by 1 permanently for the rest of the dungeon",
+                effectTags: "ON_ACTIVATE|-STR:1:ENEMY"),
 
             // ═══════════════════════════════════════════════════════════════
             //  COMMON (30) — Cost 1→4, Cost 2→6
@@ -438,7 +468,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally loses all INIT bonuses this round"),
+                "Target ally loses all INIT bonuses this round",
+                effectTags: "ON_ACTIVATE|SET_INIT:0:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -447,7 +478,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "All attacking allies lose 1 INIT this round"),
+                "All attacking allies lose 1 INIT this round",
+                effectTags: "ON_ACTIVATE|-INIT:1:ALL_ENEMIES"),
 
             // Budget 4: Damage2 + Effect2 = 4 (Cost 1)
             new TrapCard(
@@ -456,7 +488,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 2,
-                "Target ally cannot use retarget this round"),
+                "Target ally cannot use retarget this round",
+                effectTags: "ON_ACTIVATE|DISABLE_RETARGET:ENEMY"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -465,7 +498,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 3,
-                "Deals damage to target ally and 1 damage to one other attacking ally"),
+                "Deals damage to target ally and 1 damage to one other attacking ally",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -474,7 +508,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally cannot attack this round. Owner must discard 1 card to free them next round"),
+                "Target ally cannot attack this round. Owner must discard 1 card to free them next round",
+                effectTags: "ON_ACTIVATE|STUN:ENEMY|COST:DISCARD_HAND:1"),
 
             // Budget 4: Damage2 + Effect2 = 4 (Cost 1)
             new TrapCard(
@@ -483,7 +518,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 2,
-                "Deals damage and 1 additional damage at the start of the next round"),
+                "Deals damage and 1 additional damage at the start of the next round",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -492,7 +528,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally receives +2 damage from the next attack against it this round"),
+                "Target ally receives +2 damage from the next attack against it this round",
+                effectTags: "ON_ACTIVATE|VULNERABILITY:2:ENEMY"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -501,7 +538,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 3,
-                "Deals damage split among all attacking allies (rounded up per target)"),
+                "Deals damage split among all attacking allies (rounded up per target)",
+                effectTags: "ON_ACTIVATE|DAMAGE:3:ALL_ENEMIES"),
 
             // Budget 4: Damage2 + Effect2 = 4 (Cost 1)
             new TrapCard(
@@ -510,7 +548,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 2,
-                "Deals damage. If target has Armor equipment, deal 1 extra damage"),
+                "Deals damage. If target has Armor equipment, deal 1 extra damage",
+                effectTags: "ON_ACTIVATE|IF_HAS_ARMOR|DAMAGE:1:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -519,7 +558,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "All Bomb consumables deal double damage this room"),
+                "All Bomb consumables deal double damage this room",
+                effectTags: "ON_ACTIVATE|DOUBLE_BOMB_DAMAGE"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -528,7 +568,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Defender draws 1 additional card from their enemy deck this room"),
+                "Defender draws 1 additional card from their enemy deck this room",
+                effectTags: "ON_ACTIVATE|DEFENDER_DRAW:1"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -537,7 +578,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally's equipped Weapon is unequipped and returned to owner's hand"),
+                "Target ally's equipped Weapon is unequipped and returned to owner's hand",
+                effectTags: "ON_ACTIVATE|UNEQUIP_WEAPON:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -546,7 +588,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "No allies can retreat from combat this round. Opportunity attacks cannot be used"),
+                "No allies can retreat from combat this round. Opportunity attacks cannot be used",
+                effectTags: "ON_ACTIVATE|DISABLE_RETREAT:ALL_ENEMIES|DISABLE_OPP_ATTACK:ALL_ENEMIES"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -555,7 +598,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 2,
-                "All combat assignments are cleared. Attacker must reassign targets"),
+                "All combat assignments are cleared. Attacker must reassign targets",
+                effectTags: "ON_ACTIVATE|CLEAR_ASSIGNMENTS"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -564,7 +608,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 3,
-                "Target ally must exile 1 card from the top of owner's deck or take 2 additional damage"),
+                "Target ally must exile 1 card from the top of owner's deck or take 2 additional damage",
+                effectTags: "ON_ACTIVATE|COST:EXILE_DECK:1|DAMAGE:2:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -573,7 +618,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally's INIT is reduced to 0 this round"),
+                "Target ally's INIT is reduced to 0 this round",
+                effectTags: "ON_ACTIVATE|SET_INIT:0:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -582,7 +628,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "All allies with INIT below 3 lose 1 STR this round"),
+                "All allies with INIT below 3 lose 1 STR this round",
+                effectTags: "ON_ACTIVATE|IF_INIT_BELOW:3|-STR:1:ALL_ENEMIES"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -591,7 +638,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally's Weapon equipment provides no STR bonus this round"),
+                "Target ally's Weapon equipment provides no STR bonus this round",
+                effectTags: "ON_ACTIVATE|DISABLE_WEAPON_STR:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -600,7 +648,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 2,
-                "The last consumable played by the attacker has its effect reversed onto an attacking ally"),
+                "The last consumable played by the attacker has its effect reversed onto an attacking ally",
+                effectTags: "ON_ACTIVATE|REFLECT_CONSUMABLE:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -609,7 +658,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "All Totem consumable effects are cancelled this room"),
+                "All Totem consumable effects are cancelled this room",
+                effectTags: "ON_ACTIVATE|CANCEL_TOTEM"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -618,7 +668,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally cannot retarget or change combat assignment this round"),
+                "Target ally cannot retarget or change combat assignment this round",
+                effectTags: "ON_ACTIVATE|DISABLE_RETARGET:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
             new TrapCard(
@@ -627,7 +678,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 2,
-                "One random ally is removed from combat this round and cannot be targeted or deal damage"),
+                "One random ally is removed from combat this round and cannot be targeted or deal damage",
+                effectTags: "ON_ACTIVATE|REMOVE_FROM_COMBAT:1:ENEMY"),
 
             // Budget 4: Damage2 + Effect2 = 4 (Cost 1)
             new TrapCard(
@@ -636,7 +688,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 2,
-                "Owner must exile 1 card from the top of their deck"),
+                "Owner must exile 1 card from the top of their deck",
+                effectTags: "ON_ACTIVATE|EXILE_DECK:1"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -645,7 +698,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 3,
-                "Any Treasure gained this room is reduced by half (rounded down)"),
+                "Any Treasure gained this room is reduced by half (rounded down)",
+                effectTags: "ON_ACTIVATE|HALVE_TREASURE"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -654,7 +708,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally's INIT is reduced by 2 for the rest of this room"),
+                "Target ally's INIT is reduced by 2 for the rest of this room",
+                effectTags: "ON_ACTIVATE|-INIT:2:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -663,7 +718,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Deals damage. Effect stacks: each additional Needle Trap this room deals +1 extra damage"),
+                "Deals damage. Effect stacks: each additional Needle Trap this room deals +1 extra damage",
+                effectTags: "ON_ACTIVATE|STACK_DAMAGE:1"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -672,7 +728,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 3,
-                "Deals damage to the target ally and destroys one Accessory equipment if present"),
+                "Deals damage to the target ally and destroys one Accessory equipment if present",
+                effectTags: "ON_ACTIVATE|DESTROY_ACCESSORY:ENEMY"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -681,7 +738,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally's STR is reduced by 2 this round"),
+                "Target ally's STR is reduced by 2 this round",
+                effectTags: "ON_ACTIVATE|-STR:2:ENEMY"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(
@@ -690,7 +748,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 2,
                 damage: 3,
-                "Target ally is knocked out of combat. Cannot attack or be assigned a target this round"),
+                "Target ally is knocked out of combat. Cannot attack or be assigned a target this round",
+                effectTags: "ON_ACTIVATE|REMOVE_FROM_COMBAT:1:ENEMY"),
 
             // Budget 4: Damage2 + Effect2 = 4 (Cost 1)
             new TrapCard(
@@ -699,7 +758,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 2,
-                "Deals damage ignoring Armor and Shield equipment bonuses"),
+                "Deals damage ignoring Armor and Shield equipment bonuses",
+                effectTags: "ON_ACTIVATE|IGNORE_ARMOR|IGNORE_SHIELD"),
         };
 
         var restrictedTraps = new List<TrapCard>(traps.Count);
@@ -712,7 +772,8 @@ public static partial class CardSetSeeder
                     trap.Rarity,
                     trap.Cost,
                     trap.Damage,
-                    BuildRestrictedTrapEffect(trap.Name, trap.Effect)));
+                    BuildRestrictedTrapEffect(trap.Name, trap.Effect),
+                    trap.EffectTags));
         }
 
         return restrictedTraps;
