@@ -38,7 +38,7 @@ Unity client is a separate project that consumes the API.
 
 **Rarities:** Unique (1 per deck), Rare, Uncommon, Common.
 
-**Ally Classes:** Warrior (controls combat, redirects damage), Rogue (Advantage bonuses, evasion), Mage (conditional multi-combat effects), Cleric (heals, anti-Undead, conditional buffs), Ranger (reveals hand/deck/traps, favored enemy), Paladin (combat+support hybrid, sacrifice for effects). Each ally has exactly one class.
+**Ally Classes:** Warrior (controls combat, redirects damage), Rogue (Advantage bonuses, evasion), Mage (conditional multi-combat effects; Necromancer variant recycles monsters from discard to deck top), Cleric (heals, anti-Undead, conditional buffs), Ranger (reveals hand/deck/traps, favored enemy), Paladin (combat+support hybrid, sacrifice for effects), Bard (returns cards from hand to deck top/bottom/shuffle to control future draws and reshape card distribution). Each ally has exactly one class.
 
 **Races:** Human, Elf, Dwarf, Orc, Halfling, Dragonborn, Tiefling, Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon. Allies, Monsters, and Bosses each have a Race.
 

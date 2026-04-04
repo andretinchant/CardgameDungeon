@@ -70,7 +70,7 @@ public static partial class CardSetSeeder
             // Effect budget: 18 - 12 = 6 (Rare 5-6 range)
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000007"), "Mordenkainen", Rarity.Rare, 4, 4, 4, 2,
                 isAmbusher: false, treasure: 1,
-                effect: "All allies in this combat group gain +2 STR. If equipped with a Scroll: all allies in all combat groups gain +1 INIT.",
+                effect: "Necromancer: choose 1 monster with cost <= 3 from any discard pile and place it on top of your deck. All allies in this combat group gain +1 STR",
                 race: Race.Human, allyClass: AllyClass.Mage),
 
             // Tasha the Witch Queen: Mage, Human — Cost 4, Budget = 18
@@ -78,7 +78,7 @@ public static partial class CardSetSeeder
             // Effect budget: 18 - 12 = 6 (Rare 5-6 range)
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000008"), "Tasha the Witch Queen", Rarity.Rare, 4, 3, 5, 2,
                 isAmbusher: false, treasure: 1,
-                effect: "Opponent discards 2 cards at the start of combat. If a Scroll is equipped on any ally: exile 1 card from opponent's discard instead of discarding.",
+                effect: "Necromancer: choose 1 monster with cost <= 4 from any discard pile and place it on top of your deck. Opponent exiles 1 card from top of their deck",
                 race: Race.Human, allyClass: AllyClass.Mage),
 
             // Minsc and Boo: Warrior, Human — Cost 4, Budget = 18
@@ -176,7 +176,7 @@ public static partial class CardSetSeeder
             // Effect budget: 14 - 10.5 = 3.5 (Uncommon 3-4 range)
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000016"), "Tiefling Warlock", Rarity.Uncommon, 3, 4, 4, 1,
                 isAmbusher: false, treasure: 1,
-                effect: "Exile 1 card from your discard: +3 STR this combat.",
+                effect: "Necromancer: choose 1 monster with cost <= 2 from your discard pile and place it on top of your deck. +1 STR this combat",
                 race: Race.Tiefling, allyClass: AllyClass.Mage),
 
             // Eladrin Bladesinger: Mage, Elf — Cost 3, Budget = 14

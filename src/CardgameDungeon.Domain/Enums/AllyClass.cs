@@ -8,7 +8,7 @@ public enum AllyClass
     /// <summary>Opportunist. Bonus effects With Advantage, sneak attacks, evasion.</summary>
     Rogue,
 
-    /// <summary>Arcane caster. Conditional effects that affect one or more combat groups.</summary>
+    /// <summary>Arcane caster. Conditional effects that affect one or more combat groups. Necromancer variant recycles monsters from discard to deck.</summary>
     Mage,
 
     /// <summary>Healer/support. Restores HP, removes debuffs, anti-Undead, conditional buffs.</summary>
@@ -18,5 +18,8 @@ public enum AllyClass
     Ranger,
 
     /// <summary>Holy warrior. Combat + support hybrid with sacrifice mechanics for powerful effects.</summary>
-    Paladin
+    Paladin,
+
+    /// <summary>Card manipulator. Returns cards from hand to deck (top/bottom/shuffle) to control future draws and reshape card distribution.</summary>
+    Bard
 }
