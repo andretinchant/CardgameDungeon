@@ -78,87 +78,90 @@ public static partial class CardSetSeeder
             // ═════════════════════════════════════════════════════════
             // BOSSES (10) — Diverse races, progression mechanics,
             // room interactions, class-like abilities
-            // Budget: Cost 5=26, 6=30, 7=34, 8=37, 9=40
-            // Races: Dragon x2, Undead x2, Demon x1, Beast x1,
-            //        Giant x1, Human x1, Elemental x1, Monstrosity x1
+            // Budget curve (Unique ×1.5): Cost 5=120, 6=143, 7=165, 8=188, 9=210, 10=233
+            // Stat costs: ATK first free then +3 each, HP first free then +3 each, INIT=1.5/pt
+            // No stat caps — bosses fight alone vs full party.
+            // High ATK prevents 2x elimination by full party.
+            // Races: Dragon x1, Undead x2, Demon x1, Beast x1,
+            //        Giant x1, Human x1, Elemental x1, Aberration x1, Monstrosity x1
             // ═════════════════════════════════════════════════════════
 
             // 1. TIAMAT — Dragon — Caverna Vulcanica
-            // Budget 34 (cost 7): ATK 8(8) + HP 14(14) + INIT 1(1.5) = 23.5. Effect = 8 ✓
+            // Budget 188 (cost 8, High): ATK 22(63) + HP 15(42) + INIT 1(1.5) = 106.5. Effect = 81.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000001"),
-                "Tiamat, Queen of Dragons", Rarity.Unique, 7, 8, 14, 1,
-                "Sala: Caverna Vulcanica — aliados sem Armor tomam +1 dano por round. Progressao: +1 ATK por aliado morto no descarte do oponente. Breath: deal 2 damage to all attackers at start of each round. Immune to Dragon-race allies' effects",
+                "Tiamat, Queen of Dragons", Rarity.Unique, 8, 22, 15, 1,
+                "Sala: Caverna Vulcanica — aliados sem Armor tomam +1 dano por round. Progressao: +1 ATK por aliado morto no descarte do oponente. Breath: deal 1 damage to all attackers at start of each round. Immune to Dragon-race allies' effects",
                 race: Race.Dragon,
-                effectTags: "ON_ROUND_START|DAMAGE:2:ALL_ENEMIES\nPASSIVE|+ATK:1:PER_DEAD_ALLY\nPASSIVE|IF_RACE:Dragon|IMMUNE"),
+                effectTags: "ON_ROUND_START|DAMAGE:1:ALL_ENEMIES\nPASSIVE|+ATK:1:PER_DEAD_ALLY\nPASSIVE|IF_RACE:Dragon|IMMUNE"),
 
             // 2. VECNA — Undead — Cripta Arcana
-            // Budget 30 (cost 6): ATK 7(7) + HP 12(12) + INIT 1(1.5) = 20.5. Effect = 8 ✓
+            // Budget 143 (cost 6, Mid): ATK 17(48) + HP 10(27) + INIT 1(1.5) = 76.5. Effect = 66.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000002"),
-                "Vecna, the Whispered One", Rarity.Unique, 6, 7, 12, 1,
+                "Vecna, the Whispered One", Rarity.Unique, 6, 17, 10, 1,
                 "Sala: Cripta Arcana — traps nesta sala ativam 2x. Progressao: cada 3 cartas exiladas pelo oponente ao longo da partida: +1 ATK permanente. During initiative: marca 1 atacante — se atacar Vecna, exile 2 do deck em vez de 1",
                 race: Race.Undead,
                 effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nPASSIVE|+ATK:1:PER_3_EXILED\nPASSIVE|TRAP_DOUBLE"),
 
             // 3. STRAHD — Undead — Castelo Sombrio
-            // Budget 26 (cost 5): ATK 7(7) + HP 10(10) + INIT 1(1.5) = 18.5. Effect = 7.5 ✓
+            // Budget 120 (cost 5, Mid): ATK 15(42) + HP 8(21) + INIT 1(1.5) = 64.5. Effect = 55.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000003"),
-                "Strahd von Zarovich", Rarity.Unique, 5, 7, 10, 1,
+                "Strahd von Zarovich", Rarity.Unique, 5, 15, 8, 1,
                 "Sala: Castelo Sombrio — todos atacantes -1 ATK (escuridao). Progressao: restaura HP igual ao numero de aliados mortos no descarte do oponente (no inicio de cada round). With Advantage: -2 ATK ao aliado mais forte. Imune a Scrolls (resistencia magica vampirica)",
                 race: Race.Undead,
                 effectTags: "PASSIVE|-ATK:1:ALL_ENEMIES\nON_ROUND_START|HEAL:1:SELF:PER_DEAD_ALLY\nWITH_ADVANTAGE|-ATK:2:ENEMY\nPASSIVE|IMMUNE_SCROLL"),
 
             // 4. XANATHAR — Aberration — Covil Subterraneo
-            // Budget 30 (cost 6): ATK 7(7) + HP 13(13) + INIT 1(1.5) = 21.5. Effect = 8 ✓
+            // Budget 143 (cost 6, Mid): ATK 18(51) + HP 10(27) + INIT 0(0) = 78. Effect = 65 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000004"),
-                "Xanathar, the Eye Tyrant", Rarity.Unique, 6, 7, 13, 1,
+                "Xanathar, the Eye Tyrant", Rarity.Unique, 6, 18, 10, 0,
                 "Sala: Covil Subterraneo — aliados nao podem usar retarget. Revela a mao do oponente permanentemente. A cada round: desativa 1 equipamento aleatorio de um atacante (o equipamento volta pra mao). Imune a Scrolls (anti-magia do Beholder)",
                 race: Race.Aberration,
                 effectTags: "PASSIVE|REVEAL_HAND\nON_ROUND_START|DISABLE_EQUIPMENT:1\nPASSIVE|IMMUNE_SCROLL\nPASSIVE|PREVENT_RETARGET"),
 
             // 5. DEMOGORGON — Demon — Abismo
-            // Budget 34 (cost 7): ATK 8(8) + HP 14(14) + INIT 1(1.5) = 23.5. Effect = 8 ✓
+            // Budget 188 (cost 8, High): ATK 23(66) + HP 14(39) + INIT 1(1.5) = 106.5. Effect = 81.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000005"),
-                "Demogorgon, Prince of Demons", Rarity.Unique, 7, 8, 14, 1,
+                "Demogorgon, Prince of Demons", Rarity.Unique, 8, 23, 14, 1,
                 "Sala: Abismo — aliados com INIT 0 nao podem atacar (desespero). Progressao: se oponente tem >8 cartas exiladas: imune a consumiveis. Duas cabecas: ataca 2 alvos diferentes por round (divide ATK entre eles). Cada round sem ser danificado: +1 ATK",
                 race: Race.Demon,
                 effectTags: "PASSIVE|ATTACK_TWO_TARGETS\nPASSIVE|IF_EXILED_GT_8|IMMUNE_CONSUMABLE\nON_ROUND_START|IF_NO_DAMAGE|+ATK:1"),
 
             // 6. THE KRAKEN — Beast — Oceano Submerso
-            // Budget 37 (cost 8): ATK 10(10) + HP 16(16) + INIT 0(0) = 26. Effect = 8 ✓
+            // Budget 210 (cost 9, Apex): ATK 25(72) + HP 18(51) + INIT 0(0) = 123. Effect = 87 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000006"),
-                "The Kraken of the Depths", Rarity.Unique, 8, 10, 16, 0,
+                "The Kraken of the Depths", Rarity.Unique, 9, 25, 18, 0,
                 "Sala: Oceano Submerso — aliados sem Boots perdem 1 INIT. Afogamento: cada round, oponente descarta 1 da mao ou o aliado com menor HP e exilado. Tentaculos: no inicio do combate, 1 aliado aleatorio e removido do campo e volta pra mao (sem opportunity attack). Tinta: com Desvantagem, ninguem pode usar retarget",
                 race: Race.Beast,
                 effectTags: "ON_ROUND_START|FORCE_DISCARD_OR_EXILE_WEAKEST\nON_COMBAT_START|RETURN_ALLY_TO_HAND:1\nWITH_DISADVANTAGE|PREVENT_RETARGET\nPASSIVE|IF_NO_BOOTS|-INIT:1"),
 
             // 7. SNURRE IRONBELLY — Giant — Salao de Fogo
-            // Budget 34 (cost 7): ATK 9(9) + HP 14(14) + INIT 1(1.5) = 24.5. Effect = 8 ✓
+            // Budget 165 (cost 7, High): ATK 20(57) + HP 12(33) + INIT 1(1.5) = 91.5. Effect = 73.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000007"),
-                "Snurre Ironbelly, Fire Giant King", Rarity.Unique, 7, 9, 14, 1,
+                "Snurre Ironbelly, Fire Giant King", Rarity.Unique, 7, 20, 12, 1,
                 "Sala: Salao de Fogo — aliados sem Armor ou Shield tomam +1 dano por round. Progressao: cada aliado eliminado neste combate: +2 ATK permanente (fica mais forte conforme mata). Forja: equipamentos destruidos neste combate concedem +1 HP a Snurre",
                 race: Race.Giant,
                 effectTags: "ON_KILL|+ATK:2\nPASSIVE|IF_NO_ARMOR|DAMAGE:1:ALL_ENEMIES\nON_EQUIPMENT_DESTROYED|+HP:1"),
 
             // 8. HALASTER BLACKCLOAK — Human — Labirinto Magico
-            // Budget 37 (cost 8): ATK 8(8) + HP 15(15) + INIT 2(3) = 26. Effect = 8 ✓
+            // Budget 188 (cost 8, High): ATK 22(63) + HP 14(39) + INIT 1(1.5) = 103.5. Effect = 84.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000008"),
-                "Halaster Blackcloak", Rarity.Unique, 8, 8, 15, 2,
+                "Halaster Blackcloak", Rarity.Unique, 8, 22, 14, 1,
                 "Sala: Labirinto Magico — assignments sao embaralhados no inicio de cada round. Copia: o ultimo consumivel usado pelo oponente e copiado e aplicado contra os atacantes. Progressao: se oponente tem <3 cartas na mao: +3 ATK. Teleporte: uma vez por combate, troca de posicao com 1 monstro da pilha de descarte (substitui-se no campo)",
                 race: Race.Human,
                 effectTags: "ON_ROUND_START|SWAP_ASSIGNMENTS\nON_SCROLL_USED|COPY_SCROLL:REVERSE\nPASSIVE|IF_HAND_LT_3|+ATK:3\nON_ACTIVATE|ONCE_PER_COMBAT|SWAP_WITH_MONSTER"),
 
             // 9. ZARATAN — Elemental — Pantano Primordial
-            // Budget 40 (cost 9): ATK 8(8) + HP 20(20) + INIT 0(0) = 28. Effect = 8 ✓
+            // Budget 233 (cost 10, Apex): ATK 27(78) + HP 22(63) + INIT 0(0) = 141. Effect = 92 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000009"),
-                "Zaratan, the World Turtle", Rarity.Unique, 9, 8, 20, 0,
+                "Zaratan, the World Turtle", Rarity.Unique, 10, 27, 22, 0,
                 "Sala: Pantano Primordial — aliados com custo 1 nao podem entrar neste combate (afundam no pantano). Carapaca: reduz TODO dano recebido em 3. So pode ser eliminado pela regra de ATK >= 2x (nao por dano >= HP). Terremoto: a cada 2 rounds, exile 2 do topo do deck de AMBOS os jogadores. Lento: INIT 0 — nunca ganha iniciativa",
                 race: Race.Elemental,
                 effectTags: "PASSIVE|REDUCE_DAMAGE:3\nPASSIVE|ONLY_ELIM_BY_DOUBLE\nON_ROUND_START|IF_EVERY_2_ROUNDS|EXILE_DECK:2:BOTH\nPASSIVE|IF_COST_1|PREVENT_ATTACK"),
 
             // 10. ARAKTHISS — Monstrosity — Ninho de Aranhas
-            // Budget 30 (cost 6): ATK 6(6) + HP 12(12) + INIT 2(3) = 21. Effect = 8 ✓
+            // Budget 120 (cost 5, Mid): ATK 15(42) + HP 9(24) + INIT 1(1.5) = 67.5. Effect = 52.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000010"),
-                "Arakthiss, the Broodmother", Rarity.Unique, 6, 6, 12, 2,
+                "Arakthiss, the Broodmother", Rarity.Unique, 5, 15, 9, 1,
                 "Sala: Ninho de Aranhas — teias: aliados com INIT < 2 nao podem atacar. Ninhada: spawna 1 monstro Spider (ATK 2, HP 2) no inicio de cada round. Veneno: aliados sem Potion ou Balm na mao perdem 1 HP por round. Progressao: cada Spider viva concede +1 ATK a Arakthiss",
                 race: Race.Monstrosity,
                 effectTags: "PASSIVE|IF_INIT_LT_2|PREVENT_ATTACK\nON_ROUND_START|SPAWN_SPIDER:1\nON_ROUND_START|IF_NO_POTION_BALM|DAMAGE:1:ALL_ENEMIES\nPASSIVE|+ATK:1:PER_SPIDER"),

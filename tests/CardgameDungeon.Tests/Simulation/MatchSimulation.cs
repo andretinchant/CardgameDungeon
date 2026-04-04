@@ -36,7 +36,7 @@ public class MatchSimulation
             new(Guid.NewGuid(), "Dragon Lair", Rarity.Common, 4, monsterIds.Skip(6).Take(2)),
             new(Guid.NewGuid(), "Throne Room", Rarity.Common, 5, monsterIds.Skip(8).Take(2)),
         };
-        var boss = new BossCard(Guid.NewGuid(), "Strahd von Zarovich", Rarity.Unique, 5, 7, 10, 1,
+        var boss = new BossCard(Guid.NewGuid(), "Strahd von Zarovich", Rarity.Unique, 5, 15, 10, 1,
             "Necrotic Aura — drains 1 HP from each ally at the start of boss combat.",
             race: Race.Undead);
 
@@ -433,40 +433,40 @@ public class MatchSimulation
 
         // ═══ ADVENTURER (40) ═══
 
-        // ── 10 Allies ──
-        // 2 Rare
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Paladin Kael", Rarity.Rare, 4, 5, 5, 2, allyClass: AllyClass.Paladin, effect: "Divine shield protects adjacent allies"));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Archmage Vex", Rarity.Rare, 4, 4, 4, 3, allyClass: AllyClass.Mage, effect: "Chain lightning hits all enemies"));
+        // ── 10 Allies (ATK/HP: 1st free +3/pt. INIT 1.5/pt) ──
+        // 2 Rare (Cost 4, Budget 53: ATK 9(24) + HP 4(9) + INIT 4(6) = 39, Effect=14)
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Paladin Kael", Rarity.Rare, 4, 9, 4, 4, allyClass: AllyClass.Paladin, effect: "Divine shield protects adjacent allies"));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Archmage Vex", Rarity.Rare, 4, 8, 4, 3, allyClass: AllyClass.Mage, effect: "Chain lightning hits all enemies"));
 
-        // 10 Uncommon allies (cost 2-3, ATK 3-4, HP 3-4, various classes)
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Knight Errant", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Shieldbearer", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Battle Mage", Rarity.Uncommon, 3, 4, 3, 2, allyClass: AllyClass.Mage));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Evoker", Rarity.Uncommon, 2, 3, 3, 2, allyClass: AllyClass.Mage));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-War Cleric", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Cleric));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Acolyte", Rarity.Uncommon, 2, 3, 3, 1, allyClass: AllyClass.Cleric));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Cutthroat", Rarity.Uncommon, 2, 4, 3, 2, isAmbusher: true, allyClass: AllyClass.Rogue));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Scout", Rarity.Uncommon, 2, 3, 3, 3, allyClass: AllyClass.Ranger));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Druid of the Grove", Rarity.Uncommon, 3, 3, 4, 2, allyClass: AllyClass.Druid));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Berserker", Rarity.Uncommon, 2, 4, 3, 1, allyClass: AllyClass.Warrior));
+        // 10 Uncommon allies (Cost 2-3, Budget 32-37: ATK 7-8, HP 3, INIT 2-3)
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Knight Errant", Rarity.Uncommon, 2, 7, 3, 2, allyClass: AllyClass.Warrior));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Shieldbearer", Rarity.Uncommon, 2, 6, 3, 2, allyClass: AllyClass.Warrior));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Battle Mage", Rarity.Uncommon, 3, 8, 3, 3, allyClass: AllyClass.Mage));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Evoker", Rarity.Uncommon, 2, 7, 3, 2, allyClass: AllyClass.Mage));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-War Cleric", Rarity.Uncommon, 2, 7, 3, 2, allyClass: AllyClass.Cleric));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Acolyte", Rarity.Uncommon, 2, 6, 3, 2, allyClass: AllyClass.Cleric));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Cutthroat", Rarity.Uncommon, 2, 6, 2, 2, isAmbusher: true, allyClass: AllyClass.Rogue));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Scout", Rarity.Uncommon, 2, 7, 2, 3, allyClass: AllyClass.Ranger));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Druid of the Grove", Rarity.Uncommon, 3, 8, 3, 2, allyClass: AllyClass.Druid));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Berserker", Rarity.Uncommon, 2, 8, 2, 1, allyClass: AllyClass.Warrior));
 
-        // 10 Common allies (cost 1-2, ATK 2-3, HP 2-3)
+        // 10 Common allies (Cost 1, Budget 15: ATK 4(9) + HP 2(3) + INIT 1(1.5) = 13.5, Effect=1.5)
         for (int i = 0; i < 3; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Militia-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Warrior));
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Militia-{i}", Rarity.Common, 1, 4, 2, 1, allyClass: AllyClass.Warrior));
         for (int i = 0; i < 2; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Apprentice-{i}", Rarity.Common, 1, 2, 2, 2, allyClass: AllyClass.Mage));
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Apprentice-{i}", Rarity.Common, 1, 3, 2, 1, allyClass: AllyClass.Mage));
         for (int i = 0; i < 2; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Novice Healer-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Cleric));
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Novice Healer-{i}", Rarity.Common, 1, 3, 2, 1, allyClass: AllyClass.Cleric));
         for (int i = 0; i < 2; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Pickpocket-{i}", Rarity.Common, 1, 2, 2, 2, isAmbusher: true, allyClass: AllyClass.Rogue));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Trapper", Rarity.Common, 1, 2, 2, 2, allyClass: AllyClass.Ranger));
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Pickpocket-{i}", Rarity.Common, 1, 3, 2, 1, isAmbusher: true, allyClass: AllyClass.Rogue));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Trapper", Rarity.Common, 1, 4, 2, 1, allyClass: AllyClass.Ranger));
 
-        // 5 Uncommon equipment (Weapon, Armor, Shield with +2 mods)
-        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Flamebrand Sword", Rarity.Uncommon, 2, 2, 0, 0, EquipmentSlot.Weapon, effect: "Burns enemies on hit"));
-        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Enchanted Longsword", Rarity.Uncommon, 2, 2, 0, 1, EquipmentSlot.Weapon));
-        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Mithril Chainmail", Rarity.Uncommon, 2, 0, 2, 0, EquipmentSlot.Armor));
-        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Tower Shield", Rarity.Uncommon, 2, 0, 2, -1, EquipmentSlot.Shield));
-        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Winged Boots", Rarity.Uncommon, 2, 0, 0, 2, EquipmentSlot.Boots));
+        // 5 Uncommon equipment (Budget 14: ATK/HP 1st free +3, INIT 1.5)
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Flamebrand Sword", Rarity.Uncommon, 2, 3, 1, 1, EquipmentSlot.Weapon, effect: "Burns enemies on hit"));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Enchanted Longsword", Rarity.Uncommon, 2, 2, 1, 1, EquipmentSlot.Weapon));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Mithril Chainmail", Rarity.Uncommon, 2, 0, 3, 0, EquipmentSlot.Armor));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Tower Shield", Rarity.Uncommon, 2, 0, 3, 0, EquipmentSlot.Shield));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Winged Boots", Rarity.Uncommon, 2, 0, 1, 2, EquipmentSlot.Boots));
 
         // 5 Common equipment (basic +1 mods)
         cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Iron Sword", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Weapon));
@@ -484,43 +484,43 @@ public class MatchSimulation
 
         // ═══ ENEMY (40): 32 monsters + 8 traps ═══
 
-        // ── 32 Monsters ──
-        // 4 Rare (ATK 5-6, HP 6-7)
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ancient Wyvern", Rarity.Rare, 4, 6, 7, 1, effect: "Breath attack hits all allies"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Death Knight", Rarity.Rare, 4, 5, 7, 2, effect: "Drains life on hit"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Beholder", Rarity.Rare, 4, 6, 6, 1, effect: "Antimagic cone"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Lich", Rarity.Rare, 4, 5, 6, 2, effect: "Raises dead as undead"));
-        // 12 Uncommon (ATK 3-4, HP 4-5)
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ogre Chieftain", Rarity.Uncommon, 3, 4, 5, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll Berserker", Rarity.Uncommon, 3, 4, 5, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wraith", Rarity.Uncommon, 2, 3, 4, 2));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Minotaur", Rarity.Uncommon, 3, 4, 5, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Harpy", Rarity.Uncommon, 2, 3, 4, 3));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Phase Spider", Rarity.Uncommon, 2, 3, 4, 2));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Orc Warlord", Rarity.Uncommon, 3, 4, 4, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Drow Assassin", Rarity.Uncommon, 2, 3, 4, 3));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ghoul Pack", Rarity.Uncommon, 2, 3, 5, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Manticore", Rarity.Uncommon, 3, 4, 5, 2));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Basilisk", Rarity.Uncommon, 3, 4, 5, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Displacer Beast", Rarity.Uncommon, 2, 3, 4, 2));
-        // 16 Common (ATK 2-3, HP 2-3)
+        // ── 32 Monsters (30% more budget. ATK/HP: 1st free +3/pt) ──
+        // 4 Rare (Cost 4, Budget 69: ATK 14(39) + HP 5(12) + INIT 1(1.5) = 52.5, Effect=16.5)
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ancient Wyvern", Rarity.Rare, 4, 14, 5, 1, effect: "Breath attack hits all allies"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Death Knight", Rarity.Rare, 4, 13, 5, 1, effect: "Drains life on hit"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Beholder", Rarity.Rare, 4, 12, 5, 1, effect: "Antimagic cone"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Lich", Rarity.Rare, 4, 12, 4, 1, effect: "Raises dead as undead"));
+        // 12 Uncommon (Cost 2-3, Budget 42-48: ATK 10-12, HP 3-4)
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ogre Chieftain", Rarity.Uncommon, 3, 12, 4, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll Berserker", Rarity.Uncommon, 3, 11, 4, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wraith", Rarity.Uncommon, 2, 10, 3, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Minotaur", Rarity.Uncommon, 3, 12, 3, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Harpy", Rarity.Uncommon, 2, 9, 3, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Phase Spider", Rarity.Uncommon, 2, 10, 3, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Orc Warlord", Rarity.Uncommon, 3, 12, 3, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Drow Assassin", Rarity.Uncommon, 2, 9, 3, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ghoul Pack", Rarity.Uncommon, 2, 10, 3, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Manticore", Rarity.Uncommon, 3, 11, 4, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Basilisk", Rarity.Uncommon, 3, 11, 4, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Displacer Beast", Rarity.Uncommon, 2, 10, 3, 1));
+        // 16 Common (Cost 1, Budget 20: ATK 5(12) + HP 2(3) + INIT 1(1.5) = 16.5, Effect=3.5)
         for (int i = 0; i < 4; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Goblin Raider-{i}", Rarity.Common, 1, 2, 3, 1));
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Goblin Raider-{i}", Rarity.Common, 1, 5, 2, 1));
         for (int i = 0; i < 4; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Skeleton Warrior-{i}", Rarity.Common, 1, 2, 2, 1));
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Skeleton Warrior-{i}", Rarity.Common, 1, 5, 2, 1));
         for (int i = 0; i < 4; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Kobold-{i}", Rarity.Common, 1, 2, 2, 2));
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Kobold-{i}", Rarity.Common, 1, 4, 2, 1));
         for (int i = 0; i < 4; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Orc Grunt-{i}", Rarity.Common, 1, 3, 3, 1));
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Orc Grunt-{i}", Rarity.Common, 1, 6, 2, 1));
 
-        // ── 8 Traps ──
-        // 3 Uncommon (damage 3)
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Flame Geyser", Rarity.Uncommon, 2, 3, "Fire erupts"));
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Poison Dart Wall", Rarity.Uncommon, 2, 3, "Venomous darts"));
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Lightning Rune", Rarity.Uncommon, 2, 3, "Electric discharge"));
-        // 5 Common (damage 1-2)
+        // ── 8 Traps (damage always 1) ──
+        // 3 Uncommon
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Flame Geyser", Rarity.Uncommon, 2, 1, "Fire erupts"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Poison Dart Wall", Rarity.Uncommon, 2, 1, "Venomous darts"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Lightning Rune", Rarity.Uncommon, 2, 1, "Electric discharge"));
+        // 5 Common
         for (int i = 0; i < 3; i++)
-            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Spike Pit-{i}", Rarity.Common, 1, 2, "Iron spikes"));
+            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Spike Pit-{i}", Rarity.Common, 1, 1, "Iron spikes"));
         for (int i = 0; i < 2; i++)
             cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Tripwire-{i}", Rarity.Common, 1, 1, "Falling net"));
 
