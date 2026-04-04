@@ -36,6 +36,8 @@ public static partial class CardSetSeeder
             "The foundational set featuring iconic heroes, monsters, equipment, and dungeons from the world of Dungeons & Dragons.");
 
         var allies = CreateAllies();
+        var companions = CreateCompanions();
+        var summons = CreateSummons();
         var equipment = CreateEquipment();
         var consumables = CreateConsumables();
         var monsters = CreateMonsters();
@@ -44,6 +46,8 @@ public static partial class CardSetSeeder
         var bosses = CreateBosses();
 
         foreach (var card in allies) set.AddCard(card);
+        foreach (var card in companions) set.AddCard(card);
+        foreach (var card in summons) set.AddCard(card);
         foreach (var card in equipment) set.AddCard(card);
         foreach (var card in consumables) set.AddCard(card);
         foreach (var card in monsters) set.AddCard(card);

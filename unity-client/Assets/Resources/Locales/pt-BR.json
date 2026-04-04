@@ -53,6 +53,9 @@
   "class.warlock": "Bruxo",
   "class.sorcerer": "Feiticeiro",
   "class.barbarian": "Barbaro",
+  "class.druid": "Druida",
+  "class.companion": "Companheiro",
+  "class.summon": "Invocacao",
 
   "rarity.common": "Comum",
   "rarity.uncommon": "Incomum",

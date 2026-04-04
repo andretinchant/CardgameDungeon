@@ -53,6 +53,9 @@
   "class.warlock": "Warlock",
   "class.sorcerer": "Sorcerer",
   "class.barbarian": "Barbarian",
+  "class.druid": "Druid",
+  "class.companion": "Companion",
+  "class.summon": "Summon",
 
   "rarity.common": "Common",
   "rarity.uncommon": "Uncommon",

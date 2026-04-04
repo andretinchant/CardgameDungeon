@@ -33,5 +33,14 @@ public enum AllyClass
     Sorcerer,
 
     /// <summary>Rage bruiser. Highest STR/HP base. Exile cards from hand to enter Rage: +STR, damage reduction, and counts as double STR for elimination checks.</summary>
-    Barbarian
+    Barbarian,
+
+    /// <summary>Nature caster. Reshuffles hand+deck and redraws. Recovers cards from exile to discard. Reduces costs when events occur (ally dies, room advances, trap triggers).</summary>
+    Druid,
+
+    /// <summary>Animal/nature companion. Requires Ranger or Druid in play. Always cost 1. Does NOT count toward 5-ally limit.</summary>
+    Companion,
+
+    /// <summary>Arcane summon. Requires Mage or Sorcerer in play. Always cost 1. Does NOT count toward 5-ally limit.</summary>
+    Summon
 }

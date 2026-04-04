@@ -592,6 +592,45 @@ public static partial class CardSetSeeder
                 effect: "Exile 1 from hand: +2 STR this round",
                 race: Race.Human, allyClass: AllyClass.Barbarian,
                 effectTags: "ON_ACTIVATE|COST:EXILE_HAND:1|+STR:2"),
+
+            // ═══════════════════════════════════════
+            //  DRUID — Adaptation, recovery, cost reduction
+            // ═══════════════════════════════════════
+
+            // Unique — Cost 6, Budget 30: STR5(5)+HP7(7)+INIT3(4.5)+T1(1)=17.5. Effect=8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000071"),
+                "Silvanus' Chosen", Rarity.Unique, 6, 5, 7, 3, treasure: 1,
+                effect: "Voice of the wild that bends nature to her will. Reshuffle your hand into deck and draw the same number of cards. Recover up to 2 cards from exile to discard pile. When an ally dies or a room advances: next card played costs 2 less. Companions gain +1 STR",
+                race: Race.Elf, allyClass: AllyClass.Druid,
+                effectTags: "ON_ACTIVATE|RESHUFFLE_HAND_REDRAW\nON_ACTIVATE|RECOVER_FROM_EXILE:2\nON_ALLY_DEATH|REDUCE_NEXT_COST:2\nON_ROOM_ADVANCE|REDUCE_NEXT_COST:2\nPASSIVE|IF_CLASS:Companion|+STR:1"),
+
+            // Rare — Cost 3, Budget 14: STR3(3)+HP4(4)+INIT1(1.5)+T1(1)=9.5. Effect=4.5 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000072"),
+                "Circle of the Land Druid", Rarity.Rare, 3, 3, 4, 1, treasure: 1,
+                effect: "Reshuffle hand into deck and draw the same number. When trap triggers: next card costs 1 less. +1 HP to all Companions",
+                race: Race.Human, allyClass: AllyClass.Druid,
+                effectTags: "ON_ACTIVATE|RESHUFFLE_HAND_REDRAW\nON_TRAP_TRIGGER|REDUCE_NEXT_COST:1\nPASSIVE|IF_CLASS:Companion|+HP:1"),
+
+            // Uncommon — Cost 2, Budget 10: STR2(2)+HP3(3)+INIT1(1.5)=6.5. Effect=3.5 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000073"),
+                "Wildshape Initiate", Rarity.Uncommon, 2, 2, 3, 1,
+                effect: "Recover 1 card from exile to discard pile. When an ally dies: draw 1 card",
+                race: Race.Human, allyClass: AllyClass.Druid,
+                effectTags: "ON_ACTIVATE|RECOVER_FROM_EXILE:1\nON_ALLY_DEATH|DRAW:1"),
+
+            // Uncommon — Cost 3, Budget 14: STR3(3)+HP4(4)+INIT2(3)=10. Effect=4 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000074"),
+                "Moon Druid", Rarity.Uncommon, 3, 3, 4, 2,
+                effect: "Reshuffle hand into deck and draw same number. With Disadvantage: +2 HP. Companions gain +1 INIT",
+                race: Race.Elf, allyClass: AllyClass.Druid,
+                effectTags: "ON_ACTIVATE|RESHUFFLE_HAND_REDRAW\nWITH_DISADVANTAGE|+HP:2\nPASSIVE|IF_CLASS:Companion|+INIT:1"),
+
+            // Common — Cost 1, Budget 6: STR1(1)+HP3(3)+INIT1(1.5)=5.5. Effect=0.5 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000075"),
+                "Nature Apprentice", Rarity.Common, 1, 1, 3, 1,
+                effect: "When a room advances: draw 1 card",
+                race: Race.Halfling, allyClass: AllyClass.Druid,
+                effectTags: "ON_ROOM_ADVANCE|DRAW:1"),
         };
     }
 }
