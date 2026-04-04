@@ -15,11 +15,11 @@ public static partial class CardSetSeeder
             // ═══════════════════════════════════════════════════════
 
             // ── UNIQUE (1) ── Budget 30
-            // STR6(6) + HP6(6) + INIT3(4.5) + Treasure1(1) = 17.5. Effect = 8 ✓
+            // STR4(4) + HP8(8) + INIT3(4.5) + Treasure1(1) = 17.5. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0009-000000000001"),
-                "Grandmaster of Flowers", Rarity.Unique, 6,
-                6, 6, 3, treasure: 1,
-                effect: "Discard 1 from hand: cancel one combat this ally is in (both sides deal 0 damage). Exile 1 from hand: attack twice this round (STR applied to 2 different enemies). Once per dungeon: discard 3 to remove all enemies from one combat group",
+                "Kane, the Unbroken Circle", Rarity.Unique, 6,
+                4, 8, 3, treasure: 1,
+                effect: "The immovable sentinel who holds the line so others may strike. Exile 3 cards from hand: cancel ALL damage in this combat group this round (both sides deal 0). While Kane holds, allies in other combat groups gain +1 STR. This hold can be maintained each round by paying the cost again",
                 race: Race.Human, allyClass: AllyClass.Monk),
 
             // ── RARE (2) ── Budget 18

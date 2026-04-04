@@ -20,7 +20,7 @@ public static partial class CardSetSeeder
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000001"),
                 "Magus, the Tormented", Rarity.Unique, 7,
                 6, 8, 3, treasure: 2,
-                effect: "During initiative: mark up to 2 enemies. For EACH marked enemy eliminated this round: restore 3 HP to Magus, deal 2 damage to all other enemies in same combat group, exile 1 card from opponent's deck, and draw 1 card. If no marks triggered: exile 1 card from your own deck (the torment consumes)",
+                effect: "A Drow whose pact carved runes of suffering into his soul. During initiative: Magus fixes his gaze on one enemy — marking it with dread. If the marked enemy falls, terror ripples through the battlefield: every surviving enemy in that combat group panics and attempts to flee, triggering opportunity attacks from all adjacent allies. This dread can only be unleashed once per combat. If the marked enemy survives, the pact turns inward — exile 1 card from your own deck as the torment feeds",
                 race: Race.Drow, allyClass: AllyClass.Warlock),
 
             // ── RARE (2) ── Budget 14-18

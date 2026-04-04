@@ -9,54 +9,48 @@ public static partial class CardSetSeeder
     {
         return new List<AllyCard>
         {
-            // ===== UNIQUE (2) =====
+            // ===== UNIQUE =====
 
-            // Drizzt Do'Urden: Rogue, Elf — Cost 6, Unique Budget = 30
-            // Stats: STR 6(6) + HP 6(6) + INIT 3(4.5) + Ambusher(2) + Treasure 2(2) = 20.5
-            // Effect budget: 30 - 20.5 = 9.5 → capped at 8 (Unique 7-8), extra into stats
-            // Readjust: STR 6(6) + HP 7(7) + INIT 3(4.5) + Ambusher(2) + Treasure 1(1) = 20.5
-            // Effect budget: 30 - 20.5 = 9.5 → 8 with rounding ✓
-            new AllyCard(new Guid("00000000-0000-0000-0001-000000000001"), "Drizzt Do'Urden", Rarity.Unique, 6, 6, 7, 3,
-                isAmbusher: true, treasure: 1,
-                effect: "With Advantage: +4 STR. On kill: exile the defeated enemy. If another Drow or Elf ally in play: +2 INIT. Immune to opportunity attacks",
-                race: Race.Drow, allyClass: AllyClass.Rogue),
-
-            // Elminster Aumar: Mage, Human — Cost 6, Unique Budget = 30
-            // Stats: STR 5(5) + HP 8(8) + INIT 3(4.5) + Treasure 1(1) = 18.5
-            // Effect budget: 30 - 18.5 = 11.5 → capped at 8, extra into stats
-            // Readjust: STR 6(6) + HP 8(8) + INIT 3(4.5) + Treasure 1(1) = 19.5
-            // Effect budget: 30 - 19.5 = 10.5 → 8 ✓
-            new AllyCard(new Guid("00000000-0000-0000-0001-000000000002"), "Elminster Aumar", Rarity.Unique, 6, 6, 8, 3,
+            // Drizzt Do'Urden: RANGER (not Rogue), Drow — Cost 6, Unique Budget = 30
+            // STR6(6) + HP6(6) + INIT4(6) + Treasure1(1) = 19. Effect = 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000001"), "Drizzt Do'Urden", Rarity.Unique, 6, 6, 6, 4,
                 isAmbusher: false, treasure: 1,
-                effect: "All allies in all combat groups gain +1 STR. Once per dungeon: exile top 3 cards from opponent's deck. Necromancer: choose 1 monster of any cost from any discard and place on top of your deck",
+                effect: "The legendary Drow ranger moves like shadow through the dungeon. Reveal opponent's hand and top 3 of their deck. Favored Enemy (choose Race when played): +4 STR against that Race this dungeon. If another Drow or Elf in play: +2 INIT",
+                race: Race.Drow, allyClass: AllyClass.Ranger),
+
+            // Elminster Aumar: Mage, Human — Cost 7, Unique Budget = 34
+            // STR5(5) + HP8(8) + INIT3(4.5) + Treasure1(1) = 18.5. Effect = 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000002"), "Elminster Aumar", Rarity.Unique, 7, 5, 8, 3,
+                isAmbusher: false, treasure: 1,
+                effect: "The Chosen of Mystra channels the Weave itself. Exile 2 cards from hand: search your deck for any Scroll, put it in your hand, and reshuffle. All Scrolls used by allies have their effects increased by +1. Exile 8 cards from deck: search your exile pile for up to 3 Scrolls and return them to hand",
                 race: Race.Human, allyClass: AllyClass.Mage),
 
             // Thordak the Ironwall: Warrior, Dwarf — Cost 6, Unique Budget = 30
-            // STR7(7) + HP8(8) + INIT2(3) + Treasure1(1) = 19. Effect = 8 ✓
-            new AllyCard(new Guid("00000000-0000-0000-0001-000000000061"), "Thordak the Ironwall", Rarity.Unique, 6, 7, 8, 2,
+            // STR7(7) + HP8(8) + INIT1(1.5) + Treasure1(1) = 17.5. Effect = 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000061"), "Thordak the Ironwall", Rarity.Unique, 6, 7, 8, 1,
                 isAmbusher: false, treasure: 1,
-                effect: "All damage to allies in this combat group is redirected to this Warrior. With Disadvantage: +4 HP. Once per dungeon: force all enemies to target only this ally for the entire room",
+                effect: "The mountain that walks. Discard 1 from hand: all damage dealt to allies in this combat group is redirected to Thordak this round. With Disadvantage: +4 HP. Exile 8 cards from deck: force all enemies in the room to target only Thordak until end of room",
                 race: Race.Dwarf, allyClass: AllyClass.Warrior),
 
             // Seraphina the Radiant: Cleric, Human — Cost 6, Unique Budget = 30
             // STR4(4) + HP9(9) + INIT2(3) + Treasure1(1) = 17. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000062"), "Seraphina the Radiant", Rarity.Unique, 6, 4, 9, 2,
                 isAmbusher: false, treasure: 1,
-                effect: "At start of each round: restore 2 HP to all allies. +3 STR against Undead and Demon enemies. Once per dungeon: fully restore all allies to max HP",
+                effect: "Her light mends what darkness breaks. At start of each round: restore 2 HP to all allies. +3 STR against Undead and Demon. Exile 8 cards from deck: fully restore all allies to max HP and remove all negative effects",
                 race: Race.Human, allyClass: AllyClass.Cleric),
 
             // Arannis Shadowtrack: Ranger, Elf — Cost 6, Unique Budget = 30
             // STR5(5) + HP6(6) + INIT4(6) + Treasure1(1) = 18. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000063"), "Arannis Shadowtrack", Rarity.Unique, 6, 5, 6, 4,
                 isAmbusher: false, treasure: 1,
-                effect: "Reveal opponent's entire hand and top 3 cards of their deck. Favored Enemy (choose any Race when played): +4 STR against that Race for the rest of the dungeon. Detects and disarms all traps in the current room",
+                effect: "No trail goes cold under his watch. Reveal opponent's entire hand and top 3 cards of their deck. Favored Enemy (choose Race when played): +4 STR against that Race this dungeon. Detects and disarms all traps in current room",
                 race: Race.Elf, allyClass: AllyClass.Ranger),
 
             // Aldric the Oathbound: Paladin, Human — Cost 6, Unique Budget = 30
             // STR6(6) + HP7(7) + INIT2(3) + Treasure1(1) = 17. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000064"), "Aldric the Oathbound", Rarity.Unique, 6, 6, 7, 2,
                 isAmbusher: false, treasure: 1,
-                effect: "Sacrifice (exile this ally): eliminate one enemy with HP <= 10 and restore 3 HP to all other allies. +3 STR against Undead. If this ally survives the room: all allies gain +1 STR next room",
+                effect: "His oath burns brighter than any flame. Sacrifice (exile this ally): eliminate one enemy with HP <= 10 and restore 3 HP to all other allies. +3 STR against Undead. Exile 8 cards from deck: all allies gain +2 STR for the rest of the room",
                 race: Race.Human, allyClass: AllyClass.Paladin),
 
             // ===== RARE (8) =====
