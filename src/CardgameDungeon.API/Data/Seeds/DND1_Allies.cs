@@ -31,6 +31,34 @@ public static partial class CardSetSeeder
                 effect: "All allies in all combat groups gain +1 STR. Once per dungeon: exile top 3 cards from opponent's deck. Necromancer: choose 1 monster of any cost from any discard and place on top of your deck",
                 race: Race.Human, allyClass: AllyClass.Mage),
 
+            // Thordak the Ironwall: Warrior, Dwarf — Cost 6, Unique Budget = 30
+            // STR7(7) + HP8(8) + INIT2(3) + Treasure1(1) = 19. Effect = 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000061"), "Thordak the Ironwall", Rarity.Unique, 6, 7, 8, 2,
+                isAmbusher: false, treasure: 1,
+                effect: "All damage to allies in this combat group is redirected to this Warrior. With Disadvantage: +4 HP. Once per dungeon: force all enemies to target only this ally for the entire room",
+                race: Race.Dwarf, allyClass: AllyClass.Warrior),
+
+            // Seraphina the Radiant: Cleric, Human — Cost 6, Unique Budget = 30
+            // STR4(4) + HP9(9) + INIT2(3) + Treasure1(1) = 17. Effect = 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000062"), "Seraphina the Radiant", Rarity.Unique, 6, 4, 9, 2,
+                isAmbusher: false, treasure: 1,
+                effect: "At start of each round: restore 2 HP to all allies. +3 STR against Undead and Demon enemies. Once per dungeon: fully restore all allies to max HP",
+                race: Race.Human, allyClass: AllyClass.Cleric),
+
+            // Arannis Shadowtrack: Ranger, Elf — Cost 6, Unique Budget = 30
+            // STR5(5) + HP6(6) + INIT4(6) + Treasure1(1) = 18. Effect = 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000063"), "Arannis Shadowtrack", Rarity.Unique, 6, 5, 6, 4,
+                isAmbusher: false, treasure: 1,
+                effect: "Reveal opponent's entire hand and top 3 cards of their deck. Favored Enemy (choose any Race when played): +4 STR against that Race for the rest of the dungeon. Detects and disarms all traps in the current room",
+                race: Race.Elf, allyClass: AllyClass.Ranger),
+
+            // Aldric the Oathbound: Paladin, Human — Cost 6, Unique Budget = 30
+            // STR6(6) + HP7(7) + INIT2(3) + Treasure1(1) = 17. Effect = 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000064"), "Aldric the Oathbound", Rarity.Unique, 6, 6, 7, 2,
+                isAmbusher: false, treasure: 1,
+                effect: "Sacrifice (exile this ally): eliminate one enemy with HP <= 10 and restore 3 HP to all other allies. +3 STR against Undead. If this ally survives the room: all allies gain +1 STR next room",
+                race: Race.Human, allyClass: AllyClass.Paladin),
+
             // ===== RARE (8) =====
 
             // Bruenor Battlehammer: Warrior, Dwarf — Cost 4, Budget = 18

@@ -11,15 +11,16 @@ public static partial class CardSetSeeder
         {
             // ═══════════════════════════════════════════════════════
             //  WARLOCKS — Mark enemy during initiative; if marked dies, trigger effects
-            //  Budget: Cost 1=6, 2=10, 3=14, 4=18, 6=30(unique)
+            //  Budget: Cost 1=6, 2=10, 3=14, 4=18, 7=37(unique, gets cost 8 budget)
             // ═══════════════════════════════════════════════════════
 
-            // ── UNIQUE (1) ── Budget 30
-            // STR5(5) + HP7(7) + INIT3(4.5) + Treasure1(1) = 17.5. Effect = 8 ✓
+            // ── UNIQUE (1) ── Cost 7, Budget 37 (uses cost 8 unique budget as special rule)
+            // STR6(6) + HP8(8) + INIT3(4.5) + Treasure2(2) = 20.5. Effect = 8 ✓
+            // Magus is the game's cover character — premium Unique with cost 7 but budget of cost 8
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000001"),
-                "Fiend Pact Archwarlock", Rarity.Unique, 6,
-                5, 7, 3, treasure: 1,
-                effect: "During initiative: mark 1 enemy. If marked enemy is eliminated this round: restore 3 HP to this Warlock, deal 3 damage to all other enemies in same combat group, and exile 1 card from opponent's deck. If mark not triggered: discard 1 from hand",
+                "Magus, the Tormented", Rarity.Unique, 7,
+                6, 8, 3, treasure: 2,
+                effect: "During initiative: mark up to 2 enemies. For EACH marked enemy eliminated this round: restore 3 HP to Magus, deal 2 damage to all other enemies in same combat group, exile 1 card from opponent's deck, and draw 1 card. If no marks triggered: exile 1 card from your own deck (the torment consumes)",
                 race: Race.Tiefling, allyClass: AllyClass.Warlock),
 
             // ── RARE (2) ── Budget 14-18
