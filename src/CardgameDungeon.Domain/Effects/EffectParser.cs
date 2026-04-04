@@ -151,6 +151,7 @@ public static class EffectParser
         var key = parts[0];
         var val = parts.Length > 1 ? parts[1] : "";
         var val2 = parts.Length > 2 ? parts[2] : "";
+        var fullParam = parts.Length > 1 ? string.Join(":", parts[1..]) : "";
 
         return key switch
         {
@@ -181,7 +182,7 @@ public static class EffectParser
             "RETURN_HAND_TOP" => new() { Action = EffectAction.ReturnHandTop, Value = ParseInt(val) },
             "RETURN_HAND_BOTTOM" => new() { Action = EffectAction.ReturnHandBottom, Value = ParseInt(val) },
             "RETURN_HAND_SHUFFLE" => new() { Action = EffectAction.ReturnHandShuffle, Value = ParseInt(val) },
-            "MATERIALIZE_ALLY" => new() { Action = EffectAction.MaterializeAlly, Param = val },
+            "MATERIALIZE_ALLY" => new() { Action = EffectAction.MaterializeAlly, Param = fullParam },
             "REQUIRE_CLASS" => new() { Action = EffectAction.RequireClass, Param = val },
             "IGNORE_ALLY_LIMIT" => new() { Action = EffectAction.IgnoreAllyLimit },
             "RESHUFFLE_HAND_REDRAW" => new() { Action = EffectAction.ReshuffleHandRedraw },

@@ -82,6 +82,12 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
             if (defender.AlliesInPlay.Contains(ally))
                 defender.EliminateAlly(ally);
 
+        // Fire ON_ALLY_DEATH triggers for both sides (Druid cost reduction, etc.)
+        if (eliminatedAttackers.Count > 0)
+            TriggerProcessor.FireTrigger(EffectTrigger.OnAllyDeath, attacker, defender);
+        if (eliminatedDefenders.Count > 0)
+            TriggerProcessor.FireTrigger(EffectTrigger.OnAllyDeath, defender, attacker);
+
         // Process post-combat effects (ON_KILL, ON_DEATH, ON_MARKED_KILL, etc.)
         var postCombat = PostCombatProcessor.Process(
             survivingAttackers: attacker.AlliesInPlay.ToList(),

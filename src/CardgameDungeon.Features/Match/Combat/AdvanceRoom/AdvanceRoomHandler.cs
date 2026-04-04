@@ -1,3 +1,4 @@
+using CardgameDungeon.Domain.Effects;
 using CardgameDungeon.Domain.Enums;
 using CardgameDungeon.Domain.Repositories;
 using CardgameDungeon.Features.Match.Shared;
@@ -17,12 +18,14 @@ public class AdvanceRoomHandler(IMatchRepository matchRepo, IMatchNotifier notif
             throw new InvalidOperationException(
                 $"Cannot advance room during {match.Phase} phase. Expected: RoomResolution.");
 
-        // Defender shuffles discard back into deck (treasure from defeated monsters)
         var defender = match.GetDefender();
         defender.ShuffleDiscardIntoDeck();
 
-        // Advance room: both refill hand to 8, move to next room
         match.AdvanceRoom();
+
+        // Fire ON_ROOM_ADVANCE triggers for both players (Druid cost reduction, etc.)
+        TriggerProcessor.FireTrigger(EffectTrigger.OnRoomAdvance, match.Player1, match.Player2);
+        TriggerProcessor.FireTrigger(EffectTrigger.OnRoomAdvance, match.Player2, match.Player1);
 
         await matchRepo.UpdateAsync(match, ct);
 

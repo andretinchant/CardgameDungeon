@@ -143,7 +143,8 @@ internal static class MatchStateMapper
             Id = card.Id,
             Name = card.Name,
             Rarity = (int)card.Rarity,
-            Cost = card.Cost
+            Cost = card.Cost,
+            EffectTags = card.EffectTags
         };
 
         switch (card)
@@ -205,27 +206,29 @@ internal static class MatchStateMapper
             "Ally" => new AllyCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Strength ?? 0, dto.HitPoints ?? 1, dto.Initiative ?? 0,
                 dto.IsAmbusher ?? false, dto.Treasure ?? 0, dto.Effect,
-                (Race)(dto.Race ?? 0), (AllyClass)(dto.AllyClass ?? 0)),
+                (Race)(dto.Race ?? 0), (AllyClass)(dto.AllyClass ?? 0),
+                dto.EffectTags),
 
             "Equipment" => new EquipmentCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.StrengthModifier ?? 0, dto.HitPointsModifier ?? 0, dto.InitiativeModifier ?? 0,
-                (EquipmentSlot)(dto.EquipmentSlot ?? 5), dto.Effect),
+                (EquipmentSlot)(dto.EquipmentSlot ?? 5), dto.Effect,
+                dto.EffectTags),
 
             "Monster" => new MonsterCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Strength ?? 0, dto.HitPoints ?? 1, dto.Initiative ?? 0,
                 dto.Treasure ?? 0, dto.Effect,
-                (Race)(dto.Race ?? 10)),
+                (Race)(dto.Race ?? 10), dto.EffectTags),
 
             "Trap" => new TrapCard(dto.Id, dto.Name, rarity, dto.Cost,
-                dto.Damage ?? 0, dto.Effect ?? ""),
+                dto.Damage ?? 0, dto.Effect ?? "", dto.EffectTags),
 
             "DungeonRoom" => new DungeonRoomCard(dto.Id, dto.Name, rarity,
                 dto.Order ?? 1, dto.MonsterIds, dto.TrapIds,
-                dto.MonsterCostBudget ?? 0, dto.Effect),
+                dto.MonsterCostBudget ?? 0, dto.Effect, dto.EffectTags),
 
             "Boss" => new BossCard(dto.Id, dto.Name, rarity, dto.Cost,
                 dto.Strength ?? 1, dto.HitPoints ?? 1, dto.Initiative ?? 0, dto.Effect,
-                (Race)(dto.Race ?? 15)),
+                (Race)(dto.Race ?? 15), dto.EffectTags),
 
             _ => throw new InvalidOperationException($"Unknown card type: {dto.CardType}")
         };

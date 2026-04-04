@@ -108,15 +108,18 @@ public class PlayerState
         // Also remove any materialized allies attached to this ally
         RemoveMaterializedForAlly(ally.Id);
 
-        // If this is a shapeshift form, revert to the original Druid instead of discarding
+        // If this is a shapeshift form, revert to the original Druid
         if (_shapeshiftedDruids.ContainsKey(ally.Id))
         {
+            // Discard the shapeshift form (it's spent)
+            _discard.Add(ally);
+            // Revert restores the Druid to field (already removed form above)
             var druid = RevertShapeshift(ally.Id);
-            return druid; // Returns the restored Druid (or null)
+            return druid;
         }
 
         _discard.Add(ally);
-        return null; // Normal elimination, no revert
+        return null;
     }
 
     // ── Equipment ──
@@ -226,23 +229,25 @@ public class PlayerState
     /// Called when a Shapeshift form is eliminated. Returns the original Druid
     /// to the field with all stored equipment restored.
     /// </summary>
+    /// <summary>
+    /// Reverts a shapeshift form back to the original Druid.
+    /// Called from EliminateAlly AFTER the form has already been removed from _alliesInPlay.
+    /// The shapeshift form goes to discard. The Druid is restored to the field.
+    /// </summary>
     public AllyCard? RevertShapeshift(Guid shapeshiftFormId)
     {
         if (!_shapeshiftedDruids.TryGetValue(shapeshiftFormId, out var stored))
-            return null; // Not a shapeshift form, normal elimination
+            return null;
 
-        // Remove the form from field
-        var form = _alliesInPlay.FirstOrDefault(a => a.Id == shapeshiftFormId);
-        if (form != null)
-            _alliesInPlay.Remove(form);
-
-        // Discard the shapeshift equipment card
-        _discard.Add(form ?? (Card)stored.Druid);
+        // The form was already removed from _alliesInPlay by EliminateAlly.
+        // We need to find the original EquipmentCard to discard it.
+        // The form's ID matches the EquipmentCard's ID (set during ActivateShapeshift).
+        // We discard a marker — the shapeshift "used up" card.
 
         // Restore the druid to the field
         _alliesInPlay.Add(stored.Druid);
 
-        // Restore equipment
+        // Restore all equipment that was on the druid
         if (stored.Equipment.Count > 0)
             _equippedItems[stored.Druid.Id] = stored.Equipment;
 
