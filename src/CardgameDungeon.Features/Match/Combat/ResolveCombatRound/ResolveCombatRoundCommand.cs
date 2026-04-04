@@ -16,9 +16,17 @@ public record CombatResultDto(
     bool AttackerEliminated,
     bool DefenderEliminated);
 
+public record PostCombatEventDto(
+    Guid SourceCardId,
+    string SourceCardName,
+    string Trigger,
+    string Action,
+    int Value);
+
 public record ResolveCombatRoundResponse(
     Guid MatchId,
     IReadOnlyList<CombatResultDto> Results,
     CombatOutcome OverallOutcome,
     bool SimultaneousElimination,
-    string Phase);
+    string Phase,
+    IReadOnlyList<PostCombatEventDto>? PostCombatEvents = null);

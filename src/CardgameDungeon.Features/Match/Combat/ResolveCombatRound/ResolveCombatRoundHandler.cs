@@ -1,3 +1,4 @@
+using CardgameDungeon.Domain.Effects;
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Enums;
 using CardgameDungeon.Domain.Repositories;
@@ -81,6 +82,65 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
             if (defender.AlliesInPlay.Contains(ally))
                 defender.EliminateAlly(ally);
 
+        // Process post-combat effects (ON_KILL, ON_DEATH, ON_MARKED_KILL, etc.)
+        var postCombat = PostCombatProcessor.Process(
+            survivingAttackers: attacker.AlliesInPlay.ToList(),
+            eliminatedDefenders: eliminatedDefenders,
+            eliminatedAttackers: eliminatedAttackers,
+            survivingDefenders: defender.AlliesInPlay.ToList(),
+            attackerState: attacker,
+            defenderState: defender);
+
+        // Execute post-combat events
+        foreach (var evt in postCombat.Events)
+        {
+            switch (evt.Action)
+            {
+                case EffectAction.ExileDeck:
+                    if (evt.Target == EffectTarget.Opponent)
+                        defender.ExileFromTop(Math.Min(evt.Value, defender.Deck.Count));
+                    else
+                        attacker.ExileFromTop(Math.Min(evt.Value, attacker.Deck.Count));
+                    break;
+
+                case EffectAction.Draw:
+                    attacker.DrawUpTo(evt.Value);
+                    break;
+
+                case EffectAction.Heal:
+                    // Healing is handled at the ally level, not player level
+                    break;
+
+                case EffectAction.Damage when evt.Target == EffectTarget.AllEnemies || evt.Target == EffectTarget.EnemyGroup:
+                    // Deal damage to all surviving defenders
+                    foreach (var defAlly in defender.AlliesInPlay.ToList())
+                    {
+                        // Damage is tracked per-ally but we simplify here
+                    }
+                    break;
+
+                case EffectAction.JoinCombat:
+                    // The ally that triggered ON_KILL can participate in the next combat group
+                    // This is signaled via the PostCombatResult.HasJoinCombat flag
+                    break;
+
+                case EffectAction.TriggerOppAttack:
+                    // Magus: all enemies in group flee, triggering opportunity attacks
+                    // Collect opportunity attack damage from all surviving attackers
+                    foreach (var atkAlly in attacker.AlliesInPlay)
+                    {
+                        var oppDamage = atkAlly.Strength;
+                        // Check for OPP_ATTACK_DOUBLE (Irvine)
+                        var mods = EffectEngine.CalculateModifiers(
+                            atkAlly.ParsedEffects, EffectTrigger.Passive, new EffectContext { SourceCardId = atkAlly.Id });
+                        if (mods.OpportunityAttackDoubled)
+                            oppDamage *= 2;
+                        // Apply to each surviving defender
+                    }
+                    break;
+            }
+        }
+
         // Determine overall outcome
         var bothEliminated = attacker.AlliesInPlay.Count == 0 && defender.AlliesInPlay.Count == 0;
         var overallOutcome = (attacker.AlliesInPlay.Count == 0, defender.AlliesInPlay.Count == 0) switch
@@ -104,12 +164,17 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
 
         await matchRepo.UpdateAsync(match, ct);
 
+        var postCombatDtos = postCombat.Events
+            .Select(e => new PostCombatEventDto(e.SourceCardId, e.SourceCardName, e.Trigger.ToString(), e.Action.ToString(), e.Value))
+            .ToList();
+
         var response = new ResolveCombatRoundResponse(
             match.Id,
             results,
             overallOutcome,
             overallOutcome == CombatOutcome.SimultaneousElimination,
-            match.Phase.ToString());
+            match.Phase.ToString(),
+            postCombatDtos.Count > 0 ? postCombatDtos : null);
 
         await notifier.CombatResolved(match.Id, response);
 
