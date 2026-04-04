@@ -461,22 +461,29 @@ Room: 6 | Phase: PlayCards | Boss: True
 ═══════════════════════════════════════
   BOSS ROOM — Strahd von Zarovich awaits! (STR:7 HP:10)
   Boss effect: Necrotic Aura — drains 1 HP from each ally at the start of boss combat.
+  P2 plays MONSTER: P2-Kobold-2 (STR:2 HP:2)
+  P2 sets TRAP: P2-Poison Dart Wall (DMG:3)
 → Phase: BossRoom
+  *** TRAP ACTIVATES: P2-Poison Dart Wall deals 3 damage! ***
+    -> P1-Trapper takes 3 trap damage
 ═══════════════════════════════════════
   BOSS COMBAT
 ═══════════════════════════════════════
 Attacker (P1): P1-Paladin Kael(S5/H5), P1-Novice Healer-0(S2/H3), P1-Trapper(S2/H2), P1-Acolyte(S3/H3), P1-Shieldbearer(S3/H4)
-BOSS: Strahd von Zarovich (STR:7 HP:10 INIT:1)
+BOSS: Strahd von Zarovich (STR:7 HP:10)
+Boss minions: P2-Kobold-2(S2/H2)
+Total defense: STR:9 HP:12
 Boss effect: Necrotic Aura — drains 1 HP from each ally at the start of boss combat.
   5 allies (STR:15) vs BOSS (STR:7)
   Result: DefenderEliminated
   Damage: 7 to attacker, 15 to boss
   Advantage: ATK=Advantage DEF=Disadvantage
   *** BOSS Strahd von Zarovich DEFEATED! ***
+  *** MINION P2-Kobold-2 falls with the boss ***
   Phase: RoomCleared
 ADVANCE → Room 7 | Phase: Finished
 P1: Allies=5 Deck=42 Hand=7 Discard=19 Exile=0
-P2: Allies=5 Deck=43 Hand=8 Discard=18 Exile=0
+P2: Allies=5 Deck=43 Hand=6 Discard=20 Exile=0
 
 ╔════════════════════════════════════════════════════════════════╗
 ║                        MATCH RESULT                          ║
@@ -485,4 +492,4 @@ Finished: True | Phase: Finished
 Winner: PLAYER 1
 Rounds: 14 | Final room: 7
 P1 — Allies:5 Deck:42 Hand:7 Discard:19 Exile:0
-P2 — Allies:5 Deck:43 Hand:8 Discard:18 Exile:0
+P2 — Allies:5 Deck:43 Hand:6 Discard:20 Exile:0

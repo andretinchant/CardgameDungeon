@@ -151,11 +151,11 @@ public class MatchSimulation
 
                 if (match.IsBossRoom)
                 {
-                    // Boss room: the boss defends, not regular monsters
                     Log($"  BOSS ROOM — {match.Boss.Name} awaits! (STR:{match.Boss.Strength} HP:{match.Boss.HitPoints})");
                     Log($"  Boss effect: {match.Boss.Effect}");
                 }
-                else
+
+                // Defender also plays monsters and traps (even in boss room — they assist the boss)
                 {
                     // Defender plays ALL available monsters from hand (up to 3)
                     var monstersInHand = defender.Hand.OfType<MonsterCard>().OrderByDescending(m => m.Strength).ToList();
@@ -201,33 +201,38 @@ public class MatchSimulation
                 var attackerName = activeName;
                 var defenderName = activeId == p1Id ? "P2" : "P1";
 
-                // Activate traps against attacker (not in boss room — boss has its own mechanics)
-                if (!match.IsBossRoom)
+                // Activate traps against attacker (including boss room)
+                while (defender.TrapsSet.Count > 0)
                 {
-                    while (defender.TrapsSet.Count > 0)
+                    var trap = defender.ActivateTrap()!;
+                    Log($"  *** TRAP ACTIVATES: {trap.Name} deals {trap.Damage} damage! ***");
+                    if (attacker.AlliesInPlay.Count > 0)
                     {
-                        var trap = defender.ActivateTrap()!;
-                        Log($"  *** TRAP ACTIVATES: {trap.Name} deals {trap.Damage} damage! ***");
-                        if (attacker.AlliesInPlay.Count > 0)
-                        {
-                            var target = attacker.AlliesInPlay.OrderBy(a => a.HitPoints).First();
-                            Log($"    -> {target.Name} takes {trap.Damage} trap damage");
-                        }
+                        var target = attacker.AlliesInPlay.OrderBy(a => a.HitPoints).First();
+                        Log($"    -> {target.Name} takes {trap.Damage} trap damage");
                     }
                 }
 
                 if (match.IsBossRoom)
                 {
-                    // ── BOSS COMBAT ──
+                    // ── BOSS COMBAT (boss + defending monsters) ──
                     LogPhase("BOSS COMBAT");
                     var bossCard = match.Boss;
+                    var bossMonsters = defender.MonstersInPlay.ToList();
+                    var totalDefStr = bossCard.Strength + bossMonsters.Sum(m => m.Strength);
+                    var totalDefHp = bossCard.HitPoints + bossMonsters.Sum(m => m.HitPoints);
+
                     Log($"Attacker ({attackerName}): {FormatAllies(attacker)}");
-                    Log($"BOSS: {bossCard.Name} (STR:{bossCard.Strength} HP:{bossCard.HitPoints} INIT:{bossCard.Initiative})");
+                    Log($"BOSS: {bossCard.Name} (STR:{bossCard.Strength} HP:{bossCard.HitPoints})");
+                    if (bossMonsters.Count > 0)
+                        Log($"Boss minions: {string.Join(", ", bossMonsters.Select(m => $"{m.Name}(S{m.Strength}/H{m.HitPoints})"))}");
+                    Log($"Total defense: STR:{totalDefStr} HP:{totalDefHp}");
                     Log($"Boss effect: {bossCard.Effect}");
 
                     if (attacker.AlliesInPlay.Count == 0)
                     {
                         Log("Attacker has no allies — boss wins by default!");
+                        foreach (var m in bossMonsters) defender.RemoveMonster(m);
                         match.ResolveCombat(0, 0, false);
                     }
                     else
@@ -245,6 +250,8 @@ public class MatchSimulation
                         if (result.Outcome is CombatOutcome.DefenderEliminated or CombatOutcome.SimultaneousElimination)
                         {
                             Log($"  *** BOSS {bossCard.Name} DEFEATED! ***");
+                            foreach (var m in bossMonsters)
+                                Log($"  *** MINION {m.Name} falls with the boss ***");
                         }
                         if (atkElim)
                         {
