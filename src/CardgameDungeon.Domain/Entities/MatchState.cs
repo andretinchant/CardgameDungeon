@@ -124,10 +124,12 @@ public class MatchState
         if (!BothTeamsSubmitted)
             throw new InvalidOperationException("Both players must submit their teams before revealing.");
 
+        // Setup allies come from deck (via ExtractAlliesFromDeck), not hand.
+        // Add directly to allies in play without the hand check.
         foreach (var ally in _player1PendingTeam!)
-            Player1.PlayAlly(ally);
+            Player1.AddAllyDirectly(ally);
         foreach (var ally in _player2PendingTeam!)
-            Player2.PlayAlly(ally);
+            Player2.AddAllyDirectly(ally);
 
         _player1PendingTeam = null;
         _player2PendingTeam = null;

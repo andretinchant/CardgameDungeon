@@ -18,14 +18,15 @@ public class SetupInitialTeamHandlerTests
         _matchRepo.Seed(match);
 
         var p1Id = match.Player1.PlayerId;
-        var allyIds = match.Player1.Hand.OfType<AllyCard>().Take(5).Select(a => a.Id).ToList();
+        // Setup picks allies from DECK, not hand
+        var allyIds = match.Player1.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
 
         var response = await Handler.Handle(
             new SetupInitialTeamCommand(match.Id, p1Id, allyIds),
             CancellationToken.None);
 
         Assert.True(response.Submitted);
-        Assert.False(response.BothReady); // Only one player submitted
+        Assert.False(response.BothReady);
     }
 
     [Fact]
@@ -34,8 +35,8 @@ public class SetupInitialTeamHandlerTests
         var match = MatchTestHelper.MakeMatchInSetup();
         _matchRepo.Seed(match);
 
-        var p1Allies = match.Player1.Hand.OfType<AllyCard>().Take(5).Select(a => a.Id).ToList();
-        var p2Allies = match.Player2.Hand.OfType<AllyCard>().Take(5).Select(a => a.Id).ToList();
+        var p1Allies = match.Player1.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
+        var p2Allies = match.Player2.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
 
         await Handler.Handle(
             new SetupInitialTeamCommand(match.Id, match.Player1.PlayerId, p1Allies),
@@ -55,7 +56,7 @@ public class SetupInitialTeamHandlerTests
         _matchRepo.Seed(match);
 
         // Select 6 allies (cost=6, exceeds max of 5)
-        var allyIds = match.Player1.Hand.OfType<AllyCard>().Take(6).Select(a => a.Id).ToList();
+        var allyIds = match.Player1.GetAlliesInDeck().Take(6).Select(a => a.Id).ToList();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             Handler.Handle(
@@ -69,7 +70,7 @@ public class SetupInitialTeamHandlerTests
         var match = MatchTestHelper.MakeMatchInSetup();
         _matchRepo.Seed(match);
 
-        var allyIds = match.Player1.Hand.OfType<AllyCard>().Take(5).Select(a => a.Id).ToList();
+        var allyIds = match.Player1.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
 
         await Handler.Handle(
             new SetupInitialTeamCommand(match.Id, match.Player1.PlayerId, allyIds),
@@ -82,7 +83,7 @@ public class SetupInitialTeamHandlerTests
     }
 
     [Fact]
-    public async Task AllyNotInHand_Throws()
+    public async Task AllyNotInDeck_Throws()
     {
         var match = MatchTestHelper.MakeMatchInSetup();
         _matchRepo.Seed(match);

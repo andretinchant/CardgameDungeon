@@ -53,23 +53,29 @@ public class MatchSimulation
         LogHandComposition("P2", player2);
         Log("");
 
-        // ── SETUP ──
-        LogPhase("SETUP (cost ≤ 5)");
-        var p1Team = player1.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).Take(3).ToList();
-        var p2Team = player2.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).Take(3).ToList();
+        // ── SETUP (search DECK for allies, not hand) ──
+        LogPhase("SETUP — search deck for allies (cost ≤ 5)");
 
-        if (p1Team.Count < 2) { Log("P1 doesn't have enough allies — bad draw!"); }
-        if (p2Team.Count < 2) { Log("P2 doesn't have enough allies — bad draw!"); }
+        var p1Available = player1.GetAlliesInDeck().OrderByDescending(a => a.Strength).ToList();
+        var p2Available = player2.GetAlliesInDeck().OrderByDescending(a => a.Strength).ToList();
+        Log($"P1 has {p1Available.Count} allies in deck to choose from");
+        Log($"P2 has {p2Available.Count} allies in deck to choose from");
 
-        // Pad with whatever allies we have
-        while (p1Team.Sum(a => a.Cost) > 5 && p1Team.Count > 1) p1Team.RemoveAt(p1Team.Count - 1);
-        while (p2Team.Sum(a => a.Cost) > 5 && p2Team.Count > 1) p2Team.RemoveAt(p2Team.Count - 1);
+        // Pick best team that fits cost ≤ 5
+        var p1Team = PickSetupTeam(p1Available);
+        var p2Team = PickSetupTeam(p2Available);
 
-        LogTeam("P1", p1Team);
-        LogTeam("P2", p2Team);
+        // Extract chosen allies from deck
+        var p1Extracted = player1.ExtractAlliesFromDeck(p1Team.Select(a => a.Id));
+        var p2Extracted = player2.ExtractAlliesFromDeck(p2Team.Select(a => a.Id));
 
-        if (p1Team.Count > 0) match.SubmitSetupTeam(p1Id, p1Team);
-        if (p2Team.Count > 0) match.SubmitSetupTeam(p2Id, p2Team);
+        LogTeam("P1", p1Extracted.ToList());
+        LogTeam("P2", p2Extracted.ToList());
+        Log($"P1 deck after setup: {player1.Deck.Count} cards");
+        Log($"P2 deck after setup: {player2.Deck.Count} cards");
+
+        if (p1Extracted.Count > 0) match.SubmitSetupTeam(p1Id, p1Extracted);
+        if (p2Extracted.Count > 0) match.SubmitSetupTeam(p2Id, p2Extracted);
 
         if (match.BothTeamsSubmitted)
         {
@@ -344,6 +350,25 @@ public class MatchSimulation
             cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Fire-Trap-{i}", Rarity.Uncommon, 2, 3, "Flames erupt"));
 
         return cards; // 80 total
+    }
+
+    /// <summary>Pick the best team from available allies that fits cost ≤ 5.</summary>
+    private static List<AllyCard> PickSetupTeam(List<AllyCard> available)
+    {
+        var team = new List<AllyCard>();
+        var budget = 5;
+
+        foreach (var ally in available.OrderByDescending(a => a.Strength))
+        {
+            if (ally.Cost <= budget && ally.Cost >= 1)
+            {
+                team.Add(ally);
+                budget -= ally.Cost;
+                if (budget <= 0 || team.Count >= 5) break;
+            }
+        }
+
+        return team;
     }
 
     private static List<Card> Shuffle(List<Card> cards)

@@ -86,7 +86,44 @@ public class PlayerState
             DrawUpTo(needed);
     }
 
+    // ── Setup: search deck for allies ──
+
+    /// <summary>
+    /// Searches the deck for allies matching the given IDs, removes them from the deck,
+    /// and returns them. Used during Setup phase — allies come from deck, not hand.
+    /// </summary>
+    public IReadOnlyList<AllyCard> ExtractAlliesFromDeck(IEnumerable<Guid> allyIds)
+    {
+        var ids = allyIds.ToHashSet();
+        var found = new List<AllyCard>();
+
+        for (int i = _deck.Count - 1; i >= 0; i--)
+        {
+            if (_deck[i] is AllyCard ally && ids.Contains(ally.Id))
+            {
+                found.Add(ally);
+                _deck.RemoveAt(i);
+                ids.Remove(ally.Id);
+                if (ids.Count == 0) break;
+            }
+        }
+
+        return found;
+    }
+
+    /// <summary>Gets all allies available in the deck for setup selection.</summary>
+    public IReadOnlyList<AllyCard> GetAlliesInDeck() =>
+        _deck.OfType<AllyCard>().ToList();
+
     // ── Ally Management ──
+
+    /// <summary>Add ally directly to field (for setup — allies come from deck, not hand).</summary>
+    public void AddAllyDirectly(AllyCard ally)
+    {
+        if (_alliesInPlay.Count >= MaxAlliesInPlay)
+            throw new InvalidOperationException($"Cannot have more than {MaxAlliesInPlay} allies in play.");
+        _alliesInPlay.Add(ally);
+    }
 
     public void PlayAlly(AllyCard ally)
     {

@@ -8,12 +8,14 @@ P1 hand composition: 1 allies, 2 monsters, 2 traps, 3 equipment
 P2 hand composition: 1 allies, 2 monsters, 2 traps, 3 equipment
 
 ═══════════════════════════════════════
-  SETUP (cost ≤ 5)
+  SETUP — search deck for allies (cost ≤ 5)
 ═══════════════════════════════════════
-P1 doesn't have enough allies — bad draw!
-P2 doesn't have enough allies — bad draw!
-P1 team (cost 1): P1-Rogue-0(C1 S2 H2 I2)
-P2 team (cost 1): P2-Rogue-0(C1 S2 H2 I2)
+P1 has 29 allies in deck to choose from
+P2 has 29 allies in deck to choose from
+P1 team (cost 5): P1-Veteran-3(C2 S3 H4 I1), P1-Veteran-0(C2 S3 H4 I1), P1-Rogue-4(C1 S2 H2 I2)
+P2 team (cost 5): P2-Veteran-3(C2 S3 H4 I1), P2-Veteran-0(C2 S3 H4 I1), P2-Rogue-4(C1 S2 H2 I2)
+P1 deck after setup: 69 cards
+P2 deck after setup: 69 cards
 Teams revealed!
 
 ══════════════ ROUND 1 ══════════════
@@ -23,32 +25,32 @@ Revealing room: Goblin Cave
 ═══════════════════════════════════════
   INITIATIVE
 ═══════════════════════════════════════
-P1 INIT: 2 | P2 INIT: 2
+P1 INIT: 4 | P2 INIT: 4
 TIED — P1 bets 1
 Winner: P1
-P1 chooses to DEFEND (allies:1 monsters:2)
-  P1 plays MONSTER: P1-Troll-4 (STR:4 HP:5)
-  P1 plays MONSTER: P1-Troll-0 (STR:4 HP:5)
-  P1 sets TRAP: P1-Spike-Trap-8 (DMG:2)
-  P1 sets TRAP: P1-Fire-Trap-3 (DMG:3)
-  *** TRAP ACTIVATES: P1-Spike-Trap-8 deals 2 damage! ***
-    → P2-Rogue-0 takes 2 trap damage
-  *** TRAP ACTIVATES: P1-Fire-Trap-3 deals 3 damage! ***
-    → P2-Rogue-0 takes 3 trap damage
+P1 chooses to ATTACK (allies:4 monsters:2)
+  P2 plays MONSTER: P2-Troll-4 (STR:4 HP:5)
+  P2 plays MONSTER: P2-Troll-0 (STR:4 HP:5)
+  P2 sets TRAP: P2-Spike-Trap-8 (DMG:2)
+  P2 sets TRAP: P2-Fire-Trap-3 (DMG:3)
+  *** TRAP ACTIVATES: P2-Spike-Trap-8 deals 2 damage! ***
+    → P1-Rogue-4 takes 2 trap damage
+  *** TRAP ACTIVATES: P2-Fire-Trap-3 deals 3 damage! ***
+    → P1-Rogue-4 takes 3 trap damage
 ═══════════════════════════════════════
   COMBAT (Room 1)
 ═══════════════════════════════════════
-Attacker (P2): P2-Rogue-0(S2/H2)
-Defender (P1) monsters: P1-Troll-4(S4/H5), P1-Troll-0(S4/H5)
-  1 allies (STR:2) vs 1 monster (STR:4)
-  Result: AttackerEliminated
-  Damage: 4 to attacker, 2 to defender
-  Advantage: ATK=Neutral DEF=Neutral
-  *** ALLY P2-Rogue-0 ELIMINATED ***
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
+Defender (P2) monsters: P2-Troll-4(S4/H5), P2-Troll-0(S4/H5)
+  3 allies (STR:8) vs 1 monster (STR:4)
+  Result: DefenderEliminated
+  Damage: 4 to attacker, 8 to defender
+  Advantage: ATK=Advantage DEF=Disadvantage
+  *** MONSTER P2-Troll-4 ELIMINATED ***
   Phase: RoomResolution
 ADVANCE → Room 2 | Phase: RoomReveal
-P1: Allies=1 Deck=66 Hand=8 Discard=5 Exile=0
-P2: Allies=0 Deck=72 Hand=7 Discard=1 Exile=0
+P1: Allies=3 Deck=68 Hand=8 Discard=1 Exile=0
+P2: Allies=3 Deck=65 Hand=8 Discard=4 Exile=0
 
 ══════════════ ROUND 2 ══════════════
 Room: 2 | Phase: RoomReveal | Boss: False
@@ -57,31 +59,26 @@ Revealing room: Spider Nest
 ═══════════════════════════════════════
   INITIATIVE
 ═══════════════════════════════════════
-P1 INIT: 2 | P2 INIT: 0
+P1 INIT: 4 | P2 INIT: 4
+TIED — P1 bets 1
 Winner: P1
-P1 chooses to ATTACK (allies:3 monsters:1)
-  P2 plays MONSTER: P2-Troll-4 (STR:4 HP:5)
-  P2 plays MONSTER: P2-Troll-0 (STR:4 HP:5)
-  P2 sets TRAP: P2-Spike-Trap-8 (DMG:2)
-  P2 sets TRAP: P2-Fire-Trap-3 (DMG:3)
-  *** TRAP ACTIVATES: P2-Spike-Trap-8 deals 2 damage! ***
-    → P1-Rogue-0 takes 2 trap damage
-  *** TRAP ACTIVATES: P2-Fire-Trap-3 deals 3 damage! ***
-    → P1-Rogue-0 takes 3 trap damage
+P1 chooses to ATTACK (allies:4 monsters:2)
+  P2 plays MONSTER: P2-Wyvern-4 (STR:5 HP:7)
+  P2 plays MONSTER: P2-Goblin-1 (STR:2 HP:3)
 ═══════════════════════════════════════
   COMBAT (Room 2)
 ═══════════════════════════════════════
-Attacker (P1): P1-Rogue-0(S2/H2)
-Defender (P2) monsters: P2-Troll-4(S4/H5), P2-Troll-0(S4/H5)
-  1 allies (STR:2) vs 1 monster (STR:4)
-  Result: AttackerEliminated
-  Damage: 4 to attacker, 2 to defender
-  Advantage: ATK=Neutral DEF=Neutral
-  *** ALLY P1-Rogue-0 ELIMINATED ***
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
+Defender (P2) monsters: P2-Wyvern-4(S5/H7), P2-Goblin-1(S2/H3)
+  3 allies (STR:8) vs 1 monster (STR:5)
+  Result: DefenderEliminated
+  Damage: 5 to attacker, 8 to defender
+  Advantage: ATK=Advantage DEF=Disadvantage
+  *** MONSTER P2-Wyvern-4 ELIMINATED ***
   Phase: RoomResolution
 ADVANCE → Room 3 | Phase: RoomReveal
-P1: Allies=0 Deck=66 Hand=8 Discard=6 Exile=0
-P2: Allies=0 Deck=67 Hand=8 Discard=5 Exile=0
+P1: Allies=3 Deck=67 Hand=8 Discard=2 Exile=0
+P2: Allies=3 Deck=63 Hand=8 Discard=6 Exile=0
 
 ══════════════ ROUND 3 ══════════════
 Room: 3 | Phase: RoomReveal | Boss: False
@@ -90,24 +87,23 @@ Revealing room: Undead Crypt
 ═══════════════════════════════════════
   INITIATIVE
 ═══════════════════════════════════════
-P1 INIT: 0 | P2 INIT: 0
+P1 INIT: 4 | P2 INIT: 4
 TIED — P1 bets 1
 Winner: P1
-P1 chooses to ATTACK (allies:2 monsters:1)
-  P2 plays MONSTER: P2-Wyvern-4 (STR:5 HP:7)
-  P2 plays MONSTER: P2-Goblin-1 (STR:2 HP:3)
+P1 chooses to ATTACK (allies:4 monsters:2)
   P2 sets TRAP: P2-Spike-Trap-3 (DMG:2)
   *** TRAP ACTIVATES: P2-Spike-Trap-3 deals 2 damage! ***
+    → P1-Rogue-4 takes 2 trap damage
 ═══════════════════════════════════════
   COMBAT (Room 3)
 ═══════════════════════════════════════
-Attacker (P1): (none)
-Defender (P2) monsters: P2-Wyvern-4(S5/H7), P2-Goblin-1(S2/H3)
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
+Defender (P2) monsters: (none)
 One side has no units — skipping combat
   Phase: RoomResolution
 ADVANCE → Room 4 | Phase: RoomReveal
-P1: Allies=0 Deck=65 Hand=8 Discard=7 Exile=0
-P2: Allies=0 Deck=64 Hand=8 Discard=8 Exile=0
+P1: Allies=3 Deck=66 Hand=8 Discard=3 Exile=0
+P2: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
 
 ══════════════ ROUND 4 ══════════════
 Room: 4 | Phase: RoomReveal | Boss: False
@@ -116,20 +112,23 @@ Revealing room: Dragon Lair
 ═══════════════════════════════════════
   INITIATIVE
 ═══════════════════════════════════════
-P1 INIT: 0 | P2 INIT: 0
+P1 INIT: 4 | P2 INIT: 4
 TIED — P1 bets 1
 Winner: P1
-P1 chooses to ATTACK (allies:2 monsters:1)
+P1 chooses to ATTACK (allies:4 monsters:2)
+  P2 sets TRAP: P2-Spike-Trap-9 (DMG:2)
+  *** TRAP ACTIVATES: P2-Spike-Trap-9 deals 2 damage! ***
+    → P1-Rogue-4 takes 2 trap damage
 ═══════════════════════════════════════
   COMBAT (Room 4)
 ═══════════════════════════════════════
-Attacker (P1): (none)
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
 Defender (P2) monsters: (none)
 One side has no units — skipping combat
   Phase: RoomResolution
 ADVANCE → Room 5 | Phase: RoomReveal
-P1: Allies=0 Deck=64 Hand=8 Discard=8 Exile=0
-P2: Allies=0 Deck=64 Hand=8 Discard=8 Exile=0
+P1: Allies=3 Deck=65 Hand=8 Discard=4 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
 
 ══════════════ ROUND 5 ══════════════
 Room: 5 | Phase: RoomReveal | Boss: False
@@ -138,40 +137,40 @@ Revealing room: Throne Room
 ═══════════════════════════════════════
   INITIATIVE
 ═══════════════════════════════════════
-P1 INIT: 0 | P2 INIT: 0
+P1 INIT: 4 | P2 INIT: 4
 TIED — P1 bets 1
 Winner: P1
-P1 chooses to ATTACK (allies:2 monsters:1)
+P1 chooses to ATTACK (allies:4 monsters:2)
 ═══════════════════════════════════════
   COMBAT (Room 5)
 ═══════════════════════════════════════
-Attacker (P1): (none)
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
 Defender (P2) monsters: (none)
 One side has no units — skipping combat
   Phase: RoomResolution
 ADVANCE → Room 6 | Phase: Initiative
-P1: Allies=0 Deck=63 Hand=8 Discard=9 Exile=0
-P2: Allies=0 Deck=64 Hand=8 Discard=8 Exile=0
+P1: Allies=3 Deck=64 Hand=8 Discard=5 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
 
 ══════════════ ROUND 6 ══════════════
 Room: 6 | Phase: Initiative | Boss: True
 ═══════════════════════════════════════
   INITIATIVE
 ═══════════════════════════════════════
-P1 INIT: 0 | P2 INIT: 0
+P1 INIT: 4 | P2 INIT: 4
 TIED — P1 bets 1
 Winner: P1
-P1 chooses to ATTACK (allies:2 monsters:1)
+P1 chooses to ATTACK (allies:4 monsters:2)
 ═══════════════════════════════════════
   BOSS COMBAT
 ═══════════════════════════════════════
-Attacker (P1): (none)
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
 Defender (P2) monsters: (none)
 One side has no units — skipping combat
   Phase: RoomResolution
 ADVANCE → Room 7 | Phase: Finished
-P1: Allies=0 Deck=62 Hand=8 Discard=10 Exile=0
-P2: Allies=0 Deck=64 Hand=8 Discard=8 Exile=0
+P1: Allies=3 Deck=63 Hand=8 Discard=6 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
 
 ╔════════════════════════════════════════════════════════════════╗
 ║                        MATCH RESULT                          ║
@@ -179,5 +178,5 @@ P2: Allies=0 Deck=64 Hand=8 Discard=8 Exile=0
 Finished: True | Phase: Finished
 Winner: NONE
 Rounds: 6 | Final room: 7
-P1 — Allies:0 Deck:62 Hand:8 Discard:10 Exile:0
-P2 — Allies:0 Deck:64 Hand:8 Discard:8 Exile:0
+P1 — Allies:3 Deck:63 Hand:8 Discard:6 Exile:0
+P2 — Allies:3 Deck:61 Hand:8 Discard:8 Exile:0

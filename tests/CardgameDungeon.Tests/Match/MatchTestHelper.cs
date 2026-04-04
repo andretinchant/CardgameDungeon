@@ -59,21 +59,17 @@ public static class MatchTestHelper
         var p1Id = player1Id ?? Guid.NewGuid();
         var p2Id = player2Id ?? Guid.NewGuid();
 
-        // Create allies with specific initiative values
-        var p1Allies = Enumerable.Range(0, 8)
-            .Select(i => i < 5
-                ? (Card)MakeAlly(initiative: p1Initiative, cost: 1)
-                : (Card)MakeAlly())
-            .ToList();
-        var p2Allies = Enumerable.Range(0, 8)
-            .Select(i => i < 5
-                ? (Card)MakeAlly(initiative: p2Initiative, cost: 1)
-                : (Card)MakeAlly())
-            .ToList();
+        // Filler cards go first (drawn to hand by RefillHand), then setup allies with specific stats
+        var p1Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
+        var p1SetupAllies = Enumerable.Range(0, 5).Select(_ => (Card)MakeAlly(initiative: p1Initiative, cost: 1)).ToList();
+        var p1Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
 
-        // Add extra deck cards for bets
-        var p1Deck = p1Allies.Concat(Enumerable.Range(0, 20).Select(_ => (Card)MakeAlly())).ToList();
-        var p2Deck = p2Allies.Concat(Enumerable.Range(0, 20).Select(_ => (Card)MakeAlly())).ToList();
+        var p2Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
+        var p2SetupAllies = Enumerable.Range(0, 5).Select(_ => (Card)MakeAlly(initiative: p2Initiative, cost: 1)).ToList();
+        var p2Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
+
+        var p1Deck = p1Filler.Concat(p1SetupAllies).Concat(p1Extra).ToList();
+        var p2Deck = p2Filler.Concat(p2SetupAllies).Concat(p2Extra).ToList();
 
         var player1 = new PlayerState(p1Id, 20, p1Deck);
         var player2 = new PlayerState(p2Id, 20, p2Deck);
@@ -86,11 +82,13 @@ public static class MatchTestHelper
 
         var match = new MatchState(Guid.NewGuid(), player1, player2, rooms, boss);
 
-        // Submit teams with cost=5 (5 allies x cost 1)
-        var p1Team = player1.Hand.OfType<AllyCard>().Take(5).ToList();
-        var p2Team = player2.Hand.OfType<AllyCard>().Take(5).ToList();
-        match.SubmitSetupTeam(p1Id, p1Team);
-        match.SubmitSetupTeam(p2Id, p2Team);
+        // Extract allies from deck (removes them) then submit for setup
+        var p1TeamIds = player1.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
+        var p1Team = player1.ExtractAlliesFromDeck(p1TeamIds);
+        var p2TeamIds = player2.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
+        var p2Team = player2.ExtractAlliesFromDeck(p2TeamIds);
+        match.SubmitSetupTeam(p1Id, p1Team.ToList());
+        match.SubmitSetupTeam(p2Id, p2Team.ToList());
         match.RevealTeams();
         match.RevealRoom();
 
@@ -109,20 +107,19 @@ public static class MatchTestHelper
         var p1Id = player1Id ?? Guid.NewGuid();
         var p2Id = player2Id ?? Guid.NewGuid();
 
-        // P1 gets higher initiative to win
-        var p1Allies = Enumerable.Range(0, 8)
-            .Select(i => i < 5
-                ? (Card)MakeAlly(strength: p1Strength, hp: p1Hp, initiative: 5, cost: 1)
-                : (Card)MakeAlly())
-            .ToList();
-        var p2Allies = Enumerable.Range(0, 8)
-            .Select(i => i < 5
-                ? (Card)MakeAlly(strength: p2Strength, hp: p2Hp, initiative: 2, cost: 1)
-                : (Card)MakeAlly())
-            .ToList();
+        // Filler cards go first (drawn to hand by RefillHand), then setup allies with specific stats
+        var p1Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
+        var p1SetupAllies = Enumerable.Range(0, 5)
+            .Select(_ => (Card)MakeAlly(strength: p1Strength, hp: p1Hp, initiative: 5, cost: 1)).ToList();
+        var p1Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
 
-        var p1Deck = p1Allies.Concat(Enumerable.Range(0, 20).Select(_ => (Card)MakeAlly())).ToList();
-        var p2Deck = p2Allies.Concat(Enumerable.Range(0, 20).Select(_ => (Card)MakeAlly())).ToList();
+        var p2Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
+        var p2SetupAllies = Enumerable.Range(0, 5)
+            .Select(_ => (Card)MakeAlly(strength: p2Strength, hp: p2Hp, initiative: 2, cost: 1)).ToList();
+        var p2Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
+
+        var p1Deck = p1Filler.Concat(p1SetupAllies).Concat(p1Extra).ToList();
+        var p2Deck = p2Filler.Concat(p2SetupAllies).Concat(p2Extra).ToList();
 
         var player1 = new PlayerState(p1Id, 20, p1Deck);
         var player2 = new PlayerState(p2Id, 20, p2Deck);
@@ -135,10 +132,13 @@ public static class MatchTestHelper
 
         var match = new MatchState(Guid.NewGuid(), player1, player2, rooms, boss);
 
-        var p1Team = player1.Hand.OfType<AllyCard>().Take(5).ToList();
-        var p2Team = player2.Hand.OfType<AllyCard>().Take(5).ToList();
-        match.SubmitSetupTeam(p1Id, p1Team);
-        match.SubmitSetupTeam(p2Id, p2Team);
+        // Extract allies from deck (removes them) then submit for setup
+        var p1TeamIds = player1.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
+        var p1Team = player1.ExtractAlliesFromDeck(p1TeamIds);
+        var p2TeamIds = player2.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
+        var p2Team = player2.ExtractAlliesFromDeck(p2TeamIds);
+        match.SubmitSetupTeam(p1Id, p1Team.ToList());
+        match.SubmitSetupTeam(p2Id, p2Team.ToList());
         match.RevealTeams();
         match.RevealRoom();
 
@@ -162,22 +162,22 @@ public static class MatchTestHelper
         var p1Id = player1Id ?? Guid.NewGuid();
         var p2Id = player2Id ?? Guid.NewGuid();
 
-        // P1 allies: normal, P2 allies: 4 normal + 1 ambusher
-        var p1Cards = Enumerable.Range(0, 8)
-            .Select(i => i < 5
-                ? (Card)MakeAlly(initiative: 5, cost: 1)
-                : (Card)MakeAlly())
-            .ToList();
+        // Filler cards go first (drawn to hand by RefillHand), then setup allies
+        var p1Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
+        var p1SetupAllies = Enumerable.Range(0, 5)
+            .Select(_ => (Card)MakeAlly(initiative: 5, cost: 1)).ToList();
+        var p1Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
 
-        var p2Cards = new List<Card>();
+        // P2: filler first, then 4 normal + 1 ambusher as setup allies
+        var p2Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
+        var p2SetupAllies = new List<Card>();
         for (var i = 0; i < 4; i++)
-            p2Cards.Add(MakeAlly(initiative: 2, cost: 1, isAmbusher: false, name: $"Normal-{i}"));
-        p2Cards.Add(MakeAlly(initiative: 2, cost: 1, isAmbusher: true, name: "Ambusher"));
-        for (var i = 0; i < 3; i++)
-            p2Cards.Add(MakeAlly());
+            p2SetupAllies.Add(MakeAlly(initiative: 2, cost: 1, isAmbusher: false, name: $"Normal-{i}"));
+        p2SetupAllies.Add(MakeAlly(initiative: 2, cost: 1, isAmbusher: true, name: "Ambusher"));
+        var p2Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
 
-        var p1Deck = p1Cards.Concat(Enumerable.Range(0, 20).Select(_ => (Card)MakeAlly())).ToList();
-        var p2Deck = p2Cards.Concat(Enumerable.Range(0, 20).Select(_ => (Card)MakeAlly())).ToList();
+        var p1Deck = p1Filler.Concat(p1SetupAllies).Concat(p1Extra).ToList();
+        var p2Deck = p2Filler.Concat(p2SetupAllies).Concat(p2Extra).ToList();
 
         var player1 = new PlayerState(p1Id, 20, p1Deck);
         var player2 = new PlayerState(p2Id, 20, p2Deck);
@@ -190,10 +190,13 @@ public static class MatchTestHelper
 
         var match = new MatchState(Guid.NewGuid(), player1, player2, rooms, boss);
 
-        var p1Team = player1.Hand.OfType<AllyCard>().Take(5).ToList();
-        var p2Team = player2.Hand.OfType<AllyCard>().Take(5).ToList();
-        match.SubmitSetupTeam(p1Id, p1Team);
-        match.SubmitSetupTeam(p2Id, p2Team);
+        // Extract allies from deck (removes them) then submit for setup
+        var p1TeamIds = player1.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
+        var p1Team = player1.ExtractAlliesFromDeck(p1TeamIds);
+        var p2TeamIds = player2.GetAlliesInDeck().Take(5).Select(a => a.Id).ToList();
+        var p2Team = player2.ExtractAlliesFromDeck(p2TeamIds);
+        match.SubmitSetupTeam(p1Id, p1Team.ToList());
+        match.SubmitSetupTeam(p2Id, p2Team.ToList());
         match.RevealTeams();
         match.RevealRoom();
 

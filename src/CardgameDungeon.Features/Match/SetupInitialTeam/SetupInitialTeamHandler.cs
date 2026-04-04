@@ -15,11 +15,11 @@ public class SetupInitialTeamHandler(IMatchRepository matchRepo, IMatchNotifier 
 
         var player = match.GetPlayer(request.PlayerId);
 
-        // Find the ally cards in the player's hand
-        var allies = request.AllyCardIds
-            .Select(id => player.Hand.OfType<AllyCard>().FirstOrDefault(a => a.Id == id)
-                ?? throw new InvalidOperationException($"Ally {id} is not in player's hand."))
-            .ToList();
+        // Find the ally cards in the player's DECK (setup picks from deck, not hand)
+        var allies = player.ExtractAlliesFromDeck(request.AllyCardIds);
+
+        if (allies.Count != request.AllyCardIds.Count)
+            throw new InvalidOperationException("Some requested allies were not found in the deck.");
 
         match.SubmitSetupTeam(request.PlayerId, allies);
 
