@@ -423,21 +423,20 @@ public class MatchSimulation
     private void Log(string line) => _log.AppendLine(line);
 
     /// <summary>
-    /// Build a realistic 80-card deck: 25 allies + 10 equipment + 5 consumables = 40 adventurer,
-    /// 25 monsters + 15 traps = 40 enemy. Named, varied cards with mixed rarities.
+    /// Build a realistic 80-card deck:
+    /// Adventurer (40): 10 allies + 10 equipment + 20 consumables
+    /// Enemy (40): 32 monsters + 8 traps
     /// </summary>
     private static List<Card> BuildMixedDeck(string prefix)
     {
         var cards = new List<Card>();
 
-        // ── ADVENTURER (40) ──
+        // ═══ ADVENTURER (40) ═══
 
-        // 5 Rare allies (cost 3-4, STR 4-5, HP 4-5)
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Paladin Kael", Rarity.Rare, 4, 5, 5, 2, allyClass: AllyClass.Warrior, effect: "Divine shield protects adjacent allies"));
+        // ── 10 Allies ──
+        // 2 Rare
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Paladin Kael", Rarity.Rare, 4, 5, 5, 2, allyClass: AllyClass.Paladin, effect: "Divine shield protects adjacent allies"));
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Archmage Vex", Rarity.Rare, 4, 4, 4, 3, allyClass: AllyClass.Mage, effect: "Chain lightning hits all enemies"));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Shadow Dancer", Rarity.Rare, 3, 5, 4, 3, isAmbusher: true, allyClass: AllyClass.Rogue, effect: "Sneak attack deals double on first strike"));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-High Priestess", Rarity.Rare, 3, 4, 5, 2, allyClass: AllyClass.Cleric, effect: "Heals 2 HP to all allies after combat"));
-        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Beastmaster Thorn", Rarity.Rare, 3, 4, 4, 3, allyClass: AllyClass.Ranger, effect: "Companion wolf joins the fight"));
 
         // 10 Uncommon allies (cost 2-3, STR 3-4, HP 3-4, various classes)
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Knight Errant", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
@@ -483,49 +482,50 @@ public class MatchSimulation
         cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Scroll of Haste", Rarity.Common, 1, 0, 0, 1, EquipmentSlot.Accessory, effect: "Grants extra initiative"));
         cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Smoke Bomb", Rarity.Uncommon, 1, 0, 1, 1, EquipmentSlot.Accessory, effect: "Grants evasion"));
 
-        // ── ENEMY (40) ──
+        // ═══ ENEMY (40): 32 monsters + 8 traps ═══
 
-        // 3 Rare monsters (STR 5-6, HP 6-7)
+        // ── 32 Monsters ──
+        // 4 Rare (STR 5-6, HP 6-7)
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ancient Wyvern", Rarity.Rare, 4, 6, 7, 1, effect: "Breath attack hits all allies"));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Death Knight", Rarity.Rare, 4, 5, 7, 2, effect: "Drains life on hit"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Beholder", Rarity.Rare, 4, 6, 6, 1, effect: "Antimagic cone disables spells"));
-
-        // 10 Uncommon monsters (STR 3-4, HP 4-5)
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Beholder", Rarity.Rare, 4, 6, 6, 1, effect: "Antimagic cone"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Lich", Rarity.Rare, 4, 5, 6, 2, effect: "Raises dead as undead"));
+        // 12 Uncommon (STR 3-4, HP 4-5)
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ogre Chieftain", Rarity.Uncommon, 3, 4, 5, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll Berserker", Rarity.Uncommon, 3, 4, 5, 1, effect: "Regenerates 1 HP per round"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wraith", Rarity.Uncommon, 2, 3, 4, 2, effect: "Incorporeal — half physical damage"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Minotaur", Rarity.Uncommon, 3, 4, 5, 1, effect: "Charge attack on first strike"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Harpy Screecher", Rarity.Uncommon, 2, 3, 4, 3, effect: "Screech reduces enemy initiative"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Phase Spider", Rarity.Uncommon, 2, 3, 4, 2, effect: "Teleports between combats"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll Berserker", Rarity.Uncommon, 3, 4, 5, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wraith", Rarity.Uncommon, 2, 3, 4, 2));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Minotaur", Rarity.Uncommon, 3, 4, 5, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Harpy", Rarity.Uncommon, 2, 3, 4, 3));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Phase Spider", Rarity.Uncommon, 2, 3, 4, 2));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Orc Warlord", Rarity.Uncommon, 3, 4, 4, 1));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Dark Elf Assassin", Rarity.Uncommon, 2, 3, 4, 3, effect: "Poison blade"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ghoul Pack", Rarity.Uncommon, 2, 3, 5, 1, effect: "Paralyzing touch"));
-        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Manticore", Rarity.Uncommon, 3, 4, 5, 2, effect: "Tail spikes deal ranged damage"));
-
-        // 12 Common monsters (STR 2-3, HP 2-3)
-        for (int i = 0; i < 3; i++)
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Drow Assassin", Rarity.Uncommon, 2, 3, 4, 3));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ghoul Pack", Rarity.Uncommon, 2, 3, 5, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Manticore", Rarity.Uncommon, 3, 4, 5, 2));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Basilisk", Rarity.Uncommon, 3, 4, 5, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Displacer Beast", Rarity.Uncommon, 2, 3, 4, 2));
+        // 16 Common (STR 2-3, HP 2-3)
+        for (int i = 0; i < 4; i++)
             cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Goblin Raider-{i}", Rarity.Common, 1, 2, 3, 1));
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
             cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Skeleton Warrior-{i}", Rarity.Common, 1, 2, 2, 1));
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 4; i++)
             cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Kobold-{i}", Rarity.Common, 1, 2, 2, 2));
+        for (int i = 0; i < 4; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Orc Grunt-{i}", Rarity.Common, 1, 3, 3, 1));
+
+        // ── 8 Traps ──
+        // 3 Uncommon (damage 3)
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Flame Geyser", Rarity.Uncommon, 2, 3, "Fire erupts"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Poison Dart Wall", Rarity.Uncommon, 2, 3, "Venomous darts"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Lightning Rune", Rarity.Uncommon, 2, 3, "Electric discharge"));
+        // 5 Common (damage 1-2)
         for (int i = 0; i < 3; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Giant Rat-{i}", Rarity.Common, 1, 3, 2, 1));
+            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Spike Pit-{i}", Rarity.Common, 1, 2, "Iron spikes"));
+        for (int i = 0; i < 2; i++)
+            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Tripwire-{i}", Rarity.Common, 1, 1, "Falling net"));
 
-        // 5 Uncommon traps (damage 3)
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Flame Geyser", Rarity.Uncommon, 2, 3, "Fire erupts from the floor"));
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Poison Dart Wall", Rarity.Uncommon, 2, 3, "Darts coated in venom"));
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Collapsing Ceiling", Rarity.Uncommon, 2, 3, "Stones rain down from above"));
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Lightning Rune", Rarity.Uncommon, 2, 3, "Arcane sigil discharges electricity"));
-        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Acid Pool", Rarity.Uncommon, 2, 3, "Corrosive liquid covers the floor"));
-
-        // 10 Common traps (damage 1-2)
-        for (int i = 0; i < 5; i++)
-            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Spike Pit-{i}", Rarity.Common, 1, 2, "Concealed pit with iron spikes"));
-        for (int i = 0; i < 5; i++)
-            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Tripwire-{i}", Rarity.Common, 1, 1, "Thin wire triggers a falling net"));
-
-        return cards; // 80 total
+        // Total: 10 allies + 10 equip + 20 consumables + 32 monsters + 8 traps = 80
+        return cards;
     }
 
     /// <summary>Pick the best team from available allies that fits cost ≤ 5.</summary>
