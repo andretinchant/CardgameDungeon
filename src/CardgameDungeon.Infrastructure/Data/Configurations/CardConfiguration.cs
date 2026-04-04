@@ -15,6 +15,8 @@ internal class CardConfiguration : IEntityTypeConfiguration<Card>
         builder.Property(c => c.Name).HasMaxLength(200).IsRequired();
         builder.Property(c => c.Rarity).HasConversion<string>().HasMaxLength(20);
         builder.Property(c => c.Cost);
+        builder.Property(c => c.EffectTags).HasMaxLength(2000);
+        builder.Ignore(c => c.ParsedEffects);
 
         // TPH discriminator
         builder.HasDiscriminator<string>("CardType")

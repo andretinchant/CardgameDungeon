@@ -23,7 +23,8 @@ public static partial class CardSetSeeder
                 "Volo the Chronicler", Rarity.Unique, 6,
                 5, 7, 3, treasure: 2,
                 effect: "The pen that rewrites fate. Return up to 3 cards from hand to the bottom of the deck, then draw 2 cards. Exile 8 cards from deck: look at opponent's hand and return 1 of their cards to top of their deck. All Bard allies gain +1 INIT",
-                race: Race.Human, allyClass: AllyClass.Bard),
+                race: Race.Human, allyClass: AllyClass.Bard,
+                effectTags: "ON_ACTIVATE|RETURN_HAND_BOTTOM:3|DRAW:2\nON_ACTIVATE|COST:EXILE_DECK:8|REVEAL_HAND\nPASSIVE|IF_CLASS:Bard|+INIT:1"),
 
             // ── RARE (2) ──
             // Budget 18: STR3(3) + HP4(4) + INIT2(3) + Treasure1(1) = 11. Effect = 7 → capped at 6 ✓

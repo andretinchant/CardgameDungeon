@@ -28,8 +28,9 @@ public class AllyCard : Card
         int treasure = 0,
         string? effect = null,
         Race race = Race.Human,
-        AllyClass allyClass = AllyClass.Warrior)
-        : base(id, name, rarity, cost)
+        AllyClass allyClass = AllyClass.Warrior,
+        string? effectTags = null)
+        : base(id, name, rarity, cost, effectTags)
     {
         if (strength < 0)
             throw new ArgumentOutOfRangeException(nameof(strength));

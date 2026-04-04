@@ -21,7 +21,8 @@ public static partial class CardSetSeeder
                 "Magus, the Tormented", Rarity.Unique, 7,
                 6, 8, 3, treasure: 2,
                 effect: "A Drow whose pact carved runes of suffering into his soul. During initiative: Magus fixes his gaze on one enemy — marking it with dread. If the marked enemy falls, terror ripples through the battlefield: every surviving enemy in that combat group panics and attempts to flee, triggering opportunity attacks from all adjacent allies. This dread can only be unleashed once per combat. If the marked enemy survives, the pact turns inward — exile 1 card from your own deck as the torment feeds",
-                race: Race.Drow, allyClass: AllyClass.Warlock),
+                race: Race.Drow, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|TRIGGER_OPP_ATTACK:ENEMY_GROUP|ONCE_PER_COMBAT\nON_MARKED_SURVIVE|EXILE_DECK:1"),
 
             // ── RARE (2) ── Budget 14-18
             // STR3(3) + HP5(5) + INIT2(3) + Treasure1(1) = 12. Effect = 6 ✓ Budget 18

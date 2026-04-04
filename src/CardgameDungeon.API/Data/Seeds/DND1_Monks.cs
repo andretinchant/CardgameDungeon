@@ -20,7 +20,8 @@ public static partial class CardSetSeeder
                 "Kane, the Unbroken Circle", Rarity.Unique, 6,
                 4, 8, 3, treasure: 1,
                 effect: "The immovable sentinel who holds the line so others may strike. Exile 3 cards from hand: cancel ALL damage in this combat group this round (both sides deal 0). While Kane holds, allies in other combat groups gain +1 STR. This hold can be maintained each round by paying the cost again",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:EXILE_HAND:3|CANCEL_COMBAT\nPASSIVE|+STR:1"),
 
             // ── RARE (2) ── Budget 18
             // STR4(4) + HP4(4) + INIT2(3) + Treasure1(1) = 12. Effect = 6 ✓

@@ -22,6 +22,7 @@ public static partial class CardSetSeeder
                 "Uthgar, Blood of the Ancestors", Rarity.Unique, 6,
                 9, 9, 0, treasure: 5,
                 effect: "Born from a bloodline that predates the gods. Exile 4 cards from top of deck once per combat: +2 STR until end of this combat and Uthgar's STR counts as double for elimination checks. If Uthgar eliminates a monster while raging, he can join another fight immediately. While raging, Uthgar forfeits all Treasure from eliminated enemies",
+                effectTags: "ON_ACTIVATE|COST:EXILE_DECK:4|+STR:2|ELIM_DOUBLE|ONCE_PER_COMBAT\nON_KILL|IF_RAGING|JOIN_COMBAT|FORFEIT_TREASURE",
                 race: Race.Human, allyClass: AllyClass.Barbarian),
 
             // ── RARE (2) ── Budget 14-18

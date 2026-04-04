@@ -16,28 +16,32 @@ public static partial class CardSetSeeder
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000001"), "Drizzt Do'Urden", Rarity.Unique, 6, 6, 6, 4,
                 isAmbusher: false, treasure: 1,
                 effect: "The legendary Drow ranger moves like shadow through the dungeon. Reveal opponent's hand and top 3 of their deck. Favored Enemy (choose Race when played): +4 STR against that Race this dungeon. If another Drow or Elf in play: +2 INIT",
-                race: Race.Drow, allyClass: AllyClass.Ranger),
+                race: Race.Drow, allyClass: AllyClass.Ranger,
+                effectTags: "ON_PLAY|REVEAL_HAND|REVEAL_DECK:3\nON_PLAY|FAVORED_ENEMY:CHOOSE\nWITH_ADVANTAGE|IF_RACE:FAVORED|+STR:4\nPASSIVE|IF_CLASS:Ranger|+INIT:2"),
 
             // Elminster Aumar: Mage, Human — Cost 7, Unique Budget = 34
             // STR5(5) + HP8(8) + INIT3(4.5) + Treasure1(1) = 18.5. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000002"), "Elminster Aumar", Rarity.Unique, 7, 5, 8, 3,
                 isAmbusher: false, treasure: 1,
                 effect: "The Chosen of Mystra channels the Weave itself. Exile 2 cards from hand: search your deck for any Scroll, put it in your hand, and reshuffle. When Elminster uses a Scroll: the Scroll is returned to the bottom of the deck instead of being destroyed. Exile 8 cards from deck: search your exile pile for up to 3 Scrolls and return them to hand",
-                race: Race.Human, allyClass: AllyClass.Mage),
+                race: Race.Human, allyClass: AllyClass.Mage,
+                effectTags: "ON_ACTIVATE|COST:EXILE_HAND:2|SEARCH_DECK:SCROLL\nON_SCROLL_USED|SCROLL_TO_BOTTOM\nON_ACTIVATE|COST:EXILE_DECK:8|RECOVER_SCROLL_EXILE:3"),
 
             // Thordak the Ironwall: Warrior, Dwarf — Cost 6, Unique Budget = 30
             // STR7(7) + HP8(8) + INIT1(1.5) + Treasure1(1) = 17.5. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000061"), "Thordak the Ironwall", Rarity.Unique, 6, 7, 8, 1,
                 isAmbusher: false, treasure: 1,
                 effect: "The mountain that walks. Discard 1 from hand: all damage dealt to allies in this combat group is redirected to Thordak this round. With Disadvantage: +4 HP. Exile 8 cards from deck: force all enemies in the room to target only Thordak until end of room",
-                race: Race.Dwarf, allyClass: AllyClass.Warrior),
+                race: Race.Dwarf, allyClass: AllyClass.Warrior,
+                effectTags: "ON_ACTIVATE|COST:DISCARD_HAND:1|REDIRECT_DAMAGE:GROUP\nWITH_DISADVANTAGE|+HP:4\nON_ACTIVATE|COST:EXILE_DECK:8|REDIRECT_DAMAGE:ALL_ENEMIES"),
 
             // Seraphina the Radiant: Cleric, Human — Cost 6, Unique Budget = 30
             // STR4(4) + HP9(9) + INIT2(3) + Treasure1(1) = 17. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000062"), "Seraphina the Radiant", Rarity.Unique, 6, 4, 9, 2,
                 isAmbusher: false, treasure: 1,
                 effect: "Her light mends what darkness breaks. At start of each round: restore 2 HP to all allies. +3 STR against Undead and Demon. Exile 8 cards from deck: fully restore all allies to max HP and remove all negative effects",
-                race: Race.Human, allyClass: AllyClass.Cleric),
+                race: Race.Human, allyClass: AllyClass.Cleric,
+                effectTags: "ON_ROUND_START|HEAL:2:ALL_ALLIES\nPASSIVE|IF_RACE:Undead|+STR:3\nPASSIVE|IF_RACE:Demon|+STR:3\nON_ACTIVATE|COST:EXILE_DECK:8|HEAL:99:ALL_ALLIES"),
 
             // Irvine the Opportunist: Rogue, Halfling — Cost 5, Unique Budget = 26
             // STR5(5) + HP4(4) + INIT3(4.5) + Ambusher(2) + Treasure1(1) = 16.5. Effect = 8 ✓
@@ -45,14 +49,16 @@ public static partial class CardSetSeeder
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000063"), "Irvine the Opportunist", Rarity.Unique, 5, 5, 4, 3,
                 isAmbusher: true, treasure: 1,
                 effect: "Every opening is a death sentence. This ally's opportunity attacks deal double STR damage. When any enemy flees or changes combat group: Irvine automatically performs an opportunity attack against them (does not count toward the 1-per-round limit). With Advantage: +3 STR",
-                race: Race.Halfling, allyClass: AllyClass.Rogue),
+                race: Race.Halfling, allyClass: AllyClass.Rogue,
+                effectTags: "PASSIVE|OPP_ATTACK_DOUBLE\nON_ENEMY_FLEE|IGNORE_OPP_ATTACK_LIMIT\nWITH_ADVANTAGE|+STR:3"),
 
             // Aldric the Oathbound: Paladin, Human — Cost 6, Unique Budget = 30
             // STR6(6) + HP7(7) + INIT2(3) + Treasure1(1) = 17. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000064"), "Aldric the Oathbound", Rarity.Unique, 6, 6, 7, 2,
                 isAmbusher: false, treasure: 1,
                 effect: "His oath burns brighter than any flame. Sacrifice (exile this ally): eliminate one enemy with HP <= 10 and restore 3 HP to all other allies. +3 STR against Undead. Exile 8 cards from deck: all allies gain +2 STR for the rest of the room",
-                race: Race.Human, allyClass: AllyClass.Paladin),
+                race: Race.Human, allyClass: AllyClass.Paladin,
+                effectTags: "ON_ACTIVATE|COST:EXILE_HAND:99|DAMAGE:10:ENEMY|HEAL:3:ALL_ALLIES\nPASSIVE|IF_RACE:Undead|+STR:3\nON_ACTIVATE|COST:EXILE_DECK:8|+STR:2"),
 
             // ===== RARE (8) =====
 

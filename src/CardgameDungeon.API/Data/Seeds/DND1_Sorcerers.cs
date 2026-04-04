@@ -20,7 +20,8 @@ public static partial class CardSetSeeder
                 "Archmage of the Weave", Rarity.Unique, 6,
                 5, 6, 3, treasure: 2,
                 effect: "When a Scroll is used by any ally: copy its effect (apply it a second time for free). Discard 2 from hand: retrieve 1 Scroll from exile to hand. All Scrolls used by allies cost 1 less",
-                race: Race.Human, allyClass: AllyClass.Sorcerer),
+                race: Race.Human, allyClass: AllyClass.Sorcerer,
+                effectTags: "ON_SCROLL_USED|COPY_SCROLL\nON_ACTIVATE|COST:DISCARD_HAND:2|RECOVER_SCROLL:EXILE"),
 
             // ── RARE (2) ── Budget 14-18
             // STR3(3) + HP4(4) + INIT2(3) + Treasure1(1) = 11. Effect = 7 → 6 ✓ Budget 18
