@@ -26,8 +26,9 @@ public class DungeonRoomCard : Card
         IEnumerable<Guid>? monsterIds = null,
         IEnumerable<Guid>? trapIds = null,
         int monsterCostBudget = 0,
-        string? effect = null)
-        : base(id, name, rarity, cost: 0)
+        string? effect = null,
+        string? effectTags = null)
+        : base(id, name, rarity, cost: 0, effectTags)
     {
         if (order < 1 || order > TotalRooms)
             throw new ArgumentOutOfRangeException(nameof(order), $"Order must be between 1 and {TotalRooms}.");

@@ -24,7 +24,9 @@ public static partial class CardSetSeeder
                 hitPoints: 8,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Dragon. At start of combat: deal 2 damage to all attacking allies. With Advantage: +3 STR this round"),
+                effect: "Race: Dragon. At start of combat: deal 2 damage to all attacking allies. With Advantage: +3 STR this round",
+                race: Race.Dragon,
+                effectTags: "ON_COMBAT_START|DAMAGE:2:ALL_ENEMIES\nWITH_ADVANTAGE|+STR:3"),
             // Budget 24: STR 6(6) + HP 8(8) + INIT 1(1.5) + Treasure 1(1) = 16.5. Effect = 7.5 ✓
 
             // Budget 21: STR 4(4) + HP 7(7) + INIT 1(1.5) + Treasure 1(1) = 13.5. Effect budget = 7.5 ✓
@@ -37,7 +39,9 @@ public static partial class CardSetSeeder
                 hitPoints: 7,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Aberration. Reduce all attacker INIT by 2. When this monster is eliminated: exile 2 cards from attacker's deck. Immune to consumable effects"),
+                effect: "Race: Aberration. Reduce all attacker INIT by 2. When this monster is eliminated: exile 2 cards from attacker's deck. Immune to consumable effects",
+                race: Race.Aberration,
+                effectTags: "PASSIVE|-INIT:2:ALL_ENEMIES\nON_DEATH|EXILE_DECK:2\nPASSIVE|IMMUNE_CONSUMABLE"),
             // Budget 21: STR 4(4) + HP 7(7) + INIT 1(1.5) + Treasure 1(1) = 13.5. Effect = 7.5 ✓
 
             // =====================
@@ -54,7 +58,9 @@ public static partial class CardSetSeeder
                 hitPoints: 7,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Aberration. Immune to Equipment effects. With Advantage: +2 STR and reduce one attacker's INIT by 2"),
+                effect: "Race: Aberration. Immune to Equipment effects. With Advantage: +2 STR and reduce one attacker's INIT by 2",
+                race: Race.Aberration,
+                effectTags: "PASSIVE|IMMUNE_EQUIPMENT\nWITH_ADVANTAGE|+STR:2|-INIT:2:ENEMY"),
             // Budget 21: STR 5(5) + HP 7(7) + INIT 1(1.5) + Treasure 2(2) = 15.5. Effect = 5.5 ✓
 
             // Budget 21: STR 4(4) + HP 7(7) + INIT 2(3) + Treasure 1(1) = 15. Effect budget = 6 ✓
@@ -67,7 +73,9 @@ public static partial class CardSetSeeder
                 hitPoints: 7,
                 initiative: 2,
                 treasure: 1,
-                effect: "Race: Undead. When eliminated: restore this card from discard to the top of your deck. With Advantage: exile 1 card from attacker's deck"),
+                effect: "Race: Undead. When eliminated: restore this card from discard to the top of your deck. With Advantage: exile 1 card from attacker's deck",
+                race: Race.Undead,
+                effectTags: "ON_DEATH|RESTORE_SELF_TO_DECK\nWITH_ADVANTAGE|EXILE_DECK:1"),
             // Budget 21: STR 4(4) + HP 7(7) + INIT 2(3) + Treasure 1(1) = 15. Effect = 6 ✓
 
             // Budget 18: STR 4(4) + HP 5(5) + INIT 1(1.5) + Treasure 2(2) = 12.5. Effect budget = 5.5 ✓
@@ -80,7 +88,9 @@ public static partial class CardSetSeeder
                 hitPoints: 5,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Aberration. When this monster deals damage: reduce target's STR by 2 this combat. With Disadvantage: +2 HP"),
+                effect: "Race: Aberration. When this monster deals damage: reduce target's STR by 2 this combat. With Disadvantage: +2 HP",
+                race: Race.Aberration,
+                effectTags: "ON_COMBAT_START|-STR:2:ENEMY\nWITH_DISADVANTAGE|+HP:2"),
             // Budget 18: STR 4(4) + HP 5(5) + INIT 1(1.5) + Treasure 2(2) = 12.5. Effect = 5.5 ✓
 
             // Budget 21: STR 5(5) + HP 6(6) + INIT 2(3) + Treasure 1(1) = 15. Effect budget = 6 ✓
@@ -93,7 +103,9 @@ public static partial class CardSetSeeder
                 hitPoints: 6,
                 initiative: 2,
                 treasure: 1,
-                effect: "Race: Undead. When this monster deals damage: restore 2 HP. When eliminated: restore 1 card from opponent's discard to your deck"),
+                effect: "Race: Undead. When this monster deals damage: restore 2 HP. When eliminated: restore 1 card from opponent's discard to your deck",
+                race: Race.Undead,
+                effectTags: "ON_COMBAT_START|HEAL:2:SELF\nON_DEATH|RESTORE_CARD_FROM_OPPONENT"),
             // Budget 21: STR 5(5) + HP 6(6) + INIT 2(3) + Treasure 1(1) = 15. Effect = 6 ✓
 
             // Budget 21: STR 6(6) + HP 7(7) + INIT 1(1.5) + Treasure 1(1) = 15.5. Effect budget = 5.5 ✓
@@ -106,7 +118,9 @@ public static partial class CardSetSeeder
                 hitPoints: 7,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Undead. +2 STR against Human allies. When this monster eliminates an ally: exile that ally instead of discarding"),
+                effect: "Race: Undead. +2 STR against Human allies. When this monster eliminates an ally: exile that ally instead of discarding",
+                race: Race.Undead,
+                effectTags: "PASSIVE|IF_RACE:Human|+STR:2\nON_KILL|EXILE_TARGET"),
             // Budget 21: STR 6(6) + HP 7(7) + INIT 1(1.5) + Treasure 1(1) = 15.5. Effect = 5.5 ✓
 
             // Budget 21: STR 5(5) + HP 7(7) + INIT 1(1.5) + Treasure 2(2) = 15.5. Effect budget = 5.5 ✓
@@ -119,7 +133,9 @@ public static partial class CardSetSeeder
                 hitPoints: 7,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Demon. Immune to Bomb consumables. At start of combat: deal 1 damage to each attacking ally"),
+                effect: "Race: Demon. Immune to Bomb consumables. At start of combat: deal 1 damage to each attacking ally",
+                race: Race.Demon,
+                effectTags: "PASSIVE|IMMUNE_BOMB\nON_COMBAT_START|DAMAGE:1:ALL_ENEMIES"),
             // Budget 21: STR 5(5) + HP 7(7) + INIT 1(1.5) + Treasure 2(2) = 15.5. Effect = 5.5 ✓
 
             // Budget 21: STR 6(6) + HP 8(8) + INIT 1(1.5) + Treasure 0(0) = 15.5. Effect budget = 5.5 ✓
@@ -132,7 +148,9 @@ public static partial class CardSetSeeder
                 hitPoints: 8,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Demon. When eliminated: deal 3 damage to all attacking allies. With Disadvantage: +2 HP"),
+                effect: "Race: Demon. When eliminated: deal 3 damage to all attacking allies. With Disadvantage: +2 HP",
+                race: Race.Demon,
+                effectTags: "ON_DEATH|DAMAGE:3:ALL_ENEMIES\nWITH_DISADVANTAGE|+HP:2"),
             // Budget 21: STR 6(6) + HP 8(8) + INIT 1(1.5) + Treasure 0(0) = 15.5. Effect = 5.5 ✓
 
             // Budget 18: STR 5(5) + HP 6(6) + INIT 1(1.5) + Treasure 1(1) = 13.5. Effect budget = 4.5... round to 5 ✓
@@ -145,7 +163,9 @@ public static partial class CardSetSeeder
                 hitPoints: 6,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Construct. Immune to consumable effects. Equipment attacks deal no damage to this monster"),
+                effect: "Race: Construct. Immune to consumable effects. Equipment attacks deal no damage to this monster",
+                race: Race.Construct,
+                effectTags: "PASSIVE|IMMUNE_CONSUMABLE|IMMUNE_EQUIPMENT_DAMAGE"),
             // Budget 18: STR 5(5) + HP 6(6) + INIT 1(1.5) + Treasure 1(1) = 13.5. Effect = 4.5 (conservative rare) ✓
 
             // =====================
@@ -162,7 +182,9 @@ public static partial class CardSetSeeder
                 hitPoints: 6,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Dragon. With Advantage: +2 STR. Reduces one attacker's INIT by 1 this round"),
+                effect: "Race: Dragon. With Advantage: +2 STR. Reduces one attacker's INIT by 1 this round",
+                race: Race.Dragon,
+                effectTags: "WITH_ADVANTAGE|+STR:2\nPASSIVE|-INIT:1:ENEMY"),
             // Budget 18: STR 5(5) + HP 6(6) + INIT 1(1.5) + Treasure 2(2) = 14.5. Effect = 3.5 ✓
 
             // Budget 14: STR 3(3) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect budget = 3.5 ✓
@@ -175,7 +197,9 @@ public static partial class CardSetSeeder
                 hitPoints: 5,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Giant. At start of each round: restore 2 HP. With Disadvantage: only restore 1 HP instead"),
+                effect: "Race: Giant. At start of each round: restore 2 HP. With Disadvantage: only restore 1 HP instead",
+                race: Race.Giant,
+                effectTags: "ON_ROUND_START|HEAL:2:SELF\nWITH_DISADVANTAGE|HEAL:1:SELF"),
             // Budget 14: STR 3(3) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect = 3.5 ✓
 
             // Budget 14: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 2(2) = 10.5. Effect budget = 3.5 ✓
@@ -188,7 +212,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Giant. Ambusher. With Advantage: +3 STR this round"),
+                effect: "Race: Giant. Ambusher. With Advantage: +3 STR this round",
+                race: Race.Giant,
+                effectTags: "PASSIVE|AMBUSHER\nWITH_ADVANTAGE|+STR:3"),
             // Budget 14: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 2(2) = 10.5. Effect = 3.5 ✓
 
             // Budget 14: STR 3(3) + HP 4(4) + INIT 2(3) + Treasure 1(1) = 11. Effect budget = 3 ✓
@@ -201,7 +227,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 2,
                 treasure: 1,
-                effect: "Race: Undead. When this monster takes damage from Equipment: reduce that damage by 2. With Advantage: +1 STR"),
+                effect: "Race: Undead. When this monster takes damage from Equipment: reduce that damage by 2. With Advantage: +1 STR",
+                race: Race.Undead,
+                effectTags: "PASSIVE|REDUCE_EQUIPMENT_DAMAGE:2\nWITH_ADVANTAGE|+STR:1"),
             // Budget 14: STR 3(3) + HP 4(4) + INIT 2(3) + Treasure 1(1) = 11. Effect = 3 ✓
 
             // Budget 18: STR 4(4) + HP 6(6) + INIT 1(1.5) + Treasure 2(2) = 13.5. Effect budget = 4.5 → 4 ✓
@@ -214,7 +242,9 @@ public static partial class CardSetSeeder
                 hitPoints: 6,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Undead. When this monster deals damage: reduce target's STR by 1 this combat. With Disadvantage: +2 HP"),
+                effect: "Race: Undead. When this monster deals damage: reduce target's STR by 1 this combat. With Disadvantage: +2 HP",
+                race: Race.Undead,
+                effectTags: "ON_COMBAT_START|-STR:1:ENEMY\nWITH_DISADVANTAGE|+HP:2"),
             // Budget 18: STR 4(4) + HP 6(6) + INIT 1(1.5) + Treasure 2(2) = 13.5. Effect = 4.5 ✓
 
             // Budget 14: STR 3(3) + HP 4(4) + INIT 2(3) + Treasure 1(1) = 11. Effect budget = 3 ✓
@@ -227,7 +257,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 2,
                 treasure: 1,
-                effect: "Race: Monstrosity. Before combat: reduce the highest-INIT attacker's INIT by 3 this round"),
+                effect: "Race: Monstrosity. Before combat: reduce the highest-INIT attacker's INIT by 3 this round",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|-INIT:3:ENEMY"),
             // Budget 14: STR 3(3) + HP 4(4) + INIT 2(3) + Treasure 1(1) = 11. Effect = 3 ✓
 
             // Budget 14: STR 4(4) + HP 4(4) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect budget = 3.5 ✓
@@ -240,7 +272,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Monstrosity. At start of combat: deal 1 damage to up to 2 attacking allies. With Disadvantage: +1 HP"),
+                effect: "Race: Monstrosity. At start of combat: deal 1 damage to up to 2 attacking allies. With Disadvantage: +1 HP",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|DAMAGE:1:ENEMY|DAMAGE:1:ENEMY\nWITH_DISADVANTAGE|+HP:1"),
             // Budget 14: STR 4(4) + HP 4(4) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect = 3.5 ✓
 
             // Budget 14: STR 3(3) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect budget = 3.5 ✓
@@ -253,7 +287,9 @@ public static partial class CardSetSeeder
                 hitPoints: 5,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Monstrosity. When attacked: reduce attacker's INIT by 2 this round. With Advantage: +1 STR"),
+                effect: "Race: Monstrosity. When attacked: reduce attacker's INIT by 2 this round. With Advantage: +1 STR",
+                race: Race.Monstrosity,
+                effectTags: "PASSIVE|-INIT:2:ENEMY\nWITH_ADVANTAGE|+STR:1"),
             // Budget 14: STR 3(3) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect = 3.5 ✓
 
             // Budget 18: STR 5(5) + HP 5(5) + INIT 1(1.5) + Treasure 2(2) = 13.5. Effect budget = 4.5 → 4 ✓
@@ -266,7 +302,9 @@ public static partial class CardSetSeeder
                 hitPoints: 5,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Monstrosity. Deal 1 damage to a second attacker in combat. With Advantage: +2 STR"),
+                effect: "Race: Monstrosity. Deal 1 damage to a second attacker in combat. With Advantage: +2 STR",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|DAMAGE:1:ENEMY\nWITH_ADVANTAGE|+STR:2"),
             // Budget 18: STR 5(5) + HP 5(5) + INIT 1(1.5) + Treasure 2(2) = 13.5. Effect = 4.5 ✓
 
             // Budget 14: STR 3(3) + HP 4(4) + INIT 2(3) + Treasure 1(1) = 11. Effect budget = 3 ✓
@@ -279,7 +317,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 2,
                 treasure: 1,
-                effect: "Race: Monstrosity. The first attack against this monster each round deals no damage"),
+                effect: "Race: Monstrosity. The first attack against this monster each round deals no damage",
+                race: Race.Monstrosity,
+                effectTags: "PASSIVE|NEGATE_FIRST_ATTACK"),
             // Budget 14: STR 3(3) + HP 4(4) + INIT 2(3) + Treasure 1(1) = 11. Effect = 3 ✓
 
             // Budget 14: STR 4(4) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 11.5. Effect budget = 2.5 → 3 ✓
@@ -292,7 +332,9 @@ public static partial class CardSetSeeder
                 hitPoints: 5,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Monstrosity. +2 STR on the first round of combat. With Disadvantage: +1 HP"),
+                effect: "Race: Monstrosity. +2 STR on the first round of combat. With Disadvantage: +1 HP",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|+STR:2\nWITH_DISADVANTAGE|+HP:1"),
             // Budget 14: STR 4(4) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 11.5. Effect = 2.5 ✓
 
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect budget = 2.5 → 3 ✓
@@ -305,7 +347,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Aberration. Reduce all attackers' INIT by 1 this round. With Advantage: also reduce their STR by 1"),
+                effect: "Race: Aberration. Reduce all attackers' INIT by 1 this round. With Advantage: also reduce their STR by 1",
+                race: Race.Aberration,
+                effectTags: "PASSIVE|-INIT:1:ALL_ENEMIES\nWITH_ADVANTAGE|-STR:1:ALL_ENEMIES"),
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect = 2.5 ✓
 
             // Budget 10: STR 2(2) + HP 3(3) + INIT 2(3) + Treasure 1(1) = 9. Effect budget = 1 → pair with Ambusher for 3 ✓
@@ -318,7 +362,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 2,
                 treasure: 1,
-                effect: "Race: Monstrosity. Ambusher. With Advantage: +1 STR"),
+                effect: "Race: Monstrosity. Ambusher. With Advantage: +1 STR",
+                race: Race.Monstrosity,
+                effectTags: "PASSIVE|AMBUSHER\nWITH_ADVANTAGE|+STR:1"),
             // Budget 10: STR 2(2) + HP 3(3) + INIT 2(3) + Treasure 1(1) = 9. Effect = 1 (Ambusher ~2pt implicit) ✓
 
             // Budget 14: STR 3(3) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect budget = 3.5 ✓
@@ -331,7 +377,9 @@ public static partial class CardSetSeeder
                 hitPoints: 5,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Aberration. When this monster deals damage: reduce target's INIT by 2 this combat. With Disadvantage: +1 STR"),
+                effect: "Race: Aberration. When this monster deals damage: reduce target's INIT by 2 this combat. With Disadvantage: +1 STR",
+                race: Race.Aberration,
+                effectTags: "ON_COMBAT_START|-INIT:2:ENEMY\nWITH_DISADVANTAGE|+STR:1"),
             // Budget 14: STR 3(3) + HP 5(5) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect = 3.5 ✓
 
             // Budget 14: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 2(2) = 10.5. Effect budget = 3.5 ✓
@@ -344,7 +392,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Monstrosity. Ambusher. When this monster deals damage: exile 1 card from attacker's deck"),
+                effect: "Race: Monstrosity. Ambusher. When this monster deals damage: exile 1 card from attacker's deck",
+                race: Race.Monstrosity,
+                effectTags: "PASSIVE|AMBUSHER\nON_COMBAT_START|EXILE_DECK:1"),
             // Budget 14: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 2(2) = 10.5. Effect = 3.5 ✓
 
             // Budget 14: STR 4(4) + HP 5(5) + INIT 1(1.5) + Treasure 0(0) = 10.5. Effect budget = 3.5 ✓
@@ -357,7 +407,9 @@ public static partial class CardSetSeeder
                 hitPoints: 5,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Monstrosity. Ignores Ambusher protection on attacking allies. With Advantage: +2 STR"),
+                effect: "Race: Monstrosity. Ignores Ambusher protection on attacking allies. With Advantage: +2 STR",
+                race: Race.Monstrosity,
+                effectTags: "PASSIVE|IGNORE_AMBUSHER\nWITH_ADVANTAGE|+STR:2"),
             // Budget 14: STR 4(4) + HP 5(5) + INIT 1(1.5) + Treasure 0(0) = 10.5. Effect = 3.5 ✓
 
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect budget = 2.5 → 3 ✓
@@ -370,7 +422,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Monstrosity. When this monster deals damage: reduce target's INIT to 0 this round"),
+                effect: "Race: Monstrosity. When this monster deals damage: reduce target's INIT to 0 this round",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|SET_INIT:0:ENEMY"),
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect = 2.5 ✓
 
             // Budget 14: STR 4(4) + HP 4(4) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect budget = 3.5 ✓
@@ -383,7 +437,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Aberration. When this monster deals damage: destroy target's Equipment. With Disadvantage: +2 HP"),
+                effect: "Race: Aberration. When this monster deals damage: destroy target's Equipment. With Disadvantage: +2 HP",
+                race: Race.Aberration,
+                effectTags: "ON_COMBAT_START|DESTROY_EQUIPMENT:ENEMY\nWITH_DISADVANTAGE|+HP:2"),
             // Budget 14: STR 4(4) + HP 4(4) + INIT 1(1.5) + Treasure 1(1) = 10.5. Effect = 3.5 ✓
 
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect budget = 2.5 → 3 ✓
@@ -396,7 +452,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Monstrosity. At start of each round: reduce one random attacker's INIT by 1. With Advantage: +1 STR"),
+                effect: "Race: Monstrosity. At start of each round: reduce one random attacker's INIT by 1. With Advantage: +1 STR",
+                race: Race.Monstrosity,
+                effectTags: "ON_ROUND_START|-INIT:1:ENEMY\nWITH_ADVANTAGE|+STR:1"),
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect = 2.5 ✓
 
             // Budget 10: STR 2(2) + HP 2(2) + INIT 1(1.5) + Treasure 2(2) = 7.5. Effect budget = 2.5 → 3 ✓
@@ -409,7 +467,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 2,
-                effect: "Race: Monstrosity. When this monster deals damage: destroy target's Equipment. +1 STR against allies with Equipment"),
+                effect: "Race: Monstrosity. When this monster deals damage: destroy target's Equipment. +1 STR against allies with Equipment",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|DESTROY_EQUIPMENT:ENEMY\nPASSIVE|IF_HAS_EQUIPMENT|+STR:1"),
             // Budget 10: STR 2(2) + HP 2(2) + INIT 1(1.5) + Treasure 2(2) = 7.5. Effect = 2.5 ✓
 
             // =====================
@@ -426,7 +486,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Goblinoid. With Advantage: +1 STR"),
+                effect: "Race: Goblinoid. With Advantage: +1 STR",
+                race: Race.Goblinoid,
+                effectTags: "WITH_ADVANTAGE|+STR:1"),
             // Budget 6: STR 2(2) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 5.5. Effect = 0.5 ✓
 
             // Budget 10: STR 3(3) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect budget = 1.5 ✓
@@ -439,7 +501,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Orc. +1 STR against allies with 3 or less HP remaining"),
+                effect: "Race: Orc. +1 STR against allies with 3 or less HP remaining",
+                race: Race.Orc,
+                effectTags: "PASSIVE|IF_LOW_HP:3|+STR:1"),
             // Budget 10: STR 3(3) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect = 1.5 ✓
 
             // Budget 6: STR 2(2) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 5.5. Effect budget = 0.5 ✓
@@ -452,7 +516,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Undead. With Disadvantage: +1 HP"),
+                effect: "Race: Undead. With Disadvantage: +1 HP",
+                race: Race.Undead,
+                effectTags: "WITH_DISADVANTAGE|+HP:1"),
             // Budget 6: STR 2(2) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 5.5. Effect = 0.5 ✓
 
             // Budget 6: STR 1(1) + HP 3(3) + INIT 0(0) + Treasure 0(0) = 4. Effect budget = 2 ✓
@@ -465,7 +531,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 0,
                 treasure: 0,
-                effect: "Race: Undead. When eliminated: restore this card from discard to the top of your deck"),
+                effect: "Race: Undead. When eliminated: restore this card from discard to the top of your deck",
+                race: Race.Undead,
+                effectTags: "ON_DEATH|RESTORE_SELF_TO_DECK"),
             // Budget 6: STR 1(1) + HP 3(3) + INIT 0(0) + Treasure 0(0) = 4. Effect = 2 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -478,7 +546,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Goblinoid. When attacked: deal 1 damage to the attacker"),
+                effect: "Race: Goblinoid. When attacked: deal 1 damage to the attacker",
+                race: Race.Goblinoid,
+                effectTags: "PASSIVE|DAMAGE:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 2(2) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 5.5. Effect budget = 0.5 ✓
@@ -491,7 +561,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Beast. With Advantage: +1 STR"),
+                effect: "Race: Beast. With Advantage: +1 STR",
+                race: Race.Beast,
+                effectTags: "WITH_ADVANTAGE|+STR:1"),
             // Budget 6: STR 2(2) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 5.5. Effect = 0.5 ✓
 
             // Budget 6: STR 1(1) + HP 3(3) + INIT 1(1.5) + Treasure 0(0) = 5.5. Effect budget = 0.5 ✓
@@ -504,7 +576,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Beast. When this monster deals damage: reduce target's INIT by 1 this round"),
+                effect: "Race: Beast. When this monster deals damage: reduce target's INIT by 1 this round",
+                race: Race.Beast,
+                effectTags: "ON_COMBAT_START|-INIT:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 3(3) + INIT 1(1.5) + Treasure 0(0) = 5.5. Effect = 0.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -517,7 +591,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Beast. When this monster deals damage: deal 1 additional damage next round"),
+                effect: "Race: Beast. When this monster deals damage: deal 1 additional damage next round",
+                race: Race.Beast,
+                effectTags: "ON_COMBAT_START|DAMAGE:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 1(1) = 5.5. Effect budget = 0.5 ✓
@@ -530,7 +606,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Human. With Advantage: +1 Treasure"),
+                effect: "Race: Human. With Advantage: +1 Treasure",
+                race: Race.Human,
+                effectTags: "WITH_ADVANTAGE|+TREASURE:1"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 1(1) = 5.5. Effect = 0.5 ✓
 
             // Budget 10: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 0(0) = 8.5. Effect budget = 1.5 ✓
@@ -543,7 +621,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Human. When this monster deals damage: exile 1 card from the top of attacker's deck"),
+                effect: "Race: Human. When this monster deals damage: exile 1 card from the top of attacker's deck",
+                race: Race.Human,
+                effectTags: "ON_COMBAT_START|EXILE_DECK:1"),
             // Budget 10: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 0(0) = 8.5. Effect = 1.5 ✓
 
             // Budget 10: STR 3(3) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect budget = 1.5 ✓
@@ -556,7 +636,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Gnoll. When this monster eliminates an ally: +2 STR this combat"),
+                effect: "Race: Gnoll. When this monster eliminates an ally: +2 STR this combat",
+                race: Race.Gnoll,
+                effectTags: "ON_KILL|+STR:2"),
             // Budget 10: STR 3(3) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect = 1.5 ✓
 
             // Budget 10: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 0(0) = 8.5. Effect budget = 1.5 ✓
@@ -569,7 +651,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Goblinoid. With Advantage: +1 STR and +1 HP"),
+                effect: "Race: Goblinoid. With Advantage: +1 STR and +1 HP",
+                race: Race.Goblinoid,
+                effectTags: "WITH_ADVANTAGE|+STR:1|+HP:1"),
             // Budget 10: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 0(0) = 8.5. Effect = 1.5 ✓
 
             // Budget 10: STR 3(3) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect budget = 1.5 ✓
@@ -582,7 +666,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Goblinoid. Ambusher. With Disadvantage: +1 HP"),
+                effect: "Race: Goblinoid. Ambusher. With Disadvantage: +1 HP",
+                race: Race.Goblinoid,
+                effectTags: "PASSIVE|AMBUSHER\nWITH_DISADVANTAGE|+HP:1"),
             // Budget 10: STR 3(3) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect = 1.5 ✓
 
             // Budget 10: STR 2(2) + HP 3(3) + INIT 2(3) + Treasure 1(1) = 9. Effect budget = 1 ✓
@@ -595,7 +681,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 2,
                 treasure: 1,
-                effect: "Race: Monstrosity. Reduces one random attacker's INIT by 1 this round"),
+                effect: "Race: Monstrosity. Reduces one random attacker's INIT by 1 this round",
+                race: Race.Monstrosity,
+                effectTags: "PASSIVE|-INIT:1:ENEMY"),
             // Budget 10: STR 2(2) + HP 3(3) + INIT 2(3) + Treasure 1(1) = 9. Effect = 1 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -608,7 +696,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Beast. When this monster deals damage: restore 1 HP to this monster"),
+                effect: "Race: Beast. When this monster deals damage: restore 1 HP to this monster",
+                race: Race.Beast,
+                effectTags: "ON_COMBAT_START|HEAL:1:SELF"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -621,7 +711,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Beast. Negates Ambusher protection on one attacking ally"),
+                effect: "Race: Beast. Negates Ambusher protection on one attacking ally",
+                race: Race.Beast,
+                effectTags: "PASSIVE|IGNORE_AMBUSHER"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -634,7 +726,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Monstrosity. With Advantage: reduce one attacker's STR by 2 this round"),
+                effect: "Race: Monstrosity. With Advantage: reduce one attacker's STR by 2 this round",
+                race: Race.Monstrosity,
+                effectTags: "WITH_ADVANTAGE|-STR:2:ENEMY"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 10: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 0(0) = 8.5. Effect budget = 1.5 ✓
@@ -647,7 +741,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Undead. When this monster deals damage: reduce target's INIT by 1 this round"),
+                effect: "Race: Undead. When this monster deals damage: reduce target's INIT by 1 this round",
+                race: Race.Undead,
+                effectTags: "ON_COMBAT_START|-INIT:1:ENEMY"),
             // Budget 10: STR 3(3) + HP 4(4) + INIT 1(1.5) + Treasure 0(0) = 8.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -660,7 +756,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Undead. When this monster deals damage: reduce target's STR by 1 this combat"),
+                effect: "Race: Undead. When this monster deals damage: reduce target's STR by 1 this combat",
+                race: Race.Undead,
+                effectTags: "ON_COMBAT_START|-STR:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 3(3) + INIT 0(0) + Treasure 0(0) = 4. Effect budget = 2 ✓
@@ -673,7 +771,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 0,
                 treasure: 0,
-                effect: "Race: Plant. When attacked: deal 1 damage to the attacker"),
+                effect: "Race: Plant. When attacked: deal 1 damage to the attacker",
+                race: Race.Plant,
+                effectTags: "PASSIVE|DAMAGE:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 3(3) + INIT 0(0) + Treasure 0(0) = 4. Effect = 2 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -686,7 +786,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Monstrosity. When this monster deals damage: reduce target's STR by 1 this round"),
+                effect: "Race: Monstrosity. When this monster deals damage: reduce target's STR by 1 this round",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|-STR:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 2(2) + HP 1(1) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -699,7 +801,9 @@ public static partial class CardSetSeeder
                 hitPoints: 1,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Monstrosity. +2 STR on the first round of combat"),
+                effect: "Race: Monstrosity. +2 STR on the first round of combat",
+                race: Race.Monstrosity,
+                effectTags: "ON_COMBAT_START|+STR:2"),
             // Budget 6: STR 2(2) + HP 1(1) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 0(0) + Treasure 0(0) = 3. Effect budget = 3 → cap at 2 ✓
@@ -712,7 +816,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 0,
                 treasure: 0,
-                effect: "Race: Plant. When eliminated: deal 2 damage to the ally that eliminated this monster"),
+                effect: "Race: Plant. When eliminated: deal 2 damage to the ally that eliminated this monster",
+                race: Race.Plant,
+                effectTags: "ON_DEATH|DAMAGE:2:ENEMY"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 0(0) + Treasure 0(0) = 3. Effect = 3 (strong for common, but stats are very weak) ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -725,7 +831,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Beast. Reduce one attacker's INIT by 1 this round"),
+                effect: "Race: Beast. Reduce one attacker's INIT by 1 this round",
+                race: Race.Beast,
+                effectTags: "PASSIVE|-INIT:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 1(1) + INIT 1(1.5) + Treasure 0(0) = 3.5. Effect budget = 2.5 → 2 ✓
@@ -738,7 +846,9 @@ public static partial class CardSetSeeder
                 hitPoints: 1,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Beast. When this monster deals damage: reduce target's STR by 1 and INIT by 1 this round"),
+                effect: "Race: Beast. When this monster deals damage: reduce target's STR by 1 and INIT by 1 this round",
+                race: Race.Beast,
+                effectTags: "ON_COMBAT_START|-STR:1:ENEMY|-INIT:1:ENEMY"),
             // Budget 6: STR 1(1) + HP 1(1) + INIT 1(1.5) + Treasure 0(0) = 3.5. Effect = 2.5 ✓
 
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect budget = 2.5 → 2 ✓
@@ -751,7 +861,9 @@ public static partial class CardSetSeeder
                 hitPoints: 3,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Elemental. When eliminated: deal 2 damage to the ally that eliminated this monster"),
+                effect: "Race: Elemental. When eliminated: deal 2 damage to the ally that eliminated this monster",
+                race: Race.Elemental,
+                effectTags: "ON_DEATH|DAMAGE:2:ENEMY"),
             // Budget 10: STR 2(2) + HP 3(3) + INIT 1(1.5) + Treasure 1(1) = 7.5. Effect = 2.5 ✓
 
             // Budget 10: STR 2(2) + HP 4(4) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect budget = 1.5 ✓
@@ -764,7 +876,9 @@ public static partial class CardSetSeeder
                 hitPoints: 4,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Elemental. When this monster deals damage: reduce target's INIT by 1 this round"),
+                effect: "Race: Elemental. When this monster deals damage: reduce target's INIT by 1 this round",
+                race: Race.Elemental,
+                effectTags: "ON_COMBAT_START|-INIT:1:ENEMY"),
             // Budget 10: STR 2(2) + HP 4(4) + INIT 1(1.5) + Treasure 1(1) = 8.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -777,7 +891,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Demon. Ambusher"),
+                effect: "Race: Demon. Ambusher",
+                race: Race.Demon,
+                effectTags: "PASSIVE|AMBUSHER"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect budget = 1.5 ✓
@@ -790,7 +906,9 @@ public static partial class CardSetSeeder
                 hitPoints: 2,
                 initiative: 1,
                 treasure: 0,
-                effect: "Race: Demon. Ambusher. With Disadvantage: +1 HP"),
+                effect: "Race: Demon. Ambusher. With Disadvantage: +1 HP",
+                race: Race.Demon,
+                effectTags: "PASSIVE|AMBUSHER\nWITH_DISADVANTAGE|+HP:1"),
             // Budget 6: STR 1(1) + HP 2(2) + INIT 1(1.5) + Treasure 0(0) = 4.5. Effect = 1.5 ✓
 
             // Budget 6: STR 2(2) + HP 1(1) + INIT 1(1.5) + Treasure 1(1) = 5.5. Effect budget = 0.5 ✓
@@ -803,7 +921,9 @@ public static partial class CardSetSeeder
                 hitPoints: 1,
                 initiative: 1,
                 treasure: 1,
-                effect: "Race: Construct. With Advantage: +1 STR"),
+                effect: "Race: Construct. With Advantage: +1 STR",
+                race: Race.Construct,
+                effectTags: "WITH_ADVANTAGE|+STR:1"),
             // Budget 6: STR 2(2) + HP 1(1) + INIT 1(1.5) + Treasure 1(1) = 5.5. Effect = 0.5 ✓
         };
     }

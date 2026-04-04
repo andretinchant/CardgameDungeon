@@ -24,8 +24,9 @@ public class MonsterCard : Card
         int initiative,
         int treasure = 0,
         string? effect = null,
-        Race race = Race.Beast)
-        : base(id, name, rarity, cost)
+        Race race = Race.Beast,
+        string? effectTags = null)
+        : base(id, name, rarity, cost, effectTags)
     {
         if (strength < 0)
             throw new ArgumentOutOfRangeException(nameof(strength));

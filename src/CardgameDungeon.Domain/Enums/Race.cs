@@ -18,5 +18,9 @@ public enum Race
     Giant,
     Aberration,
     Dragon,
-    Drow
+    Drow,
+    Monstrosity,
+    Goblinoid,
+    Gnoll,
+    Plant
 }

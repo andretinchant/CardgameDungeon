@@ -30,14 +30,16 @@ public static partial class CardSetSeeder
                 "Hexblade Champion", Rarity.Rare, 4,
                 3, 5, 2, treasure: 1,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: +3 STR until end of room and draw 2 cards. This Warlock's weapon deals +1 damage to marked target",
-                race: Race.Human, allyClass: AllyClass.Warlock),
+                race: Race.Human, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|+STR:3|DRAW:2\nPASSIVE|DAMAGE:1:MARKED"),
 
             // STR2(2) + HP4(4) + INIT2(3) + Treasure0(0) = 9. Effect = 5 ✓ Budget 14
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000003"),
                 "Fey Pact Trickster", Rarity.Rare, 3,
                 2, 4, 2, treasure: 0,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: return 2 cards from discard to hand. Marked enemy has -1 STR",
-                race: Race.Elf, allyClass: AllyClass.Warlock),
+                race: Race.Elf, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|DRAW:2\nPASSIVE|-STR:1:MARKED"),
 
             // ── UNCOMMON (3) ── Budget 10-14
             // STR3(3) + HP4(4) + INIT1(1.5) + Treasure1(1) = 9.5. Effect = 4.5 ✓ Budget 14
@@ -45,21 +47,24 @@ public static partial class CardSetSeeder
                 "Fiend Pact Adept", Rarity.Uncommon, 3,
                 3, 4, 1, treasure: 1,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: deal 2 damage to all enemies in same combat group",
-                race: Race.Tiefling, allyClass: AllyClass.Warlock),
+                race: Race.Tiefling, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|DAMAGE:2:ENEMY_GROUP"),
 
             // STR2(2) + HP3(3) + INIT1(1.5) + Treasure1(1) = 7.5. Effect = 2.5 ✓ Budget 10
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000005"),
                 "Great Old One Cultist", Rarity.Uncommon, 2,
                 2, 3, 1, treasure: 1,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: exile 1 card from opponent's deck",
-                race: Race.Human, allyClass: AllyClass.Warlock),
+                race: Race.Human, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|EXILE_DECK:1"),
 
             // STR3(3) + HP3(3) + INIT2(3) + Treasure1(1) = 10. Effect = 4 ✓ Budget 14
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000006"),
                 "Undead Pact Binder", Rarity.Uncommon, 3,
                 3, 3, 2, treasure: 1,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: restore this Warlock to full HP. +2 STR against Undead",
-                race: Race.Human, allyClass: AllyClass.Warlock),
+                race: Race.Human, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|HEAL:99:SELF\nPASSIVE|FAVORED_ENEMY:Undead|+STR:2"),
 
             // ── COMMON (4) ── Budget 6-10
             // STR2(2) + HP3(3) + INIT0(0) + Treasure0(0) = 5. Effect = 1 ✓ Budget 6
@@ -67,28 +72,32 @@ public static partial class CardSetSeeder
                 "Pact Initiate", Rarity.Common, 1,
                 2, 3, 0, treasure: 0,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: draw 1 card",
-                race: Race.Human, allyClass: AllyClass.Warlock),
+                race: Race.Human, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|DRAW:1"),
 
             // STR3(3) + HP3(3) + INIT1(1.5) + Treasure1(1) = 8.5. Effect = 1.5 ✓ Budget 10
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000008"),
                 "Hex Caster", Rarity.Common, 2,
                 3, 3, 1, treasure: 1,
                 effect: "During initiative: mark 1 enemy. Marked enemy has -1 STR this round",
-                race: Race.Tiefling, allyClass: AllyClass.Warlock),
+                race: Race.Tiefling, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1|-STR:1:MARKED"),
 
             // STR1(1) + HP2(2) + INIT1(1.5) + Treasure1(1) = 5.5. Effect = 0.5 ✓ Budget 6
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000009"),
                 "Dark Apprentice", Rarity.Common, 1,
                 1, 2, 1, treasure: 1,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: +1 STR next round",
-                race: Race.Human, allyClass: AllyClass.Warlock),
+                race: Race.Human, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|+STR:1"),
 
             // STR3(3) + HP4(4) + INIT1(1.5) + Treasure0(0) = 8.5. Effect = 1.5 ✓ Budget 10
             new AllyCard(new Guid("00000000-0000-0000-000A-000000000010"),
                 "Eldritch Knight Pact", Rarity.Common, 2,
                 3, 4, 1, treasure: 0,
                 effect: "During initiative: mark 1 enemy. If marked enemy is eliminated: restore 2 HP to this Warlock",
-                race: Race.Human, allyClass: AllyClass.Warlock),
+                race: Race.Human, allyClass: AllyClass.Warlock,
+                effectTags: "ON_INITIATIVE|MARK_ENEMY:1\nON_MARKED_KILL|HEAL:2:SELF"),
         };
     }
 }

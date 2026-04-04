@@ -28,8 +28,9 @@ public class EquipmentCard : Card
         int hitPointsModifier,
         int initiativeModifier,
         EquipmentSlot slot = EquipmentSlot.Accessory,
-        string? effect = null)
-        : base(id, name, rarity, cost)
+        string? effect = null,
+        string? effectTags = null)
+        : base(id, name, rarity, cost, effectTags)
     {
         Slot = slot;
         StrengthModifier = strengthModifier;

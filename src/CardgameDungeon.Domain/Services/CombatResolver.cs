@@ -1,3 +1,4 @@
+using CardgameDungeon.Domain.Effects;
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Enums;
 using CardgameDungeon.Domain.ValueObjects;
@@ -36,12 +37,18 @@ public class CombatResolver
         bool isBossRoom)
     {
         var advantage = CombatAdvantage.Calculate(attackers.Count, defenders.Count);
-        var atkStrength = attackers.Sum(a => a.Strength);
-        var defStrength = defenders.Sum(a => a.Strength);
-        var atkHp = attackers.Sum(a => a.HitPoints);
-        var defHp = defenders.Sum(a => a.HitPoints);
 
-        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage);
+        var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
+        var defMods = CalculateGroupModifiers(defenders, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
+
+        var atkStrength = attackers.Sum(a => a.Strength) + atkMods.Strength;
+        var defStrength = defenders.Sum(a => a.Strength) + defMods.Strength;
+        var atkHp = attackers.Sum(a => a.HitPoints) + atkMods.HitPoints;
+        var defHp = defenders.Sum(a => a.HitPoints) + defMods.HitPoints;
+
+        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage,
+            atkMods.EliminationDoubled, defMods.EliminationDoubled,
+            atkMods.DamageReduction, defMods.DamageReduction);
     }
 
     public BattleResolutionResult ResolveCombat(
@@ -50,12 +57,18 @@ public class CombatResolver
         bool isBossRoom)
     {
         var advantage = CombatAdvantage.Calculate(attackers.Count, defenders.Count);
-        var atkStrength = attackers.Sum(a => a.Strength);
-        var defStrength = defenders.Sum(m => m.Strength);
-        var atkHp = attackers.Sum(a => a.HitPoints);
-        var defHp = defenders.Sum(m => m.HitPoints);
 
-        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage);
+        var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
+        var defMods = CalculateGroupModifiers(defenders, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
+
+        var atkStrength = attackers.Sum(a => a.Strength) + atkMods.Strength;
+        var defStrength = defenders.Sum(m => m.Strength) + defMods.Strength;
+        var atkHp = attackers.Sum(a => a.HitPoints) + atkMods.HitPoints;
+        var defHp = defenders.Sum(m => m.HitPoints) + defMods.HitPoints;
+
+        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage,
+            atkMods.EliminationDoubled, defMods.EliminationDoubled,
+            atkMods.DamageReduction, defMods.DamageReduction);
     }
 
     public BattleResolutionResult ResolveCombat(
@@ -63,10 +76,18 @@ public class CombatResolver
         BossCard boss)
     {
         var advantage = CombatAdvantage.Calculate(attackers.Count, 1);
-        var atkStrength = attackers.Sum(a => a.Strength);
-        var atkHp = attackers.Sum(a => a.HitPoints);
 
-        return ResolveCore(atkStrength, boss.Strength, atkHp, boss.HitPoints, isBossRoom: true, advantage);
+        var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
+        var bossMods = CalculateCardModifiers(boss, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
+
+        var atkStrength = attackers.Sum(a => a.Strength) + atkMods.Strength;
+        var defStrength = boss.Strength + bossMods.Strength;
+        var atkHp = attackers.Sum(a => a.HitPoints) + atkMods.HitPoints;
+        var defHp = boss.HitPoints + bossMods.HitPoints;
+
+        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom: true, advantage,
+            atkMods.EliminationDoubled, bossMods.EliminationDoubled,
+            atkMods.DamageReduction, bossMods.DamageReduction);
     }
 
     private static BattleResolutionResult ResolveCore(
@@ -75,14 +96,22 @@ public class CombatResolver
         int attackerHp,
         int defenderHp,
         bool isBossRoom,
-        CombatAdvantage? advantage = null)
+        CombatAdvantage? advantage = null,
+        bool attackerElimDoubled = false,
+        bool defenderElimDoubled = false,
+        int attackerDamageReduction = 0,
+        int defenderDamageReduction = 0)
     {
-        // Each side deals damage equal to their strength
-        var damageToAttacker = defenderStrength;
-        var damageToDefender = attackerStrength;
+        // Each side deals damage equal to their strength, reduced by damage reduction
+        var damageToAttacker = Math.Max(0, defenderStrength - attackerDamageReduction);
+        var damageToDefender = Math.Max(0, attackerStrength - defenderDamageReduction);
 
-        var attackerEliminated = IsEliminated(attackerStrength, defenderStrength, attackerHp);
-        var defenderEliminated = IsEliminated(defenderStrength, attackerStrength, defenderHp);
+        // If elimination is doubled, effective STR counts as 2x for elimination checks
+        var atkEffectiveStr = attackerElimDoubled ? attackerStrength * 2 : attackerStrength;
+        var defEffectiveStr = defenderElimDoubled ? defenderStrength * 2 : defenderStrength;
+
+        var attackerEliminated = IsEliminated(attackerStrength, defEffectiveStr, attackerHp);
+        var defenderEliminated = IsEliminated(defenderStrength, atkEffectiveStr, defenderHp);
 
         var outcome = (attackerEliminated, defenderEliminated) switch
         {
@@ -196,6 +225,70 @@ public class CombatResolver
             primaryStrength,
             secondaryStrength,
             retargetCost);
+    }
+
+    #endregion
+
+    #region Effect Processing
+
+    /// <summary>
+    /// Calculates cumulative stat modifiers from all cards' ParsedEffects in a combat group.
+    /// Evaluates PASSIVE, ON_COMBAT_START, WITH_ADVANTAGE, WITH_DISADVANTAGE triggers.
+    /// </summary>
+    private static StatModifiers CalculateGroupModifiers<T>(
+        IReadOnlyList<T> cards, bool hasAdvantage, bool hasDisadvantage) where T : Card
+    {
+        var combined = new StatModifiers();
+
+        foreach (var card in cards)
+        {
+            var mods = CalculateCardModifiers(card, hasAdvantage, hasDisadvantage);
+            combined.Strength += mods.Strength;
+            combined.HitPoints += mods.HitPoints;
+            combined.Initiative += mods.Initiative;
+            combined.DamageReduction += mods.DamageReduction;
+            combined.EliminationDoubled = combined.EliminationDoubled || mods.EliminationDoubled;
+            combined.OpportunityAttackDoubled = combined.OpportunityAttackDoubled || mods.OpportunityAttackDoubled;
+            combined.IgnoreOpportunityAttackLimit = combined.IgnoreOpportunityAttackLimit || mods.IgnoreOpportunityAttackLimit;
+            combined.ForfeitsTreasure = combined.ForfeitsTreasure || mods.ForfeitsTreasure;
+        }
+
+        return combined;
+    }
+
+    private static StatModifiers CalculateCardModifiers(Card card, bool hasAdvantage, bool hasDisadvantage)
+    {
+        var tags = card.ParsedEffects;
+        if (tags.Count == 0) return new StatModifiers();
+
+        var context = new EffectContext
+        {
+            SourceCardId = card.Id,
+            HasAdvantage = hasAdvantage,
+            HasDisadvantage = hasDisadvantage
+        };
+
+        var mods = new StatModifiers();
+
+        // Evaluate combat-relevant triggers
+        var triggers = new[] { EffectTrigger.Passive, EffectTrigger.OnCombatStart };
+        if (hasAdvantage) triggers = [..triggers, EffectTrigger.WithAdvantage];
+        if (hasDisadvantage) triggers = [..triggers, EffectTrigger.WithDisadvantage];
+
+        foreach (var trigger in triggers)
+        {
+            var triggerMods = EffectEngine.CalculateModifiers(tags, trigger, context);
+            mods.Strength += triggerMods.Strength;
+            mods.HitPoints += triggerMods.HitPoints;
+            mods.Initiative += triggerMods.Initiative;
+            mods.DamageReduction += triggerMods.DamageReduction;
+            mods.EliminationDoubled = mods.EliminationDoubled || triggerMods.EliminationDoubled;
+            mods.OpportunityAttackDoubled = mods.OpportunityAttackDoubled || triggerMods.OpportunityAttackDoubled;
+            mods.IgnoreOpportunityAttackLimit = mods.IgnoreOpportunityAttackLimit || triggerMods.IgnoreOpportunityAttackLimit;
+            mods.ForfeitsTreasure = mods.ForfeitsTreasure || triggerMods.ForfeitsTreasure;
+        }
+
+        return mods;
     }
 
     #endregion

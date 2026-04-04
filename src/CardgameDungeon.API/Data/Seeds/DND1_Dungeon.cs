@@ -81,52 +81,72 @@ public static partial class CardSetSeeder
 
             // Budget 30 (cost 6): STR 9(9) + HP 12(12) + INIT 1(1.5) = 22.5. Effect budget = 7.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000001"), "Tiamat", Rarity.Unique, 6, 9, 12, 1,
-                "Race: Dragon. At start of each round: deal 2 damage to all attacking allies. With Advantage: +3 STR this round. Immune to Equipment effects"),
+                "Race: Dragon. At start of each round: deal 2 damage to all attacking allies. With Advantage: +3 STR this round. Immune to Equipment effects",
+                race: Race.Dragon,
+                effectTags: "ON_ROUND_START|DAMAGE:2:ALL_ENEMIES\nWITH_ADVANTAGE|+STR:3\nPASSIVE|IMMUNE_EQUIPMENT"),
             // Budget 30: STR 9(9) + HP 12(12) + INIT 1(1.5) = 22.5. Effect = 7.5 ✓
 
             // Budget 30 (cost 6): STR 8(8) + HP 13(13) + INIT 1(1.5) = 22.5. Effect budget = 7.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000002"), "Vecna the Undying", Rarity.Unique, 6, 8, 13, 1,
-                "Race: Undead. At start of combat: exile 2 cards from attacker's deck. When this boss takes damage: exile 1 card from attacker's deck"),
+                "Race: Undead. At start of combat: exile 2 cards from attacker's deck. When this boss takes damage: exile 1 card from attacker's deck",
+                race: Race.Undead,
+                effectTags: "ON_COMBAT_START|EXILE_DECK:2\nPASSIVE|EXILE_DECK:1"),
             // Budget 30: STR 8(8) + HP 13(13) + INIT 1(1.5) = 22.5. Effect = 7.5 ✓
 
             // Budget 26 (cost 5): STR 8(8) + HP 10(10) + INIT 1(1.5) = 19.5. Effect budget = 6.5 → 7 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000003"), "Strahd von Zarovich", Rarity.Unique, 5, 8, 10, 1,
-                "Race: Undead. When this boss deals damage: restore 3 HP. With Advantage: also reduce target's STR by 2 this combat"),
+                "Race: Undead. When this boss deals damage: restore 3 HP. With Advantage: also reduce target's STR by 2 this combat",
+                race: Race.Undead,
+                effectTags: "ON_COMBAT_START|HEAL:3:SELF\nWITH_ADVANTAGE|-STR:2:ENEMY"),
             // Budget 26: STR 8(8) + HP 10(10) + INIT 1(1.5) = 19.5. Effect = 6.5 ✓
 
             // Budget 30 (cost 6): STR 8(8) + HP 14(14) + INIT 1(1.5) = 23.5. Effect budget = 6.5 → 7 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000004"), "Acererak the Archlich", Rarity.Unique, 6, 8, 14, 1,
-                "Race: Undead. Immune to consumable effects. When this boss takes damage: reduce that damage by 1. With Advantage: exile 1 card from attacker's deck"),
+                "Race: Undead. Immune to consumable effects. When this boss takes damage: reduce that damage by 1. With Advantage: exile 1 card from attacker's deck",
+                race: Race.Undead,
+                effectTags: "PASSIVE|IMMUNE_CONSUMABLE|REDUCE_DAMAGE:1\nWITH_ADVANTAGE|EXILE_DECK:1"),
             // Budget 30: STR 8(8) + HP 14(14) + INIT 1(1.5) = 23.5. Effect = 6.5 ✓
 
             // Budget 34 (cost 7): STR 10(10) + HP 15(15) + INIT 1(1.5) = 26.5. Effect budget = 7.5 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000005"), "Demogorgon", Rarity.Unique, 7, 10, 15, 1,
-                "Race: Demon. Deals damage to two attacking allies each round instead of one. With Disadvantage: +3 HP"),
+                "Race: Demon. Deals damage to two attacking allies each round instead of one. With Disadvantage: +3 HP",
+                race: Race.Demon,
+                effectTags: "PASSIVE|ELIM_DOUBLE\nWITH_DISADVANTAGE|+HP:3"),
             // Budget 34: STR 10(10) + HP 15(15) + INIT 1(1.5) = 26.5. Effect = 7.5 ✓
 
             // Budget 26 (cost 5): STR 8(8) + HP 10(10) + INIT 1(1.5) = 19.5. Effect budget = 6.5 → 7 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000006"), "Lolth the Spider Queen", Rarity.Unique, 5, 8, 10, 1,
-                "Race: Demon. At start of each round: reduce all attackers' INIT by 1. With Advantage: +3 STR this round. Immune to Bomb consumables"),
+                "Race: Demon. At start of each round: reduce all attackers' INIT by 1. With Advantage: +3 STR this round. Immune to Bomb consumables",
+                race: Race.Demon,
+                effectTags: "ON_ROUND_START|-INIT:1:ALL_ENEMIES\nWITH_ADVANTAGE|+STR:3\nPASSIVE|IMMUNE_BOMB"),
             // Budget 26: STR 8(8) + HP 10(10) + INIT 1(1.5) = 19.5. Effect = 6.5 ✓
 
             // Budget 37 (cost 8): STR 12(12) + HP 17(17) + INIT 1(1.5) = 30.5. Effect budget = 6.5 → 7 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000007"), "Asmodeus", Rarity.Unique, 8, 12, 17, 1,
-                "Race: Demon. Allies that deal damage to this boss: exile 1 card from their deck. With Advantage: +2 STR and deal 1 damage to all attackers"),
+                "Race: Demon. Allies that deal damage to this boss: exile 1 card from their deck. With Advantage: +2 STR and deal 1 damage to all attackers",
+                race: Race.Demon,
+                effectTags: "PASSIVE|EXILE_DECK:1\nWITH_ADVANTAGE|+STR:2|DAMAGE:1:ALL_ENEMIES"),
             // Budget 37: STR 12(12) + HP 17(17) + INIT 1(1.5) = 30.5. Effect = 6.5 ✓
 
             // Budget 34 (cost 7): STR 11(11) + HP 15(15) + INIT 1(1.5) = 27.5. Effect budget = 6.5 → 7 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000008"), "Orcus", Rarity.Unique, 7, 11, 15, 1,
-                "Race: Undead. At start of each round: restore 1 card from your discard to the top of your deck. When this boss eliminates an ally: exile that ally instead of discarding"),
+                "Race: Undead. At start of each round: restore 1 card from your discard to the top of your deck. When this boss eliminates an ally: exile that ally instead of discarding",
+                race: Race.Undead,
+                effectTags: "ON_ROUND_START|RESTORE_CARD_FROM_DISCARD\nON_KILL|EXILE_TARGET"),
             // Budget 34: STR 11(11) + HP 15(15) + INIT 1(1.5) = 27.5. Effect = 6.5 ✓
 
             // Budget 26 (cost 5): STR 8(8) + HP 9(9) + INIT 2(3) = 20. Effect budget = 6 → pair for 7 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000009"), "Zariel the Fallen", Rarity.Unique, 5, 8, 9, 2,
-                "Race: Demon. +2 STR for each ally eliminated this combat. With Advantage: deal 2 damage to the strongest attacking ally"),
+                "Race: Demon. +2 STR for each ally eliminated this combat. With Advantage: deal 2 damage to the strongest attacking ally",
+                race: Race.Demon,
+                effectTags: "ON_KILL|+STR:2\nWITH_ADVANTAGE|DAMAGE:2:ENEMY"),
             // Budget 26: STR 8(8) + HP 9(9) + INIT 2(3) = 20. Effect = 6 ✓
 
             // Budget 40 (cost 9): STR 13(13) + HP 19(19) + INIT 1(1.5) = 33.5. Effect budget = 6.5 → 7 ✓
             new BossCard(new Guid("00000000-0000-0000-0006-000000000010"), "Halaster Blackcloak", Rarity.Unique, 9, 13, 19, 1,
-                "Race: Human. At start of each round: swap two attackers' combat assignments. Immune to consumable effects. With Disadvantage: +3 HP"),
+                "Race: Human. At start of each round: swap two attackers' combat assignments. Immune to consumable effects. With Disadvantage: +3 HP",
+                race: Race.Human,
+                effectTags: "ON_ROUND_START|SWAP_ASSIGNMENTS\nPASSIVE|IMMUNE_CONSUMABLE\nWITH_DISADVANTAGE|+HP:3"),
             // Budget 40: STR 13(13) + HP 19(19) + INIT 1(1.5) = 33.5. Effect = 6.5 ✓
         };
     }

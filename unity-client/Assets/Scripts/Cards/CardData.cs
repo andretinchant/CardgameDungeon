@@ -23,7 +23,8 @@ namespace CardgameDungeon.Unity.Cards
     public enum Race
     {
         Human, Elf, Dwarf, Orc, Halfling, Dragonborn, Tiefling,
-        Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon, Drow
+        Goblin, Undead, Demon, Beast, Construct, Elemental, Giant, Aberration, Dragon, Drow,
+        Monstrosity, Goblinoid, Gnoll, Plant
     }
 
     public enum AllyClass

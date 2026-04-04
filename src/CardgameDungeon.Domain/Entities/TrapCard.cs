@@ -16,8 +16,9 @@ public class TrapCard : Card
         Rarity rarity,
         int cost,
         int damage,
-        string effect)
-        : base(id, name, rarity, cost)
+        string effect,
+        string? effectTags = null)
+        : base(id, name, rarity, cost, effectTags)
     {
         if (damage < 0)
             throw new ArgumentOutOfRangeException(nameof(damage));

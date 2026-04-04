@@ -22,8 +22,9 @@ public class BossCard : Card
         int hitPoints,
         int initiative,
         string? effect = null,
-        Race race = Race.Dragon)
-        : base(id, name, rarity, cost)
+        Race race = Race.Dragon,
+        string? effectTags = null)
+        : base(id, name, rarity, cost, effectTags)
     {
         if (strength <= 0)
             throw new ArgumentOutOfRangeException(nameof(strength), "Boss strength must be positive.");

@@ -70,5 +70,7 @@ internal class CardDto
     public int? Order { get; set; }
     public int? MonsterCostBudget { get; set; }
     public List<Guid>? MonsterIds { get; set; }
+    // Effect tags (all card types)
+    public string? EffectTags { get; set; }
     public List<Guid>? TrapIds { get; set; }
 }

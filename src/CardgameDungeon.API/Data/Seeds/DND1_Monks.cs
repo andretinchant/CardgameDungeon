@@ -29,14 +29,16 @@ public static partial class CardSetSeeder
                 "Shadow Monk", Rarity.Rare, 4,
                 4, 4, 2, treasure: 1,
                 effect: "Discard 1 from hand: cancel one combat this ally is in. Exile 1 from hand: this ally cannot be targeted until next round. With Advantage: +2 STR",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:DISCARD_HAND:1|CANCEL_COMBAT\nON_ACTIVATE|COST:EXILE_HAND:1|REDUCE_DAMAGE:99\nWITH_ADVANTAGE|+STR:2"),
 
             // STR3(3) + HP5(5) + INIT2(3) + Treasure0(0) = 11. Effect = 3. Budget 14 ✓
             new AllyCard(new Guid("00000000-0000-0000-0009-000000000003"),
                 "Kensei Blademaster", Rarity.Rare, 3,
                 3, 5, 2, treasure: 0,
                 effect: "Exile 1 from hand: attack twice this round. If equipped with Weapon: +1 STR on each attack",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:EXILE_HAND:1|JOIN_COMBAT\nPASSIVE|IF_EQUIPPED:Weapon|+STR:1"),
 
             // ── UNCOMMON (3) ── Budget 10-14
             // STR3(3) + HP4(4) + INIT2(3) + Treasure0(0) = 10. Effect = 4 ✓ Budget 14
@@ -44,21 +46,24 @@ public static partial class CardSetSeeder
                 "Open Hand Adept", Rarity.Uncommon, 3,
                 3, 4, 2, treasure: 0,
                 effect: "Discard 1 from hand: cancel one combat this ally is in. With Disadvantage: +2 HP",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:DISCARD_HAND:1|CANCEL_COMBAT\nWITH_DISADVANTAGE|+HP:2"),
 
             // STR2(2) + HP3(3) + INIT2(3) + Treasure0(0) = 8. Effect = 2. Budget 10 ✓
             new AllyCard(new Guid("00000000-0000-0000-0009-000000000005"),
                 "Drunken Fist Brawler", Rarity.Uncommon, 2,
                 2, 3, 2, treasure: 0,
                 effect: "Discard 1 from hand: disengage without triggering opportunity attack. +1 STR against enemies with higher INIT",
-                race: Race.Halfling, allyClass: AllyClass.Monk),
+                race: Race.Halfling, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:DISCARD_HAND:1|IGNORE_OPP_ATTACK_LIMIT\nPASSIVE|+STR:1"),
 
             // STR3(3) + HP3(3) + INIT2(3) + Treasure1(1) = 10. Effect = 4 ✓ Budget 14
             new AllyCard(new Guid("00000000-0000-0000-0009-000000000006"),
                 "Sun Soul Disciple", Rarity.Uncommon, 3,
                 3, 3, 2, treasure: 1,
                 effect: "Exile 1 from hand: deal STR damage to an enemy in a different combat group. +1 STR against Undead",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:EXILE_HAND:1|DAMAGE:STR:ENEMY\nPASSIVE|FAVORED_ENEMY:Undead|+STR:1"),
 
             // ── COMMON (4) ── Budget 6-10
             // STR2(2) + HP3(3) + INIT0(0) + Treasure0(0) = 5. Effect = 1 ✓ Budget 6
@@ -66,28 +71,32 @@ public static partial class CardSetSeeder
                 "Temple Initiate", Rarity.Common, 1,
                 2, 3, 0, treasure: 0,
                 effect: "Discard 1 from hand: +1 STR this round",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:DISCARD_HAND:1|+STR:1"),
 
             // STR3(3) + HP3(3) + INIT1(1.5) + Treasure1(1) = 8.5. Effect = 1.5 ✓ Budget 10
             new AllyCard(new Guid("00000000-0000-0000-0009-000000000008"),
                 "Traveling Ascetic", Rarity.Common, 2,
                 3, 3, 1, treasure: 1,
                 effect: "Discard 1 from hand: disengage without triggering opportunity attack",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:DISCARD_HAND:1|IGNORE_OPP_ATTACK_LIMIT"),
 
             // STR1(1) + HP3(3) + INIT1(1.5) + Treasure0(0) = 5.5. Effect = 0.5 ✓ Budget 6
             new AllyCard(new Guid("00000000-0000-0000-0009-000000000009"),
                 "Meditation Student", Rarity.Common, 1,
                 1, 3, 1, treasure: 0,
                 effect: "With Disadvantage: +1 HP",
-                race: Race.Elf, allyClass: AllyClass.Monk),
+                race: Race.Elf, allyClass: AllyClass.Monk,
+                effectTags: "WITH_DISADVANTAGE|+HP:1"),
 
             // STR3(3) + HP4(4) + INIT1(1.5) + Treasure0(0) = 8.5. Effect = 1.5 ✓ Budget 10
             new AllyCard(new Guid("00000000-0000-0000-0009-000000000010"),
                 "Street Fighter", Rarity.Common, 2,
                 3, 4, 1, treasure: 0,
                 effect: "Discard 1 from hand: cancel one combat this ally is in",
-                race: Race.Human, allyClass: AllyClass.Monk),
+                race: Race.Human, allyClass: AllyClass.Monk,
+                effectTags: "ON_ACTIVATE|COST:DISCARD_HAND:1|CANCEL_COMBAT"),
         };
     }
 }
