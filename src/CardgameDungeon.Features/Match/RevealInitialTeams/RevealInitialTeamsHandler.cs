@@ -13,7 +13,6 @@ public class RevealInitialTeamsHandler(IMatchRepository matchRepo, IMatchNotifie
             ?? throw new KeyNotFoundException($"Match {request.MatchId} not found.");
 
         match.RevealTeams();
-        match.RevealRoom();
 
         await matchRepo.UpdateAsync(match, ct);
 

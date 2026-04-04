@@ -22,7 +22,7 @@ public class ConcedeRoomHandlerTests
             new ConcedeRoomCommand(match.Id, defender.PlayerId),
             CancellationToken.None);
 
-        Assert.Equal(MatchPhase.RoomResolution, response.Phase);
+        Assert.Equal(MatchPhase.RoomCleared, response.Phase);
     }
 
     [Fact]

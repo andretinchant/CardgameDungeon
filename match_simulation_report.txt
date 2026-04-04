@@ -18,21 +18,21 @@ P1 deck after setup: 69 cards
 P2 deck after setup: 69 cards
 Teams revealed!
 
-══════════════ ROUND 1 ══════════════
-Room: 1 | Phase: RoomReveal | Boss: False
-Revealing room: Goblin Cave
-→ Phase: Initiative
+══════════════ ROUND 1 (P1's turn) ══════════════
+Room: 1 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
-  INITIATIVE
+  PLAY CARDS (P1)
 ═══════════════════════════════════════
-P1 INIT: 4 | P2 INIT: 4
-TIED — P1 bets 1
-Winner: P1
-P1 chooses to ATTACK (allies:4 monsters:2)
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
   P2 plays MONSTER: P2-Troll-4 (STR:4 HP:5)
   P2 plays MONSTER: P2-Troll-0 (STR:4 HP:5)
   P2 sets TRAP: P2-Spike-Trap-8 (DMG:2)
   P2 sets TRAP: P2-Fire-Trap-3 (DMG:3)
+→ Phase: Combat
   *** TRAP ACTIVATES: P2-Spike-Trap-8 deals 2 damage! ***
     → P1-Rogue-4 takes 2 trap damage
   *** TRAP ACTIVATES: P2-Fire-Trap-3 deals 3 damage! ***
@@ -47,24 +47,24 @@ Defender (P2) monsters: P2-Troll-4(S4/H5), P2-Troll-0(S4/H5)
   Damage: 4 to attacker, 8 to defender
   Advantage: ATK=Advantage DEF=Disadvantage
   *** MONSTER P2-Troll-4 ELIMINATED ***
-  Phase: RoomResolution
-ADVANCE → Room 2 | Phase: RoomReveal
-P1: Allies=3 Deck=68 Hand=8 Discard=1 Exile=0
+  Phase: RoomCleared
+ADVANCE → Room 2 | Phase: PlayCards
+P1: Allies=3 Deck=69 Hand=8 Discard=0 Exile=0
 P2: Allies=3 Deck=65 Hand=8 Discard=4 Exile=0
 
-══════════════ ROUND 2 ══════════════
-Room: 2 | Phase: RoomReveal | Boss: False
-Revealing room: Spider Nest
-→ Phase: Initiative
+══════════════ ROUND 2 (P1's turn) ══════════════
+Room: 2 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
-  INITIATIVE
+  PLAY CARDS (P1)
 ═══════════════════════════════════════
-P1 INIT: 4 | P2 INIT: 4
-TIED — P1 bets 1
-Winner: P1
-P1 chooses to ATTACK (allies:4 monsters:2)
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
   P2 plays MONSTER: P2-Wyvern-4 (STR:5 HP:7)
   P2 plays MONSTER: P2-Goblin-1 (STR:2 HP:3)
+→ Phase: Combat
 ═══════════════════════════════════════
   COMBAT (Room 2)
 ═══════════════════════════════════════
@@ -75,23 +75,23 @@ Defender (P2) monsters: P2-Wyvern-4(S5/H7), P2-Goblin-1(S2/H3)
   Damage: 5 to attacker, 8 to defender
   Advantage: ATK=Advantage DEF=Disadvantage
   *** MONSTER P2-Wyvern-4 ELIMINATED ***
-  Phase: RoomResolution
-ADVANCE → Room 3 | Phase: RoomReveal
-P1: Allies=3 Deck=67 Hand=8 Discard=2 Exile=0
+  Phase: RoomCleared
+ADVANCE → Room 3 | Phase: PlayCards
+P1: Allies=3 Deck=69 Hand=8 Discard=0 Exile=0
 P2: Allies=3 Deck=63 Hand=8 Discard=6 Exile=0
 
-══════════════ ROUND 3 ══════════════
-Room: 3 | Phase: RoomReveal | Boss: False
-Revealing room: Undead Crypt
-→ Phase: Initiative
+══════════════ ROUND 3 (P1's turn) ══════════════
+Room: 3 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
-  INITIATIVE
+  PLAY CARDS (P1)
 ═══════════════════════════════════════
-P1 INIT: 4 | P2 INIT: 4
-TIED — P1 bets 1
-Winner: P1
-P1 chooses to ATTACK (allies:4 monsters:2)
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
   P2 sets TRAP: P2-Spike-Trap-3 (DMG:2)
+→ Phase: Combat
   *** TRAP ACTIVATES: P2-Spike-Trap-3 deals 2 damage! ***
     → P1-Rogue-4 takes 2 trap damage
 ═══════════════════════════════════════
@@ -100,83 +100,296 @@ P1 chooses to ATTACK (allies:4 monsters:2)
 Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
 Defender (P2) monsters: (none)
 One side has no units — skipping combat
-  Phase: RoomResolution
-ADVANCE → Room 4 | Phase: RoomReveal
-P1: Allies=3 Deck=66 Hand=8 Discard=3 Exile=0
+  Phase: RoomCleared
+STOP & HEAL → Pass turn | Phase: PlayCards
+P1: Allies=3 Deck=69 Hand=8 Discard=0 Exile=0
 P2: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
 
-══════════════ ROUND 4 ══════════════
-Room: 4 | Phase: RoomReveal | Boss: False
-Revealing room: Dragon Lair
-→ Phase: Initiative
+══════════════ ROUND 4 (P2's turn) ══════════════
+Room: 1 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
-  INITIATIVE
+  PLAY CARDS (P2)
 ═══════════════════════════════════════
-P1 INIT: 4 | P2 INIT: 4
-TIED — P1 bets 1
-Winner: P1
-P1 chooses to ATTACK (allies:4 monsters:2)
+  P2 could play ally: P2-Rogue-0 (STR:2 HP:2)
+  P2 could play ally: P2-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P1)
+═══════════════════════════════════════
+  P1 plays MONSTER: P1-Troll-4 (STR:4 HP:5)
+  P1 plays MONSTER: P1-Troll-0 (STR:4 HP:5)
+  P1 sets TRAP: P1-Spike-Trap-8 (DMG:2)
+  P1 sets TRAP: P1-Fire-Trap-3 (DMG:3)
+→ Phase: Combat
+  *** TRAP ACTIVATES: P1-Spike-Trap-8 deals 2 damage! ***
+    → P2-Rogue-4 takes 2 trap damage
+  *** TRAP ACTIVATES: P1-Fire-Trap-3 deals 3 damage! ***
+    → P2-Rogue-4 takes 3 trap damage
+═══════════════════════════════════════
+  COMBAT (Room 1)
+═══════════════════════════════════════
+Attacker (P2): P2-Veteran-3(S3/H4), P2-Veteran-0(S3/H4), P2-Rogue-4(S2/H2)
+Defender (P1) monsters: P1-Troll-4(S4/H5), P1-Troll-0(S4/H5)
+  3 allies (STR:8) vs 1 monster (STR:4)
+  Result: DefenderEliminated
+  Damage: 4 to attacker, 8 to defender
+  Advantage: ATK=Advantage DEF=Disadvantage
+  *** MONSTER P1-Troll-4 ELIMINATED ***
+  Phase: RoomCleared
+ADVANCE → Room 2 | Phase: PlayCards
+P1: Allies=3 Deck=65 Hand=8 Discard=4 Exile=0
+P2: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
+
+══════════════ ROUND 5 (P2's turn) ══════════════
+Room: 2 | Phase: PlayCards | Boss: False
+═══════════════════════════════════════
+  PLAY CARDS (P2)
+═══════════════════════════════════════
+  P2 could play ally: P2-Rogue-0 (STR:2 HP:2)
+  P2 could play ally: P2-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P1)
+═══════════════════════════════════════
+  P1 plays MONSTER: P1-Wyvern-4 (STR:5 HP:7)
+  P1 plays MONSTER: P1-Goblin-1 (STR:2 HP:3)
+→ Phase: Combat
+═══════════════════════════════════════
+  COMBAT (Room 2)
+═══════════════════════════════════════
+Attacker (P2): P2-Veteran-3(S3/H4), P2-Veteran-0(S3/H4), P2-Rogue-4(S2/H2)
+Defender (P1) monsters: P1-Wyvern-4(S5/H7), P1-Goblin-1(S2/H3)
+  3 allies (STR:8) vs 1 monster (STR:5)
+  Result: DefenderEliminated
+  Damage: 5 to attacker, 8 to defender
+  Advantage: ATK=Advantage DEF=Disadvantage
+  *** MONSTER P1-Wyvern-4 ELIMINATED ***
+  Phase: RoomCleared
+ADVANCE → Room 3 | Phase: PlayCards
+P1: Allies=3 Deck=63 Hand=8 Discard=6 Exile=0
+P2: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
+
+══════════════ ROUND 6 (P2's turn) ══════════════
+Room: 3 | Phase: PlayCards | Boss: False
+═══════════════════════════════════════
+  PLAY CARDS (P2)
+═══════════════════════════════════════
+  P2 could play ally: P2-Rogue-0 (STR:2 HP:2)
+  P2 could play ally: P2-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P1)
+═══════════════════════════════════════
+  P1 sets TRAP: P1-Spike-Trap-3 (DMG:2)
+→ Phase: Combat
+  *** TRAP ACTIVATES: P1-Spike-Trap-3 deals 2 damage! ***
+    → P2-Rogue-4 takes 2 trap damage
+═══════════════════════════════════════
+  COMBAT (Room 3)
+═══════════════════════════════════════
+Attacker (P2): P2-Veteran-3(S3/H4), P2-Veteran-0(S3/H4), P2-Rogue-4(S2/H2)
+Defender (P1) monsters: (none)
+One side has no units — skipping combat
+  Phase: RoomCleared
+STOP & HEAL → Pass turn | Phase: PlayCards
+P1: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
+P2: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
+
+══════════════ ROUND 7 (P1's turn) ══════════════
+Room: 3 | Phase: PlayCards | Boss: False
+═══════════════════════════════════════
+  PLAY CARDS (P1)
+═══════════════════════════════════════
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+  P1 could play ally: P1-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
   P2 sets TRAP: P2-Spike-Trap-9 (DMG:2)
+→ Phase: Combat
   *** TRAP ACTIVATES: P2-Spike-Trap-9 deals 2 damage! ***
     → P1-Rogue-4 takes 2 trap damage
+═══════════════════════════════════════
+  COMBAT (Room 3)
+═══════════════════════════════════════
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
+Defender (P2) monsters: (none)
+One side has no units — skipping combat
+  Phase: RoomCleared
+ADVANCE → Room 4 | Phase: PlayCards
+P1: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+
+══════════════ ROUND 8 (P1's turn) ══════════════
+Room: 4 | Phase: PlayCards | Boss: False
+═══════════════════════════════════════
+  PLAY CARDS (P1)
+═══════════════════════════════════════
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+  P1 could play ally: P1-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
+→ Phase: Combat
 ═══════════════════════════════════════
   COMBAT (Room 4)
 ═══════════════════════════════════════
 Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
 Defender (P2) monsters: (none)
 One side has no units — skipping combat
-  Phase: RoomResolution
-ADVANCE → Room 5 | Phase: RoomReveal
-P1: Allies=3 Deck=65 Hand=8 Discard=4 Exile=0
+  Phase: RoomCleared
+ADVANCE → Room 5 | Phase: PlayCards
+P1: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
 P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
 
-══════════════ ROUND 5 ══════════════
-Room: 5 | Phase: RoomReveal | Boss: False
-Revealing room: Throne Room
-→ Phase: Initiative
+══════════════ ROUND 9 (P1's turn) ══════════════
+Room: 5 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
-  INITIATIVE
+  PLAY CARDS (P1)
 ═══════════════════════════════════════
-P1 INIT: 4 | P2 INIT: 4
-TIED — P1 bets 1
-Winner: P1
-P1 chooses to ATTACK (allies:4 monsters:2)
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+  P1 could play ally: P1-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
+→ Phase: Combat
 ═══════════════════════════════════════
   COMBAT (Room 5)
 ═══════════════════════════════════════
 Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
 Defender (P2) monsters: (none)
 One side has no units — skipping combat
-  Phase: RoomResolution
-ADVANCE → Room 6 | Phase: Initiative
-P1: Allies=3 Deck=64 Hand=8 Discard=5 Exile=0
+  Phase: RoomCleared
+STOP & HEAL → Pass turn | Phase: PlayCards
+P1: Allies=3 Deck=62 Hand=8 Discard=7 Exile=0
 P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
 
-══════════════ ROUND 6 ══════════════
-Room: 6 | Phase: Initiative | Boss: True
+══════════════ ROUND 10 (P2's turn) ══════════════
+Room: 3 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
-  INITIATIVE
+  PLAY CARDS (P2)
 ═══════════════════════════════════════
-P1 INIT: 4 | P2 INIT: 4
-TIED — P1 bets 1
-Winner: P1
-P1 chooses to ATTACK (allies:4 monsters:2)
+  P2 could play ally: P2-Rogue-0 (STR:2 HP:2)
+  P2 could play ally: P2-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P1)
+═══════════════════════════════════════
+  P1 sets TRAP: P1-Spike-Trap-9 (DMG:2)
+→ Phase: Combat
+  *** TRAP ACTIVATES: P1-Spike-Trap-9 deals 2 damage! ***
+    → P2-Rogue-4 takes 2 trap damage
+═══════════════════════════════════════
+  COMBAT (Room 3)
+═══════════════════════════════════════
+Attacker (P2): P2-Veteran-3(S3/H4), P2-Veteran-0(S3/H4), P2-Rogue-4(S2/H2)
+Defender (P1) monsters: (none)
+One side has no units — skipping combat
+  Phase: RoomCleared
+ADVANCE → Room 4 | Phase: PlayCards
+P1: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+
+══════════════ ROUND 11 (P2's turn) ══════════════
+Room: 4 | Phase: PlayCards | Boss: False
+═══════════════════════════════════════
+  PLAY CARDS (P2)
+═══════════════════════════════════════
+  P2 could play ally: P2-Rogue-0 (STR:2 HP:2)
+  P2 could play ally: P2-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P1)
+═══════════════════════════════════════
+→ Phase: Combat
+═══════════════════════════════════════
+  COMBAT (Room 4)
+═══════════════════════════════════════
+Attacker (P2): P2-Veteran-3(S3/H4), P2-Veteran-0(S3/H4), P2-Rogue-4(S2/H2)
+Defender (P1) monsters: (none)
+One side has no units — skipping combat
+  Phase: RoomCleared
+ADVANCE → Room 5 | Phase: PlayCards
+P1: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+
+══════════════ ROUND 12 (P2's turn) ══════════════
+Room: 5 | Phase: PlayCards | Boss: False
+═══════════════════════════════════════
+  PLAY CARDS (P2)
+═══════════════════════════════════════
+  P2 could play ally: P2-Rogue-0 (STR:2 HP:2)
+  P2 could play ally: P2-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P1)
+═══════════════════════════════════════
+→ Phase: Combat
+═══════════════════════════════════════
+  COMBAT (Room 5)
+═══════════════════════════════════════
+Attacker (P2): P2-Veteran-3(S3/H4), P2-Veteran-0(S3/H4), P2-Rogue-4(S2/H2)
+Defender (P1) monsters: (none)
+One side has no units — skipping combat
+  Phase: RoomCleared
+STOP & HEAL → Pass turn | Phase: PlayCards
+P1: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+
+══════════════ ROUND 13 (P1's turn) ══════════════
+Room: 5 | Phase: PlayCards | Boss: False
+═══════════════════════════════════════
+  PLAY CARDS (P1)
+═══════════════════════════════════════
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+  P1 could play ally: P1-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
+→ Phase: Combat
+═══════════════════════════════════════
+  COMBAT (Room 5)
+═══════════════════════════════════════
+Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
+Defender (P2) monsters: (none)
+One side has no units — skipping combat
+  Phase: RoomCleared
+ADVANCE → Room 6 | Phase: PlayCards
+P1: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
+
+══════════════ ROUND 14 (P1's turn) ══════════════
+Room: 6 | Phase: PlayCards | Boss: True
+═══════════════════════════════════════
+  PLAY CARDS (P1)
+═══════════════════════════════════════
+  P1 could play ally: P1-Rogue-0 (STR:2 HP:2)
+  P1 could play ally: P1-Cleric-2 (STR:2 HP:4)
+→ Phase: DefenderSetup
+═══════════════════════════════════════
+  DEFENDER SETUP (P2)
+═══════════════════════════════════════
+→ Phase: BossRoom
 ═══════════════════════════════════════
   BOSS COMBAT
 ═══════════════════════════════════════
 Attacker (P1): P1-Veteran-3(S3/H4), P1-Veteran-0(S3/H4), P1-Rogue-4(S2/H2)
 Defender (P2) monsters: (none)
 One side has no units — skipping combat
-  Phase: RoomResolution
+  Phase: RoomCleared
 ADVANCE → Room 7 | Phase: Finished
-P1: Allies=3 Deck=63 Hand=8 Discard=6 Exile=0
+P1: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
 P2: Allies=3 Deck=61 Hand=8 Discard=8 Exile=0
 
 ╔════════════════════════════════════════════════════════════════╗
 ║                        MATCH RESULT                          ║
 ╚════════════════════════════════════════════════════════════════╝
 Finished: True | Phase: Finished
-Winner: NONE
-Rounds: 6 | Final room: 7
-P1 — Allies:3 Deck:63 Hand:8 Discard:6 Exile:0
+Winner: PLAYER 1
+Rounds: 14 | Final room: 7
+P1 — Allies:3 Deck:61 Hand:8 Discard:8 Exile:0
 P2 — Allies:3 Deck:61 Hand:8 Discard:8 Exile:0

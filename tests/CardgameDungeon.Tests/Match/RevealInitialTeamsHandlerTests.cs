@@ -28,8 +28,8 @@ public class RevealInitialTeamsHandlerTests
             new RevealInitialTeamsCommand(match.Id),
             CancellationToken.None);
 
-        // After reveal + room reveal, should be in Initiative (rooms have monsters)
-        Assert.Equal(MatchPhase.Initiative, response.Phase);
+        // After reveal + StartTurn, should be in PlayCards phase
+        Assert.Equal(MatchPhase.PlayCards, response.Phase);
         Assert.Equal(5, response.Player1.AlliesInPlay.Count);
         Assert.Equal(5, response.Player2.AlliesInPlay.Count);
     }

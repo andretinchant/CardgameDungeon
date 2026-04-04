@@ -50,9 +50,10 @@ public static class MatchTestHelper
     }
 
     /// <summary>
-    /// Creates a match in Initiative phase (both teams already revealed).
+    /// Creates a match in PlayCards phase (both teams already revealed, turn started).
+    /// In the new flow this replaces the old MakeMatchInInitiative.
     /// </summary>
-    public static MatchState MakeMatchInInitiative(
+    public static MatchState MakeMatchInPlayCards(
         int p1Initiative = 3, int p2Initiative = 3,
         Guid? player1Id = null, Guid? player2Id = null)
     {
@@ -90,14 +91,24 @@ public static class MatchTestHelper
         match.SubmitSetupTeam(p1Id, p1Team.ToList());
         match.SubmitSetupTeam(p2Id, p2Team.ToList());
         match.RevealTeams();
-        match.RevealRoom();
+        // RevealTeams calls StartTurn() which sets Phase = PlayCards
 
         return match;
     }
 
     /// <summary>
-    /// Creates a match in Combat phase with initiative resolved.
-    /// P1 wins initiative by default. Both players have 5 allies in play.
+    /// Backward-compatible alias for MakeMatchInPlayCards.
+    /// Old code that called MakeMatchInInitiative now gets a match in PlayCards phase.
+    /// </summary>
+    public static MatchState MakeMatchInInitiative(
+        int p1Initiative = 3, int p2Initiative = 3,
+        Guid? player1Id = null, Guid? player2Id = null)
+        => MakeMatchInPlayCards(p1Initiative, p2Initiative, player1Id, player2Id);
+
+    /// <summary>
+    /// Creates a match in Combat phase.
+    /// P1 is the active player (attacker). Goes through PlayCards → DefenderSetup → Combat.
+    /// Both players have 5 allies in play.
     /// </summary>
     public static MatchState MakeMatchInCombat(
         int p1Strength = 3, int p1Hp = 5,
@@ -140,15 +151,10 @@ public static class MatchTestHelper
         match.SubmitSetupTeam(p1Id, p1Team.ToList());
         match.SubmitSetupTeam(p2Id, p2Team.ToList());
         match.RevealTeams();
-        match.RevealRoom();
 
-        // Resolve initiative — P1 wins (initiative 5 > 2)
-        match.ResolveInitiative(
-            player1.AlliesInPlay.Sum(a => a.Initiative),
-            player2.AlliesInPlay.Sum(a => a.Initiative));
-
-        // Winner chooses to attack
-        match.ChooseRole(match.InitiativeWinnerId!.Value, choosesToAttack: true);
+        // Advance through new flow: PlayCards → DefenderSetup → Combat
+        match.FinishPlayingCards();
+        match.FinishDefenderSetup();
 
         return match;
     }
@@ -198,14 +204,10 @@ public static class MatchTestHelper
         match.SubmitSetupTeam(p1Id, p1Team.ToList());
         match.SubmitSetupTeam(p2Id, p2Team.ToList());
         match.RevealTeams();
-        match.RevealRoom();
 
-        match.ResolveInitiative(
-            player1.AlliesInPlay.Sum(a => a.Initiative),
-            player2.AlliesInPlay.Sum(a => a.Initiative));
-
-        // Winner chooses to attack
-        match.ChooseRole(match.InitiativeWinnerId!.Value, choosesToAttack: true);
+        // Advance through new flow: PlayCards → DefenderSetup → Combat
+        match.FinishPlayingCards();
+        match.FinishDefenderSetup();
 
         return match;
     }

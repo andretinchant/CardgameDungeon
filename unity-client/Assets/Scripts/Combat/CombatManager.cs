@@ -12,10 +12,10 @@ namespace CardgameDungeon.Unity.Combat
     public enum MatchPhase
     {
         Setup,
-        RoomReveal,
-        Initiative,
+        PlayCards,
+        DefenderSetup,
         Combat,
-        RoomResolution,
+        RoomCleared,
         BossRoom,
         Finished
     }
@@ -175,7 +175,7 @@ namespace CardgameDungeon.Unity.Combat
 
             if (task.Result != null)
             {
-                SetPhase(MatchPhase.RoomReveal);
+                SetPhase(MatchPhase.PlayCards);
 
                 if (boardManager != null)
                 {
@@ -202,7 +202,7 @@ namespace CardgameDungeon.Unity.Combat
 
         private IEnumerator ResolveInitiativeRoutine()
         {
-            SetPhase(MatchPhase.Initiative);
+            SetPhase(MatchPhase.PlayCards);
 
             var task = ApiClient.Instance.Post<EmptyRequest, InitiativeResponse>(
                 $"/api/matches/{currentMatchId}/initiative", new EmptyRequest());
@@ -319,7 +319,7 @@ namespace CardgameDungeon.Unity.Combat
 
                 if (task.Result.IsCombatOver)
                 {
-                    SetPhase(MatchPhase.RoomResolution);
+                    SetPhase(MatchPhase.RoomCleared);
                     if (matchHud != null)
                     {
                         matchHud.ShowMessage("Combat resolved!");
@@ -434,7 +434,7 @@ namespace CardgameDungeon.Unity.Combat
                 }
                 else
                 {
-                    SetPhase(MatchPhase.RoomReveal);
+                    SetPhase(MatchPhase.PlayCards);
                 }
 
                 if (boardManager != null)
@@ -468,7 +468,7 @@ namespace CardgameDungeon.Unity.Combat
 
             if (task.Result != null)
             {
-                SetPhase(MatchPhase.RoomResolution);
+                SetPhase(MatchPhase.RoomCleared);
 
                 if (matchHud != null)
                 {

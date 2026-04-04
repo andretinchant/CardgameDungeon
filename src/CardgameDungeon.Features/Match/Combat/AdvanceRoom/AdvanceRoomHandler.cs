@@ -14,14 +14,11 @@ public class AdvanceRoomHandler(IMatchRepository matchRepo, IMatchNotifier notif
         var match = await matchRepo.GetByIdAsync(request.MatchId, ct)
             ?? throw new KeyNotFoundException($"Match {request.MatchId} not found.");
 
-        if (match.Phase != MatchPhase.RoomResolution)
+        if (match.Phase != MatchPhase.RoomCleared)
             throw new InvalidOperationException(
-                $"Cannot advance room during {match.Phase} phase. Expected: RoomResolution.");
+                $"Cannot advance room during {match.Phase} phase. Expected: RoomCleared.");
 
-        var defender = match.GetDefender();
-        defender.ShuffleDiscardIntoDeck();
-
-        match.AdvanceRoom();
+        match.AdvanceToNextRoom(defenderReshuffles: false);
 
         // Fire ON_ROOM_ADVANCE triggers for both players (Druid cost reduction, etc.)
         TriggerProcessor.FireTrigger(EffectTrigger.OnRoomAdvance, match.Player1, match.Player2);

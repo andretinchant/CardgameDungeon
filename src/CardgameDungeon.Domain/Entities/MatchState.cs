@@ -16,6 +16,21 @@ public class MatchState
     public Guid? AttackerId { get; private set; }
     public Guid? WinnerId { get; private set; }
 
+    /// <summary>Whose turn it is (alternates after each turn ends).</summary>
+    public Guid ActivePlayerId { get; private set; }
+
+    /// <summary>How many rooms the active player has cleared THIS turn (max 2).</summary>
+    public int RoomsClearedThisTurn { get; private set; }
+
+    /// <summary>Max rooms a player can clear per turn.</summary>
+    public const int MaxRoomsPerTurn = 2;
+
+    /// <summary>Player 1's current room progress (separate tracking per player).</summary>
+    public int Player1Room { get; private set; } = 1;
+
+    /// <summary>Player 2's current room progress (separate tracking per player).</summary>
+    public int Player2Room { get; private set; } = 1;
+
     private readonly List<DungeonRoomCard> _dungeonRooms;
     private readonly BossCard _boss;
 
@@ -36,6 +51,17 @@ public class MatchState
     public bool IsFinished => Phase == MatchPhase.Finished;
     public bool IsBossRoom => CurrentRoom > _dungeonRooms.Count;
     public bool BothTeamsSubmitted => _setupSubmitted.Count == 2;
+    public bool CanAdvance => RoomsClearedThisTurn < MaxRoomsPerTurn;
+
+    /// <summary>The active player's current room (each player tracks separately).</summary>
+    public int GetPlayerRoom(Guid playerId) =>
+        playerId == Player1.PlayerId ? Player1Room : Player2Room;
+
+    /// <summary>Gets the active player (whose turn it is).</summary>
+    public PlayerState GetActivePlayer() => GetPlayer(ActivePlayerId);
+
+    /// <summary>Gets the non-active player (defending).</summary>
+    public PlayerState GetInactivePlayer() => GetOpponent(ActivePlayerId);
 
     public DungeonRoomCard? CurrentDungeonRoom =>
         CurrentRoom <= _dungeonRooms.Count ? _dungeonRooms[CurrentRoom - 1] : null;
@@ -68,6 +94,9 @@ public class MatchState
         _boss = boss ?? throw new ArgumentNullException(nameof(boss));
         Phase = MatchPhase.Setup;
         CurrentRoom = 1;
+        ActivePlayerId = player1.PlayerId; // P1 goes first after setup
+        Player1Room = 1;
+        Player2Room = 1;
 
         if (_dungeonRooms.Count != DungeonRoomCard.TotalRooms)
             throw new ArgumentException($"Match requires exactly {DungeonRoomCard.TotalRooms} dungeon rooms.");
@@ -134,94 +163,8 @@ public class MatchState
         _player1PendingTeam = null;
         _player2PendingTeam = null;
 
-        Phase = MatchPhase.RoomReveal;
-    }
-
-    public void RevealRoom()
-    {
-        EnsurePhase(MatchPhase.RoomReveal);
-
-        var room = CurrentDungeonRoom;
-
-        if (room is not null && !room.HasMonsters)
-        {
-            AdvanceRoom();
-            return;
-        }
-
-        Phase = MatchPhase.Initiative;
-    }
-
-    public void ResolveInitiative(int player1Total, int player2Total)
-    {
-        EnsurePhase(MatchPhase.Initiative);
-
-        if (player1Total != player2Total)
-        {
-            InitiativeWinnerId = player1Total > player2Total
-                ? Player1.PlayerId
-                : Player2.PlayerId;
-            Player1BetTotal = 0;
-            Player2BetTotal = 0;
-            Phase = MatchPhase.RoleSelection;
-        }
-        // Tie: callers must handle the bid war externally, then call again
-    }
-
-    /// <summary>
-    /// Initiative winner chooses whether to be the attacker or defender.
-    /// </summary>
-    public void ChooseRole(Guid playerId, bool choosesToAttack)
-    {
-        EnsurePhase(MatchPhase.RoleSelection);
-
-        if (InitiativeWinnerId != playerId)
-            throw new InvalidOperationException("Only the initiative winner can choose the role.");
-
-        if (choosesToAttack)
-        {
-            AttackerId = playerId;
-        }
-        else
-        {
-            // Winner chose to defend — opponent becomes the attacker
-            AttackerId = GetOpponent(playerId).PlayerId;
-        }
-
-        Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
-    }
-
-    public void PlaceBet(Guid playerId, int amount, bool exile)
-    {
-        EnsurePhase(MatchPhase.Initiative);
-
-        if (amount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(amount), "Bet amount must be positive.");
-
-        var player = GetPlayer(playerId);
-        player.PayCostFromDeck(amount, exile);
-
-        if (Player1.PlayerId == playerId)
-            Player1BetTotal += amount;
-        else
-            Player2BetTotal += amount;
-    }
-
-    public bool TryResolveBets()
-    {
-        EnsurePhase(MatchPhase.Initiative);
-
-        if (Player1BetTotal == Player2BetTotal)
-            return false; // Still tied, need more bets
-
-        InitiativeWinnerId = Player1BetTotal > Player2BetTotal
-            ? Player1.PlayerId
-            : Player2.PlayerId;
-
-        Player1BetTotal = 0;
-        Player2BetTotal = 0;
-        Phase = MatchPhase.RoleSelection;
-        return true;
+        // After setup, start first turn (P1 goes first)
+        StartTurn();
     }
 
     public void ResolveCombat(int attackerDamage, int defenderDamage, bool simultaneousElimination)
@@ -246,7 +189,8 @@ public class MatchState
         }
 
         CombatBoard.Clear();
-        Phase = MatchPhase.RoomResolution;
+        // After combat resolves, room is cleared
+        Phase = MatchPhase.RoomCleared;
     }
 
     public void ConcedeRoom()
@@ -255,34 +199,132 @@ public class MatchState
 
         // Defender concedes — attacker wins room without combat
         CombatBoard.Clear();
-        Phase = MatchPhase.RoomResolution;
+        Phase = MatchPhase.RoomCleared;
     }
 
-    public void AdvanceRoom()
+    // ── Turn-Based Flow ──
+
+    /// <summary>
+    /// Start a new turn for the active player.
+    /// 1. Draw up to 8 cards
+    /// 2. Move to PlayCards phase
+    /// </summary>
+    public void StartTurn()
     {
-        CurrentRoom++;
+        var active = GetActivePlayer();
+        active.RefillHand();
+        AttackerId = ActivePlayerId;
+        RoomsClearedThisTurn = 0;
+        CurrentRoom = GetPlayerRoom(ActivePlayerId);
+        Phase = MatchPhase.PlayCards;
+    }
 
-        // Only defender draws up to 8 when entering a new room
-        if (AttackerId.HasValue)
-            GetDefender().RefillHand();
+    /// <summary>
+    /// Active player finishes playing cards. Move to defender setup.
+    /// </summary>
+    public void FinishPlayingCards()
+    {
+        EnsurePhase(MatchPhase.PlayCards);
+        Phase = MatchPhase.DefenderSetup;
+    }
 
-        // Reset roles for next room
-        AttackerId = null;
-        InitiativeWinnerId = null;
+    /// <summary>
+    /// Defender finishes placing monsters and traps. Move to combat.
+    /// </summary>
+    public void FinishDefenderSetup()
+    {
+        EnsurePhase(MatchPhase.DefenderSetup);
+        Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
+    }
 
-        if (CurrentRoom > _dungeonRooms.Count + 1) // past boss = finished
+    /// <summary>
+    /// Room has been cleared (all monsters defeated). Move to RoomCleared choice.
+    /// </summary>
+    public void RoomCleared()
+    {
+        EnsurePhase(MatchPhase.Combat, MatchPhase.BossRoom);
+        CombatBoard.Clear();
+        RoomsClearedThisTurn++;
+
+        // Advance the active player's room counter
+        if (ActivePlayerId == Player1.PlayerId)
+            Player1Room++;
+        else
+            Player2Room++;
+
+        // Check win: if player cleared all 5 rooms + boss
+        var playerRoom = GetPlayerRoom(ActivePlayerId);
+        if (playerRoom > _dungeonRooms.Count + 1)
         {
+            WinnerId = ActivePlayerId;
             Phase = MatchPhase.Finished;
             return;
         }
 
-        if (IsBossRoom)
+        Phase = MatchPhase.RoomCleared;
+    }
+
+    /// <summary>
+    /// Active player chooses to STOP after clearing a room.
+    /// Heals 1 HP to all allies. Passes turn.
+    /// </summary>
+    public void StopAndHeal()
+    {
+        EnsurePhase(MatchPhase.RoomCleared);
+
+        var active = GetActivePlayer();
+        // Heal 1 HP to all allies (add to current HP — handled by caller or effect)
+        // For now, signal the intent; actual HP restoration needs a mechanism
+
+        PassTurn();
+    }
+
+    /// <summary>
+    /// Active player chooses to ADVANCE to the next room.
+    /// Defender can reshuffle hand and draw 8, or draw up to 8.
+    /// Back to PlayCards phase for attacker.
+    /// </summary>
+    public void AdvanceToNextRoom(bool defenderReshuffles)
+    {
+        EnsurePhase(MatchPhase.RoomCleared);
+
+        if (!CanAdvance)
+            throw new InvalidOperationException($"Cannot advance — already cleared {MaxRoomsPerTurn} rooms this turn.");
+
+        // Increment room counter for active player
+        RoomsClearedThisTurn++;
+        if (ActivePlayerId == Player1.PlayerId)
+            Player1Room++;
+        else
+            Player2Room++;
+
+        CurrentRoom = GetPlayerRoom(ActivePlayerId);
+
+        // Check win: if player cleared all rooms + boss
+        if (CurrentRoom > _dungeonRooms.Count + 1)
         {
-            Phase = MatchPhase.Initiative;
+            WinnerId = ActivePlayerId;
+            Phase = MatchPhase.Finished;
             return;
         }
 
-        Phase = MatchPhase.RoomReveal;
+        // Defender gets to refresh hand
+        var defender = GetInactivePlayer();
+        if (defenderReshuffles)
+            defender.ReshuffleHandAndRedraw();
+        else
+            defender.RefillHand();
+
+        // Back to attacker playing cards
+        Phase = MatchPhase.PlayCards;
+    }
+
+    /// <summary>Pass the turn to the other player.</summary>
+    public void PassTurn()
+    {
+        ActivePlayerId = ActivePlayerId == Player1.PlayerId ? Player2.PlayerId : Player1.PlayerId;
+        RoomsClearedThisTurn = 0;
+        StartTurn();
     }
 
     public void Finish(Guid winnerId)

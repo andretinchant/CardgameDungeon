@@ -84,70 +84,41 @@ public class MatchSimulation
         }
         Log("");
 
-        // ── ROOM LOOP ──
+        // ── TURN LOOP (new flow) ──
         int maxRounds = 25;
         int round = 0;
 
         while (!match.IsFinished && round < maxRounds)
         {
             round++;
-            Log($"══════════════ ROUND {round} ══════════════");
+            var activeId = match.ActivePlayerId;
+            var activeName = activeId == p1Id ? "P1" : "P2";
+            Log($"══════════════ ROUND {round} ({activeName}'s turn) ══════════════");
             Log($"Room: {match.CurrentRoom} | Phase: {match.Phase} | Boss: {match.IsBossRoom}");
 
-            // Room Reveal
-            if (match.Phase == MatchPhase.RoomReveal)
+            // PlayCards phase — active player plays allies/equipment from hand
+            if (match.Phase == MatchPhase.PlayCards)
             {
-                var roomName = match.CurrentDungeonRoom?.Name ?? "???";
-                Log($"Revealing room: {roomName}");
-                match.RevealRoom();
-                Log($"→ Phase: {match.Phase}");
-                if (match.Phase == MatchPhase.RoomReveal) continue;
-            }
-
-            // Initiative
-            if (match.Phase == MatchPhase.Initiative)
-            {
-                LogPhase("INITIATIVE");
-                var initResult = _resolver.ResolveInitiative(
-                    player1.AlliesInPlay, p1Id, player2.AlliesInPlay, p2Id);
-                Log($"P1 INIT: {initResult.Player1Total} | P2 INIT: {initResult.Player2Total}");
-
-                match.ResolveInitiative(initResult.Player1Total, initResult.Player2Total);
-
-                if (initResult.IsTied && player1.Deck.Count > 0)
+                LogPhase($"PLAY CARDS ({activeName})");
+                var active = match.GetActivePlayer();
+                var alliesInHand = active.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).Take(2).ToList();
+                foreach (var ally in alliesInHand)
                 {
-                    Log("TIED — P1 bets 1");
-                    match.PlaceBet(p1Id, 1, false);
-                    match.TryResolveBets();
+                    if (active.AlliesInPlay.Count >= PlayerState.MaxAlliesInPlay) break;
+                    Log($"  {activeName} could play ally: {ally.Name} (STR:{ally.Strength} HP:{ally.HitPoints})");
                 }
 
-                var winner = match.InitiativeWinnerId == p1Id ? "P1" : "P2";
-                Log($"Winner: {winner}");
+                match.FinishPlayingCards();
+                Log($"→ Phase: {match.Phase}");
             }
 
-            // Role Selection
-            if (match.Phase == MatchPhase.RoleSelection)
+            // DefenderSetup phase — defender places monsters and traps
+            if (match.Phase == MatchPhase.DefenderSetup)
             {
-                var winnerId = match.InitiativeWinnerId!.Value;
-                var winnerState = winnerId == p1Id ? player1 : player2;
+                var defender = match.GetInactivePlayer();
+                var defenderName = activeId == p1Id ? "P2" : "P1";
 
-                // Smart choice: attack if you have more allies, defend if you have more monsters
-                var allyCount = winnerState.Hand.OfType<AllyCard>().Count() + winnerState.AlliesInPlay.Count;
-                var monsterCount = winnerState.Hand.OfType<MonsterCard>().Count() + winnerState.MonstersInPlay.Count;
-                var choosesAttack = allyCount >= monsterCount;
-
-                match.ChooseRole(winnerId, choosesAttack);
-                var winnerName = winnerId == p1Id ? "P1" : "P2";
-                Log($"{winnerName} chooses to {(choosesAttack ? "ATTACK" : "DEFEND")} (allies:{allyCount} monsters:{monsterCount})");
-            }
-
-            // Defender plays monsters and traps from hand
-            if (match.Phase is MatchPhase.Combat or MatchPhase.BossRoom)
-            {
-                var attacker = match.GetAttacker();
-                var defender = match.GetDefender();
-                var attackerName = match.AttackerId == p1Id ? "P1" : "P2";
-                var defenderName = match.AttackerId == p1Id ? "P2" : "P1";
+                LogPhase($"DEFENDER SETUP ({defenderName})");
 
                 // Defender plays monsters from hand
                 var monstersInHand = defender.Hand.OfType<MonsterCard>().OrderByDescending(m => m.Strength).ToList();
@@ -166,12 +137,23 @@ public class MatchSimulation
                     Log($"  {defenderName} sets TRAP: {trap.Name} (DMG:{trap.Damage})");
                 }
 
+                match.FinishDefenderSetup();
+                Log($"→ Phase: {match.Phase}");
+            }
+
+            // Combat phase
+            if (match.Phase is MatchPhase.Combat or MatchPhase.BossRoom)
+            {
+                var attacker = match.GetAttacker();
+                var defender = match.GetInactivePlayer();
+                var attackerName = activeName;
+                var defenderName = activeId == p1Id ? "P2" : "P1";
+
                 // Activate traps against attacker
                 while (defender.TrapsSet.Count > 0)
                 {
                     var trap = defender.ActivateTrap()!;
                     Log($"  *** TRAP ACTIVATES: {trap.Name} deals {trap.Damage} damage! ***");
-                    // Apply trap damage to attacker's weakest ally
                     if (attacker.AlliesInPlay.Count > 0)
                     {
                         var target = attacker.AlliesInPlay.OrderBy(a => a.HitPoints).First();
@@ -186,22 +168,14 @@ public class MatchSimulation
                 if (attacker.AlliesInPlay.Count == 0 || defender.MonstersInPlay.Count == 0)
                 {
                     Log("One side has no units — skipping combat");
-                    // Clear defender monsters
                     foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
                     match.ResolveCombat(0, 0, false);
                 }
                 else
                 {
-                    // Combat: allies vs monsters
-                    var defMonster = defender.MonstersInPlay[0];
-                    foreach (var atkAlly in attacker.AlliesInPlay)
-                    {
-                        // CombatBoard expects AllyCard targets — we use a proxy approach
-                        // For simulation, resolve directly
-                    }
-
                     var atkGroup = attacker.AlliesInPlay.ToList();
                     var defGroup = defender.MonstersInPlay.Take(1).ToArray();
+                    var defMonster = defGroup[0];
                     var result = _resolver.ResolveCombat(atkGroup, defGroup, match.IsBossRoom);
 
                     Log($"  {atkGroup.Count} allies (STR:{result.AttackerStrength}) vs {defGroup.Length} monster (STR:{result.DefenderStrength})");
@@ -227,7 +201,6 @@ public class MatchSimulation
                             }
                     }
 
-                    // Clear remaining monsters after combat
                     foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
 
                     match.ResolveCombat(result.DamageToAttacker, result.DamageToDefender,
@@ -237,11 +210,19 @@ public class MatchSimulation
                 Log($"  Phase: {match.Phase}");
             }
 
-            // Advance
-            if (match.Phase == MatchPhase.RoomResolution)
+            // RoomCleared — choose to advance or stop
+            if (match.Phase == MatchPhase.RoomCleared)
             {
-                match.AdvanceRoom();
-                Log($"ADVANCE → Room {match.CurrentRoom} | Phase: {match.Phase}");
+                if (match.CanAdvance)
+                {
+                    match.AdvanceToNextRoom(defenderReshuffles: false);
+                    Log($"ADVANCE → Room {match.CurrentRoom} | Phase: {match.Phase}");
+                }
+                else
+                {
+                    match.StopAndHeal();
+                    Log($"STOP & HEAL → Pass turn | Phase: {match.Phase}");
+                }
                 LogState(player1, player2);
             }
 

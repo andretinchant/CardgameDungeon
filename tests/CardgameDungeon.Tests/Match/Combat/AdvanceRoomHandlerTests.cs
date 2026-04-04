@@ -68,22 +68,23 @@ public class AdvanceRoomHandlerTests
     }
 
     [Fact]
-    public async Task AdvanceRoom_DefenderShufflesDiscardIntoDeck()
+    public async Task AdvanceRoom_DefenderDiscard_NotShuffledByDefault()
     {
         var match = MatchTestHelper.MakeMatchInCombat(p1Strength: 10, p1Hp: 20, p2Strength: 3, p2Hp: 5);
         _matchRepo.Seed(match);
 
         await BringToRoomResolution(match);
 
-        // After combat, defender should have cards in discard
+        // After combat, defender should have cards in discard (eliminated allies)
         var defender = match.GetDefender();
+        var discardBefore = defender.Discard.Count;
 
         await AdvanceHandler.Handle(
             new AdvanceRoomCommand(match.Id),
             CancellationToken.None);
 
-        // Discard should be empty after shuffle back into deck
-        Assert.Empty(defender.Discard);
+        // In the new flow, discard is NOT automatically shuffled back (defenderReshuffles=false)
+        Assert.Equal(discardBefore, defender.Discard.Count);
     }
 
     [Fact]

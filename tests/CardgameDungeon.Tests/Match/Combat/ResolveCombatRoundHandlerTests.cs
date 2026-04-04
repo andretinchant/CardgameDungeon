@@ -36,7 +36,7 @@ public class ResolveCombatRoundHandlerTests
 
         Assert.Single(response.Results);
         Assert.True(response.Results[0].DefenderEliminated);
-        Assert.Equal("RoomResolution", response.Phase);
+        Assert.Equal("RoomCleared", response.Phase);
     }
 
     [Fact]

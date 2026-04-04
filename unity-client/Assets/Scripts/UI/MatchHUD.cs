@@ -305,9 +305,9 @@ namespace CardgameDungeon.Unity.UI
             return serverPhase switch
             {
                 "Setup" => TurnPhase.Setup,
-                "Initiative" => TurnPhase.Initiative,
+                "PlayCards" or "DefenderSetup" => TurnPhase.Initiative,
                 "Combat" or "BossRoom" => TurnPhase.Combat,
-                "RoomReveal" or "RoomResolution" => TurnPhase.Advance,
+                "RoomCleared" => TurnPhase.Advance,
                 "Finished" => TurnPhase.Finished,
                 _ => TurnPhase.Setup
             };

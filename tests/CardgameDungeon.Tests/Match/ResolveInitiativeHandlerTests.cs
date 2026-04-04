@@ -4,6 +4,10 @@ using CardgameDungeon.Tests.Match.Fakes;
 
 namespace CardgameDungeon.Tests.Match;
 
+/// <summary>
+/// ResolveInitiative handler is obsolete in the new turn-based flow.
+/// All tests verify that the handler throws NotImplementedException.
+/// </summary>
 public class ResolveInitiativeHandlerTests
 {
     private readonly FakeMatchRepository _matchRepo = new();
@@ -15,49 +19,34 @@ public class ResolveInitiativeHandlerTests
     [Fact]
     public async Task DifferentInitiative_ReturnsWinner()
     {
-        var match = MatchTestHelper.MakeMatchInInitiative(p1Initiative: 5, p2Initiative: 2);
-        _matchRepo.Seed(match);
-
-        var response = await Handler.Handle(
-            new ResolveInitiativeCommand(match.Id),
-            CancellationToken.None);
-
-        Assert.False(response.IsTied);
-        Assert.Equal(match.Player1.PlayerId, response.WinnerId);
-        Assert.True(response.Player1Total > response.Player2Total);
+        await Assert.ThrowsAsync<NotImplementedException>(() =>
+            Handler.Handle(
+                new ResolveInitiativeCommand(Guid.NewGuid()),
+                CancellationToken.None));
     }
 
     [Fact]
     public async Task EqualInitiative_ReturnsTied()
     {
-        var match = MatchTestHelper.MakeMatchInInitiative(p1Initiative: 3, p2Initiative: 3);
-        _matchRepo.Seed(match);
-
-        var response = await Handler.Handle(
-            new ResolveInitiativeCommand(match.Id),
-            CancellationToken.None);
-
-        Assert.True(response.IsTied);
-        Assert.Null(response.WinnerId);
+        await Assert.ThrowsAsync<NotImplementedException>(() =>
+            Handler.Handle(
+                new ResolveInitiativeCommand(Guid.NewGuid()),
+                CancellationToken.None));
     }
 
     [Fact]
     public async Task Player2HigherInitiative_Player2Wins()
     {
-        var match = MatchTestHelper.MakeMatchInInitiative(p1Initiative: 1, p2Initiative: 8);
-        _matchRepo.Seed(match);
-
-        var response = await Handler.Handle(
-            new ResolveInitiativeCommand(match.Id),
-            CancellationToken.None);
-
-        Assert.Equal(match.Player2.PlayerId, response.WinnerId);
+        await Assert.ThrowsAsync<NotImplementedException>(() =>
+            Handler.Handle(
+                new ResolveInitiativeCommand(Guid.NewGuid()),
+                CancellationToken.None));
     }
 
     [Fact]
     public async Task MatchNotFound_Throws()
     {
-        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+        await Assert.ThrowsAsync<NotImplementedException>(() =>
             Handler.Handle(
                 new ResolveInitiativeCommand(Guid.NewGuid()),
                 CancellationToken.None));

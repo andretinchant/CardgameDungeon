@@ -13,8 +13,8 @@ public class AssignCombatHandler(IMatchRepository matchRepo, IMatchNotifier noti
         var match = await matchRepo.GetByIdAsync(request.MatchId, ct)
             ?? throw new KeyNotFoundException($"Match {request.MatchId} not found.");
 
-        if (match.InitiativeWinnerId != request.PlayerId)
-            throw new InvalidOperationException("Only the initiative winner can assign combat.");
+        if (match.AttackerId != request.PlayerId)
+            throw new InvalidOperationException("Only the attacker can assign combat.");
 
         var attacker = match.GetAttacker();
         var defender = match.GetDefender();
