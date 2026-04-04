@@ -49,6 +49,9 @@
   "class.ranger": "Ranger",
   "class.paladin": "Paladin",
   "class.bard": "Bard",
+  "class.monk": "Monk",
+  "class.warlock": "Warlock",
+  "class.sorcerer": "Sorcerer",
 
   "rarity.common": "Common",
   "rarity.uncommon": "Uncommon",

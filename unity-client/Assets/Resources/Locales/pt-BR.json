@@ -49,6 +49,9 @@
   "class.ranger": "Patrulheiro",
   "class.paladin": "Paladino",
   "class.bard": "Bardo",
+  "class.monk": "Monge",
+  "class.warlock": "Bruxo",
+  "class.sorcerer": "Feiticeiro",
 
   "rarity.common": "Comum",
   "rarity.uncommon": "Incomum",

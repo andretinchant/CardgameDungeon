@@ -28,7 +28,7 @@ namespace CardgameDungeon.Unity.Cards
 
     public enum AllyClass
     {
-        Warrior, Rogue, Mage, Cleric, Ranger, Paladin, Bard
+        Warrior, Rogue, Mage, Cleric, Ranger, Paladin, Bard, Monk, Warlock, Sorcerer
     }
 
     public enum EquipmentSlot

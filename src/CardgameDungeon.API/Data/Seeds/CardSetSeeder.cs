@@ -37,6 +37,9 @@ public static partial class CardSetSeeder
 
         var allies = CreateAllies();
         var bards = CreateBards();
+        var monks = CreateMonks();
+        var warlocks = CreateWarlocks();
+        var sorcerers = CreateSorcerers();
         var equipment = CreateEquipment();
         var consumables = CreateConsumables();
         var monsters = CreateMonsters();
@@ -46,6 +49,9 @@ public static partial class CardSetSeeder
 
         foreach (var card in allies) set.AddCard(card);
         foreach (var card in bards) set.AddCard(card);
+        foreach (var card in monks) set.AddCard(card);
+        foreach (var card in warlocks) set.AddCard(card);
+        foreach (var card in sorcerers) set.AddCard(card);
         foreach (var card in equipment) set.AddCard(card);
         foreach (var card in consumables) set.AddCard(card);
         foreach (var card in monsters) set.AddCard(card);

@@ -21,5 +21,14 @@ public enum AllyClass
     Paladin,
 
     /// <summary>Card manipulator. Returns cards from hand to deck (top/bottom/shuffle) to control future draws and reshape card distribution.</summary>
-    Bard
+    Bard,
+
+    /// <summary>Martial artist. Discards or exiles from hand to cancel combats, attack twice, or disengage without opportunity attacks.</summary>
+    Monk,
+
+    /// <summary>Pact caster. Marks an enemy during initiative; if the marked enemy dies, triggers powerful effects (heal, draw, AOE damage, exile).</summary>
+    Warlock,
+
+    /// <summary>Scroll amplifier. Copies Scroll effects, recovers Scrolls from discard via discard/exile cost, empowers Scroll potency.</summary>
+    Sorcerer
 }
