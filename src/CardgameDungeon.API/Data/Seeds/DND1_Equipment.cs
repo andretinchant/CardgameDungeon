@@ -286,55 +286,65 @@ public static partial class CardSetSeeder
                 "Studded Leather", Rarity.Common, 1, 0, 1, 1, EquipmentSlot.Armor,
                 effectTags: "PASSIVE|+HP:1|+INIT:1"),
 
-            // Budget: STR1 + HP1 + INIT0×1.5 = 2 ≈ 3
+            // ═══════════════════════════════════════════════════════════════
+            //  COMPANIONS (5) — Equip on Ranger/Druid. Materializes as ally in combat.
+            //  Cost 1, Budget 3. No slot limit. Extra ally (ignores 5-limit).
+            // ═══════════════════════════════════════════════════════════════
+
             new(new Guid("00000000-0000-0000-0002-000000000051"),
-                "Hand Crossbow", Rarity.Common, 1, 1, 1, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+HP:1"),
+                "Wolf Companion", Rarity.Common, 1, 2, 1, 0, EquipmentSlot.Companion,
+                effect: "Equip on Ranger or Druid. In combat: materializes as ally (STR 2, HP 1). Does not count toward 5-ally limit. With Advantage: +1 STR",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Ranger,Druid\nON_COMBAT_START|MATERIALIZE_ALLY:STR2:HP1\nPASSIVE|IGNORE_ALLY_LIMIT\nWITH_ADVANTAGE|+STR:1"),
 
-            // Budget: STR1 + HP1 + INIT0×1.5 = 2 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000052"),
-                "Quarterstaff", Rarity.Common, 1, 1, 1, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+HP:1"),
+                "Eagle Companion", Rarity.Common, 1, 1, 1, 1, EquipmentSlot.Companion,
+                effect: "Equip on Ranger or Druid. In combat: materializes as ally (STR 1, HP 1, INIT 1). Does not count toward 5-ally limit. Reveals top card of opponent deck",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Ranger,Druid\nON_COMBAT_START|MATERIALIZE_ALLY:STR1:HP1:INIT1\nPASSIVE|IGNORE_ALLY_LIMIT\nON_PLAY|REVEAL_DECK:1"),
 
-            // Budget: STR1 + HP0 + INIT1×1.5 = 2.5 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000053"),
-                "Dagger +0", Rarity.Common, 1, 1, 0, 1, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+INIT:1"),
+                "Bear Companion", Rarity.Uncommon, 1, 2, 2, 0, EquipmentSlot.Companion,
+                effect: "Equip on Ranger or Druid. In combat: materializes as ally (STR 2, HP 2). Does not count toward 5-ally limit. With Disadvantage: +1 STR and +1 HP",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Ranger,Druid\nON_COMBAT_START|MATERIALIZE_ALLY:STR2:HP2\nPASSIVE|IGNORE_ALLY_LIMIT\nWITH_DISADVANTAGE|+STR:1|+HP:1"),
 
-            // Budget: STR2 + HP0 + INIT0×1.5 = 2 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000054"),
-                "Light Hammer", Rarity.Common, 1, 2, 0, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:2"),
+                "Hawk Familiar", Rarity.Common, 1, 1, 1, 1, EquipmentSlot.Companion,
+                effect: "Equip on Ranger or Druid. In combat: materializes as ally (STR 1, HP 1, INIT 1). Does not count toward 5-ally limit",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Ranger,Druid\nON_COMBAT_START|MATERIALIZE_ALLY:STR1:HP1:INIT1\nPASSIVE|IGNORE_ALLY_LIMIT"),
 
-            // Budget: STR1 + HP1 + INIT0×1.5 = 2 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000055"),
-                "Sickle", Rarity.Common, 1, 1, 1, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+HP:1"),
+                "Spider Companion", Rarity.Uncommon, 1, 1, 2, 0, EquipmentSlot.Companion,
+                effect: "Equip on Ranger or Druid. In combat: materializes as ally (STR 1, HP 2). Does not count toward 5-ally limit. Target enemy -1 INIT (web)",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Ranger,Druid\nON_COMBAT_START|MATERIALIZE_ALLY:STR1:HP2\nPASSIVE|IGNORE_ALLY_LIMIT\nON_COMBAT_START|-INIT:1:ENEMY"),
 
-            // Budget: STR2 + HP0 + INIT0×1.5 = 2 ≈ 3
+            // ═══════════════════════════════════════════════════════════════
+            //  SUMMONS (5) — Equip on Mage/Sorcerer. Materializes as ally in combat.
+            //  Cost 1, Budget 3. No slot limit. Extra ally (ignores 5-limit).
+            // ═══════════════════════════════════════════════════════════════
+
             new(new Guid("00000000-0000-0000-0002-000000000056"),
-                "Club", Rarity.Common, 1, 2, 0, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:2"),
+                "Fire Elemental Spark", Rarity.Common, 1, 2, 1, 0, EquipmentSlot.Summon,
+                effect: "Equip on Mage or Sorcerer. In combat: materializes as ally (STR 2, HP 1). Does not count toward 5-ally limit. On death: deal 2 damage to killer",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Mage,Sorcerer\nON_COMBAT_START|MATERIALIZE_ALLY:STR2:HP1\nPASSIVE|IGNORE_ALLY_LIMIT\nON_DEATH|DAMAGE:2:ENEMY"),
 
-            // Budget: STR1 + HP0 + INIT1×1.5 = 2.5 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000057"),
-                "Handaxe", Rarity.Common, 1, 1, 0, 1, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+INIT:1"),
+                "Earth Elemental Shard", Rarity.Common, 1, 1, 2, 0, EquipmentSlot.Summon,
+                effect: "Equip on Mage or Sorcerer. In combat: materializes as ally (STR 1, HP 2). Does not count toward 5-ally limit. Reduces damage to carrier by 1",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Mage,Sorcerer\nON_COMBAT_START|MATERIALIZE_ALLY:STR1:HP2\nPASSIVE|IGNORE_ALLY_LIMIT\nPASSIVE|REDUCE_DAMAGE:1"),
 
-            // Budget: STR1 + HP1 + INIT0×1.5 = 2 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000058"),
-                "Javelin", Rarity.Common, 1, 1, 1, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+HP:1"),
+                "Arcane Construct", Rarity.Uncommon, 1, 2, 1, 0, EquipmentSlot.Summon,
+                effect: "Equip on Mage or Sorcerer. In combat: materializes as ally (STR 2, HP 1). Does not count toward 5-ally limit. Immune to trap effects",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Mage,Sorcerer\nON_COMBAT_START|MATERIALIZE_ALLY:STR2:HP1\nPASSIVE|IGNORE_ALLY_LIMIT\nPASSIVE|IMMUNE_TRAP"),
 
-            // Budget: STR1 + HP1 + INIT0×1.5 = 2 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000059"),
-                "Mace", Rarity.Common, 1, 1, 1, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+HP:1"),
+                "Shadow Servant", Rarity.Uncommon, 1, 1, 1, 1, EquipmentSlot.Summon,
+                effect: "Equip on Mage or Sorcerer. In combat: materializes as ally (STR 1, HP 1, INIT 1). Does not count toward 5-ally limit. Ambusher. With Advantage: +1 STR",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Mage,Sorcerer\nON_COMBAT_START|MATERIALIZE_ALLY:STR1:HP1:INIT1:AMBUSHER\nPASSIVE|IGNORE_ALLY_LIMIT\nWITH_ADVANTAGE|+STR:1"),
 
-            // Budget: STR1 + HP0 + INIT1×1.5 = 2.5 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000060"),
-                "Spear", Rarity.Common, 1, 1, 0, 1, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+INIT:1"),
+                "Familiar Imp", Rarity.Common, 1, 1, 1, 0, EquipmentSlot.Summon,
+                effect: "Equip on Mage or Sorcerer. In combat: materializes as ally (STR 1, HP 1). Does not count toward 5-ally limit. Draw 1 card when equipped ally enters combat",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Mage,Sorcerer\nON_COMBAT_START|MATERIALIZE_ALLY:STR1:HP1\nPASSIVE|IGNORE_ALLY_LIMIT\nON_PLAY|DRAW:1"),
 
             // ═══════════════════════════════════════════════════════════════
             //  COMMON (9) — Consumables in Equipment file — Cost 1, Budget 4

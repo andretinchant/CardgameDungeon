@@ -36,11 +36,5 @@ public enum AllyClass
     Barbarian,
 
     /// <summary>Nature caster. Reshuffles hand+deck and redraws. Recovers cards from exile to discard. Reduces costs when events occur (ally dies, room advances, trap triggers).</summary>
-    Druid,
-
-    /// <summary>Animal/nature companion. Requires Ranger or Druid in play. Always cost 1. Does NOT count toward 5-ally limit.</summary>
-    Companion,
-
-    /// <summary>Arcane summon. Requires Mage or Sorcerer in play. Always cost 1. Does NOT count toward 5-ally limit.</summary>
-    Summon
+    Druid
 }

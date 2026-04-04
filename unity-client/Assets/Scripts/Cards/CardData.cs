@@ -29,14 +29,15 @@ namespace CardgameDungeon.Unity.Cards
 
     public enum AllyClass
     {
-        Warrior, Rogue, Mage, Cleric, Ranger, Paladin, Bard, Monk, Warlock, Sorcerer, Barbarian,
-        Druid, Companion, Summon
+        Warrior, Rogue, Mage, Cleric, Ranger, Paladin, Bard, Monk, Warlock, Sorcerer, Barbarian, Druid
     }
 
     public enum EquipmentSlot
     {
         // Gear — 1 per slot per ally
         Weapon, Armor, Shield, Helmet, Boots, Accessory,
+        // Companion/Summon — equip on specific classes, materializes as ally in combat
+        Companion, Summon,
         // Consumables — no limit, single-use
         Scroll, Potion, Balm, Bomb, Totem
     }

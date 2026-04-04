@@ -54,8 +54,6 @@
   "class.sorcerer": "Feiticeiro",
   "class.barbarian": "Barbaro",
   "class.druid": "Druida",
-  "class.companion": "Companheiro",
-  "class.summon": "Invocacao",
 
   "rarity.common": "Comum",
   "rarity.uncommon": "Incomum",
@@ -91,7 +89,10 @@
   "equipment_slot.balm": "Balsamo",
   "equipment_slot.bomb": "Bomba",
   "equipment_slot.totem": "Totem",
+  "equipment_slot.companion": "Companheiro",
+  "equipment_slot.summon": "Invocacao",
   "equipment.consumable": "Uso Unico",
+  "equipment.companion_summon": "Materializa como aliado em combate",
   "equipment.gear": "Equipamento",
 
   "advantage.state.advantage": "Vantagem",
