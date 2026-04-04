@@ -30,5 +30,8 @@ public enum AllyClass
     Warlock,
 
     /// <summary>Scroll amplifier. Copies Scroll effects, recovers Scrolls from discard via discard/exile cost, empowers Scroll potency.</summary>
-    Sorcerer
+    Sorcerer,
+
+    /// <summary>Rage bruiser. Highest STR/HP base. Exile cards from hand to enter Rage: +STR, damage reduction, and counts as double STR for elimination checks.</summary>
+    Barbarian
 }

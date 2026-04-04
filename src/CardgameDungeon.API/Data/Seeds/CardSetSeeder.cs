@@ -40,6 +40,7 @@ public static partial class CardSetSeeder
         var monks = CreateMonks();
         var warlocks = CreateWarlocks();
         var sorcerers = CreateSorcerers();
+        var barbarians = CreateBarbarians();
         var equipment = CreateEquipment();
         var consumables = CreateConsumables();
         var monsters = CreateMonsters();
@@ -52,6 +53,7 @@ public static partial class CardSetSeeder
         foreach (var card in monks) set.AddCard(card);
         foreach (var card in warlocks) set.AddCard(card);
         foreach (var card in sorcerers) set.AddCard(card);
+        foreach (var card in barbarians) set.AddCard(card);
         foreach (var card in equipment) set.AddCard(card);
         foreach (var card in consumables) set.AddCard(card);
         foreach (var card in monsters) set.AddCard(card);
