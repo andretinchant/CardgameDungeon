@@ -22,7 +22,7 @@ public static partial class CardSetSeeder
             new AllyCard(new Guid("00000000-0000-0000-0008-000000000001"),
                 "Volo the Chronicler", Rarity.Unique, 6,
                 5, 7, 3, treasure: 2,
-                effect: "The pen that rewrites fate. Return up to 3 cards from hand to top of deck in any order, then draw 2 cards. Exile 8 cards from deck: look at opponent's hand and return 1 of their cards to top of their deck. All Bard allies gain +1 INIT",
+                effect: "The pen that rewrites fate. Return up to 3 cards from hand to the bottom of the deck, then draw 2 cards. Exile 8 cards from deck: look at opponent's hand and return 1 of their cards to top of their deck. All Bard allies gain +1 INIT",
                 race: Race.Human, allyClass: AllyClass.Bard),
 
             // ── RARE (2) ──

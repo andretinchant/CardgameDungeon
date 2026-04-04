@@ -22,7 +22,7 @@ public static partial class CardSetSeeder
             // STR5(5) + HP8(8) + INIT3(4.5) + Treasure1(1) = 18.5. Effect = 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000002"), "Elminster Aumar", Rarity.Unique, 7, 5, 8, 3,
                 isAmbusher: false, treasure: 1,
-                effect: "The Chosen of Mystra channels the Weave itself. Exile 2 cards from hand: search your deck for any Scroll, put it in your hand, and reshuffle. All Scrolls used by allies have their effects increased by +1. Exile 8 cards from deck: search your exile pile for up to 3 Scrolls and return them to hand",
+                effect: "The Chosen of Mystra channels the Weave itself. Exile 2 cards from hand: search your deck for any Scroll, put it in your hand, and reshuffle. When Elminster uses a Scroll: the Scroll is returned to the bottom of the deck instead of being destroyed. Exile 8 cards from deck: search your exile pile for up to 3 Scrolls and return them to hand",
                 race: Race.Human, allyClass: AllyClass.Mage),
 
             // Thordak the Ironwall: Warrior, Dwarf — Cost 6, Unique Budget = 30
@@ -39,12 +39,13 @@ public static partial class CardSetSeeder
                 effect: "Her light mends what darkness breaks. At start of each round: restore 2 HP to all allies. +3 STR against Undead and Demon. Exile 8 cards from deck: fully restore all allies to max HP and remove all negative effects",
                 race: Race.Human, allyClass: AllyClass.Cleric),
 
-            // Arannis Shadowtrack: Ranger, Elf — Cost 6, Unique Budget = 30
-            // STR5(5) + HP6(6) + INIT4(6) + Treasure1(1) = 18. Effect = 8 ✓
-            new AllyCard(new Guid("00000000-0000-0000-0001-000000000063"), "Arannis Shadowtrack", Rarity.Unique, 6, 5, 6, 4,
-                isAmbusher: false, treasure: 1,
-                effect: "No trail goes cold under his watch. Reveal opponent's entire hand and top 3 cards of their deck. Favored Enemy (choose Race when played): +4 STR against that Race this dungeon. Detects and disarms all traps in current room",
-                race: Race.Elf, allyClass: AllyClass.Ranger),
+            // Irvne the Opportunist: Rogue, Halfling — Cost 5, Unique Budget = 26
+            // STR5(5) + HP4(4) + INIT3(4.5) + Ambusher(2) + Treasure1(1) = 16.5. Effect = 8 ✓
+            // The ONLY Unique at cost 5 — can enter the field earlier than other Uniques
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000063"), "Irvne the Opportunist", Rarity.Unique, 5, 5, 4, 3,
+                isAmbusher: true, treasure: 1,
+                effect: "Every opening is a death sentence. This ally's opportunity attacks deal double STR damage. When any enemy flees or changes combat group: Irvne automatically performs an opportunity attack against them (does not count toward the 1-per-round limit). With Advantage: +3 STR",
+                race: Race.Halfling, allyClass: AllyClass.Rogue),
 
             // Aldric the Oathbound: Paladin, Human — Cost 6, Unique Budget = 30
             // STR6(6) + HP7(7) + INIT2(3) + Treasure1(1) = 17. Effect = 8 ✓
