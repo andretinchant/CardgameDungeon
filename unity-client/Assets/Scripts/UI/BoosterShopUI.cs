@@ -18,7 +18,10 @@ namespace CardgameDungeon.Unity.UI
 
         [Header("Actions")]
         [SerializeField] private Button buyAndOpenButton;
+        [SerializeField] private Button goToCollectionButton;
         [SerializeField] private Button backButton;
+        [SerializeField] private bool navigateToCollectionScene = true;
+        [SerializeField] private string collectionSceneName = "Collection";
 
         [Header("Status")]
         [SerializeField] private TMP_Text walletBalanceText;
@@ -31,6 +34,8 @@ namespace CardgameDungeon.Unity.UI
 
         private readonly List<BoosterSetDto> _allSets = [];
         private List<BoosterSetDto> _filteredSets = [];
+        private bool _hasPendingCollectionRefresh;
+        private int _openedBoostersPending;
 
         private Guid PlayerId => GameManager.Instance.CurrentPlayerId;
 
@@ -40,8 +45,10 @@ namespace CardgameDungeon.Unity.UI
             if (setDropdown != null) setDropdown.onValueChanged.AddListener(OnSetChanged);
             if (refreshSetsButton != null) refreshSetsButton.onClick.AddListener(RefreshAll);
             if (buyAndOpenButton != null) buyAndOpenButton.onClick.AddListener(BuyAndOpenSelectedSet);
+            if (goToCollectionButton != null) goToCollectionButton.onClick.AddListener(ConfirmAndGoToCollection);
             if (backButton != null) backButton.onClick.AddListener(OnBackClicked);
 
+            if (goToCollectionButton != null) goToCollectionButton.interactable = false;
             RefreshAll();
         }
 
@@ -51,6 +58,7 @@ namespace CardgameDungeon.Unity.UI
             if (setDropdown != null) setDropdown.onValueChanged.RemoveListener(OnSetChanged);
             if (refreshSetsButton != null) refreshSetsButton.onClick.RemoveListener(RefreshAll);
             if (buyAndOpenButton != null) buyAndOpenButton.onClick.RemoveListener(BuyAndOpenSelectedSet);
+            if (goToCollectionButton != null) goToCollectionButton.onClick.RemoveListener(ConfirmAndGoToCollection);
             if (backButton != null) backButton.onClick.RemoveListener(OnBackClicked);
         }
 
@@ -59,6 +67,7 @@ namespace CardgameDungeon.Unity.UI
             LoadBoosterSets();
             LoadBalance();
             LoadCollection();
+            ResetRevealSession(clearVisuals: true);
         }
 
         private void LoadBoosterSets()
@@ -171,11 +180,16 @@ namespace CardgameDungeon.Unity.UI
                 request,
                 response =>
                 {
-                    RenderOpenedCards(response.cards, response.setCode);
+                    RenderOpenedCards(response.cards, response.setCode, append: true);
                     LoadBalance();
-                    LoadCollection();
+                    _hasPendingCollectionRefresh = true;
+                    _openedBoostersPending++;
+                    if (goToCollectionButton != null) goToCollectionButton.interactable = true;
 
-                    SetStatus($"Booster aberto ({response.setCode}). {response.cards?.Count ?? 0} cartas adicionadas.");
+                    SetStatus(
+                        $"Booster {_openedBoostersPending} aberto ({response.setCode}). " +
+                        $"{response.cards?.Count ?? 0} cartas reveladas. " +
+                        "Abra mais boosters ou toque em 'Ir para Coleção'.");
                     if (buyAndOpenButton != null) buyAndOpenButton.interactable = true;
                 },
                 error =>
@@ -185,12 +199,15 @@ namespace CardgameDungeon.Unity.UI
                 });
         }
 
-        private void RenderOpenedCards(List<BoosterCardDto> cards, string setCode)
+        private void RenderOpenedCards(List<BoosterCardDto> cards, string setCode, bool append)
         {
             if (openedCardsContainer == null) return;
 
-            foreach (Transform child in openedCardsContainer)
-                Destroy(child.gameObject);
+            if (!append)
+            {
+                foreach (Transform child in openedCardsContainer)
+                    Destroy(child.gameObject);
+            }
 
             if (cards == null || cards.Count == 0)
             {
@@ -198,6 +215,7 @@ namespace CardgameDungeon.Unity.UI
                 return;
             }
 
+            CreateCardRow($"=== Booster {_openedBoostersPending + 1} ({setCode}) ===");
             foreach (var card in cards)
             {
                 var text = $"[{card.setCode}] {card.name} | {card.rarity} | {card.type}";
@@ -222,6 +240,35 @@ namespace CardgameDungeon.Unity.UI
             var tmp = go.GetComponent<TextMeshProUGUI>();
             tmp.text = text;
             tmp.fontSize = 24;
+        }
+
+        private void ConfirmAndGoToCollection()
+        {
+            if (_hasPendingCollectionRefresh)
+            {
+                LoadCollection();
+                SetStatus("Coleção atualizada com as novas cartas.");
+            }
+
+            ResetRevealSession(clearVisuals: true);
+
+            if (navigateToCollectionScene && !string.IsNullOrWhiteSpace(collectionSceneName))
+                GameManager.Instance.GoToScene(collectionSceneName);
+        }
+
+        private void ResetRevealSession(bool clearVisuals)
+        {
+            _hasPendingCollectionRefresh = false;
+            _openedBoostersPending = 0;
+
+            if (goToCollectionButton != null)
+                goToCollectionButton.interactable = false;
+
+            if (!clearVisuals || openedCardsContainer == null)
+                return;
+
+            foreach (Transform child in openedCardsContainer)
+                Destroy(child.gameObject);
         }
 
         private void SetStatus(string message)
