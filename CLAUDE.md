@@ -36,7 +36,7 @@ Unity client is a separate project that consumes the API.
 
 **Card types:** Ally, Equipment, Monster, Trap, Dungeon Room, Boss.
 
-**Rarities:** Unique (1 per deck), Rare, Uncommon, Common.
+**Rarities:** Unique (1 per deck, minimum cost 6 for allies — cannot be used in starting team), Rare, Uncommon, Common.
 
 **Ally Classes:** Warrior (controls combat, redirects damage), Rogue (Advantage bonuses, evasion), Mage (conditional multi-combat effects; Necromancer variant recycles monsters from discard to deck top), Cleric (heals, anti-Undead, conditional buffs), Ranger (reveals hand/deck/traps, favored enemy), Paladin (combat+support hybrid, sacrifice for effects), Bard (returns cards from hand to deck top/bottom/shuffle to control future draws and reshape card distribution). Each ally has exactly one class.
 

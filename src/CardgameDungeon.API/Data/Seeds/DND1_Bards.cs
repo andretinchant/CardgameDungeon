@@ -15,11 +15,14 @@ public static partial class CardSetSeeder
             // ═════════════════════════════════════════════════════
 
             // ── UNIQUE (1) ──
-            // Budget 26: STR4(4) + HP5(5) + INIT2(3) + Treasure1(1) = 13. Effect = 13 → capped at 8 ✓
+            // Budget 30 (Unique cost 6): STR5(5) + HP6(6) + INIT3(4.5) + Treasure1(1) = 16.5
+            // Effect budget: 30 - 16.5 = 13.5 → capped at 8 ✓ (extra into stats)
+            // Readjust: STR 5(5) + HP 7(7) + INIT 3(4.5) + Treasure 2(2) = 18.5
+            // Effect budget: 30 - 18.5 = 11.5 → 8 ✓
             new AllyCard(new Guid("00000000-0000-0000-0008-000000000001"),
-                "Volo the Chronicler", Rarity.Unique, 5,
-                4, 5, 2, treasure: 1,
-                effect: "Return up to 3 cards from hand to top of deck in any order. Draw 2 cards. Once per dungeon: look at opponent's hand and return 1 of their cards to top of their deck",
+                "Volo the Chronicler", Rarity.Unique, 6,
+                5, 7, 3, treasure: 2,
+                effect: "Return up to 3 cards from hand to top of deck in any order. Draw 2 cards. Once per dungeon: look at opponent's hand and return 1 of their cards to top of their deck. All Bard allies gain +1 INIT",
                 race: Race.Human, allyClass: AllyClass.Bard),
 
             // ── RARE (2) ──

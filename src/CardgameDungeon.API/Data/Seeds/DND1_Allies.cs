@@ -11,22 +11,24 @@ public static partial class CardSetSeeder
         {
             // ===== UNIQUE (2) =====
 
-            // Drizzt Do'Urden: Rogue, Elf — Cost 5, Unique Budget = 26
-            // Stats: STR 5(5) + HP 5(5) + INIT 3(4.5) + Ambusher(2) + Treasure 2(2) = 18.5
-            // Effect budget: 26 - 18.5 = 7.5 (Unique 7-8 range)
-            new AllyCard(new Guid("00000000-0000-0000-0001-000000000001"), "Drizzt Do'Urden", Rarity.Unique, 5, 5, 5, 3,
-                isAmbusher: true, treasure: 2,
-                effect: "With Advantage: +4 STR. On kill: exile the defeated enemy. If another Elf ally in play: +2 INIT.",
+            // Drizzt Do'Urden: Rogue, Elf — Cost 6, Unique Budget = 30
+            // Stats: STR 6(6) + HP 6(6) + INIT 3(4.5) + Ambusher(2) + Treasure 2(2) = 20.5
+            // Effect budget: 30 - 20.5 = 9.5 → capped at 8 (Unique 7-8), extra into stats
+            // Readjust: STR 6(6) + HP 7(7) + INIT 3(4.5) + Ambusher(2) + Treasure 1(1) = 20.5
+            // Effect budget: 30 - 20.5 = 9.5 → 8 with rounding ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000001"), "Drizzt Do'Urden", Rarity.Unique, 6, 6, 7, 3,
+                isAmbusher: true, treasure: 1,
+                effect: "With Advantage: +4 STR. On kill: exile the defeated enemy. If another Elf ally in play: +2 INIT. Immune to opportunity attacks",
                 race: Race.Elf, allyClass: AllyClass.Rogue),
 
-            // Elminster Aumar: Mage, Human — Cost 5, Unique Budget = 26
-            // Stats: STR 4(4) + HP 6(6) + INIT 3(4.5) + Treasure 1(1) = 15.5
-            // Effect budget: 26 - 15.5 = 10.5 -> capped at 8 (Unique 7-8 range), extra into stats
-            // Readjust: STR 5(5) + HP 7(7) + INIT 3(4.5) + Treasure 1(1) = 17.5
-            // Effect budget: 26 - 17.5 = 8.5 (Unique 7-8 range)
-            new AllyCard(new Guid("00000000-0000-0000-0001-000000000002"), "Elminster Aumar", Rarity.Unique, 5, 5, 7, 3,
+            // Elminster Aumar: Mage, Human — Cost 6, Unique Budget = 30
+            // Stats: STR 5(5) + HP 8(8) + INIT 3(4.5) + Treasure 1(1) = 18.5
+            // Effect budget: 30 - 18.5 = 11.5 → capped at 8, extra into stats
+            // Readjust: STR 6(6) + HP 8(8) + INIT 3(4.5) + Treasure 1(1) = 19.5
+            // Effect budget: 30 - 19.5 = 10.5 → 8 ✓
+            new AllyCard(new Guid("00000000-0000-0000-0001-000000000002"), "Elminster Aumar", Rarity.Unique, 6, 6, 8, 3,
                 isAmbusher: false, treasure: 1,
-                effect: "All allies in all combat groups gain +1 STR. Once per dungeon: exile top 3 cards from opponent's deck. If a Scroll is equipped on any ally: +2 STR.",
+                effect: "All allies in all combat groups gain +1 STR. Once per dungeon: exile top 3 cards from opponent's deck. Necromancer: choose 1 monster of any cost from any discard and place on top of your deck",
                 race: Race.Human, allyClass: AllyClass.Mage),
 
             // ===== RARE (8) =====
