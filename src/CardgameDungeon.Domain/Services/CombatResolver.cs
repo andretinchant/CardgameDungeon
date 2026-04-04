@@ -256,7 +256,8 @@ public class CombatResolver
         return combined;
     }
 
-    private static StatModifiers CalculateCardModifiers(Card card, bool hasAdvantage, bool hasDisadvantage)
+    private static StatModifiers CalculateCardModifiers(Card card, bool hasAdvantage, bool hasDisadvantage,
+        PlayerState? ownerState = null)
     {
         var tags = card.ParsedEffects;
         if (tags.Count == 0) return new StatModifiers();
@@ -265,8 +266,25 @@ public class CombatResolver
         {
             SourceCardId = card.Id,
             HasAdvantage = hasAdvantage,
-            HasDisadvantage = hasDisadvantage
+            HasDisadvantage = hasDisadvantage,
+            DeckCount = ownerState?.Deck.Count ?? 0,
+            HandCount = ownerState?.Hand.Count ?? 0,
+            AlliesInPlay = ownerState?.AlliesInPlay.Count ?? 0
         };
+
+        // Feed classes in play
+        if (ownerState != null)
+        {
+            foreach (var ally in ownerState.AlliesInPlay)
+                context.AddClassInPlay(ally.Class.ToString());
+
+            // Feed equipped slots for this card if it's an AllyCard
+            if (card is AllyCard allyCard)
+            {
+                foreach (var equip in ownerState.GetEquippedForAlly(allyCard.Id))
+                    context.AddEquippedSlot(equip.Slot.ToString());
+            }
+        }
 
         var mods = new StatModifiers();
 

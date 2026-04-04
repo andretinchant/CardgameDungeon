@@ -15,7 +15,11 @@ public enum EffectTrigger
     OnMarkedKill,
     OnMarkedSurvive,
     WithAdvantage,
-    WithDisadvantage
+    WithDisadvantage,
+    OnAllyDeath,
+    OnRoomAdvance,
+    OnTrapTrigger,
+    OnEquipmentDestroyed
 }
 
 public enum EffectAction
@@ -49,7 +53,30 @@ public enum EffectAction
     ScrollToBottom,
     ReduceDamage,
     OppAttackDouble,
-    IgnoreOppAttackLimit
+    IgnoreOppAttackLimit,
+    MaterializeAlly,
+    RequireClass,
+    IgnoreAllyLimit,
+    ReshuffleHandRedraw,
+    RecoverFromExile,
+    ReduceNextCost,
+    DetectTrap,
+    PreventRetarget,
+    PreventAttack,
+    ImmuneConsumable,
+    ImmuneEquipment,
+    ImmuneScroll,
+    ImmuneBomb,
+    ImmuneTrap,
+    DisableEquipment,
+    SpawnMonster,
+    SwapAssignments,
+    ForceDiscardOrExile,
+    ReturnAllyToHand,
+    AttackTwoTargets,
+    SwapWithMonster,
+    OnlyElimByDouble,
+    TrapDouble
 }
 
 public enum EffectTarget
@@ -62,7 +89,8 @@ public enum EffectTarget
     AllEnemies,
     EnemyGroup,
     MarkedEnemy,
-    Opponent
+    Opponent,
+    Both
 }
 
 public enum EffectCondition
@@ -74,5 +102,14 @@ public enum EffectCondition
     IfEquipped,
     IfScrollUsed,
     OncePerCombat,
-    OncePerRoom
+    OncePerRoom,
+    IfNoDamage,
+    IfExiledGt,
+    IfHandLt,
+    IfNoBoots,
+    IfNoArmor,
+    IfNoPotionBalm,
+    IfInitLt,
+    IfCost1,
+    IfEveryXRounds
 }

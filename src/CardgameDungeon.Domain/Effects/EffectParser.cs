@@ -83,6 +83,10 @@ public static class EffectParser
         "ON_MARKED_SURVIVE" => EffectTrigger.OnMarkedSurvive,
         "WITH_ADVANTAGE" => EffectTrigger.WithAdvantage,
         "WITH_DISADVANTAGE" => EffectTrigger.WithDisadvantage,
+        "ON_ALLY_DEATH" => EffectTrigger.OnAllyDeath,
+        "ON_ROOM_ADVANCE" => EffectTrigger.OnRoomAdvance,
+        "ON_TRAP_TRIGGER" => EffectTrigger.OnTrapTrigger,
+        "ON_EQUIPMENT_DESTROYED" => EffectTrigger.OnEquipmentDestroyed,
         _ => EffectTrigger.Passive
     };
 
@@ -120,6 +124,15 @@ public static class EffectParser
             "IF_SCROLL_USED" => (EffectCondition.IfScrollUsed, null),
             "ONCE_PER_COMBAT" => (EffectCondition.OncePerCombat, null),
             "ONCE_PER_ROOM" => (EffectCondition.OncePerRoom, null),
+            "IF_NO_DAMAGE" => (EffectCondition.IfNoDamage, null),
+            "IF_EXILED_GT_8" or "IF_EXILED_GT" => (EffectCondition.IfExiledGt, parts.Length > 1 ? parts[1] : "8"),
+            "IF_HAND_LT_3" or "IF_HAND_LT" => (EffectCondition.IfHandLt, parts.Length > 1 ? parts[1] : "3"),
+            "IF_NO_BOOTS" => (EffectCondition.IfNoBoots, null),
+            "IF_NO_ARMOR" => (EffectCondition.IfNoArmor, null),
+            "IF_NO_POTION_BALM" => (EffectCondition.IfNoPotionBalm, null),
+            "IF_INIT_LT_2" or "IF_INIT_LT" => (EffectCondition.IfInitLt, parts.Length > 1 ? parts[1] : "2"),
+            "IF_COST_1" => (EffectCondition.IfCost1, null),
+            "IF_EVERY_2_ROUNDS" or "IF_EVERY_X_ROUNDS" => (EffectCondition.IfEveryXRounds, parts.Length > 1 ? parts[1] : "2"),
             _ => (EffectCondition.None, null)
         };
     }
@@ -168,6 +181,32 @@ public static class EffectParser
             "RETURN_HAND_TOP" => new() { Action = EffectAction.ReturnHandTop, Value = ParseInt(val) },
             "RETURN_HAND_BOTTOM" => new() { Action = EffectAction.ReturnHandBottom, Value = ParseInt(val) },
             "RETURN_HAND_SHUFFLE" => new() { Action = EffectAction.ReturnHandShuffle, Value = ParseInt(val) },
+            "MATERIALIZE_ALLY" => new() { Action = EffectAction.MaterializeAlly, Param = val },
+            "REQUIRE_CLASS" => new() { Action = EffectAction.RequireClass, Param = val },
+            "IGNORE_ALLY_LIMIT" => new() { Action = EffectAction.IgnoreAllyLimit },
+            "RESHUFFLE_HAND_REDRAW" => new() { Action = EffectAction.ReshuffleHandRedraw },
+            "RECOVER_FROM_EXILE" => new() { Action = EffectAction.RecoverFromExile, Value = ParseInt(val) },
+            "REDUCE_NEXT_COST" => new() { Action = EffectAction.ReduceNextCost, Value = ParseInt(val) },
+            "DETECT_TRAP" => new() { Action = EffectAction.DetectTrap, Value = ParseInt(val) },
+            "PREVENT_RETARGET" => new() { Action = EffectAction.PreventRetarget },
+            "PREVENT_ATTACK" => new() { Action = EffectAction.PreventAttack },
+            "IMMUNE_CONSUMABLE" => new() { Action = EffectAction.ImmuneConsumable },
+            "IMMUNE_EQUIPMENT" => new() { Action = EffectAction.ImmuneEquipment },
+            "IMMUNE_SCROLL" => new() { Action = EffectAction.ImmuneScroll },
+            "IMMUNE_BOMB" => new() { Action = EffectAction.ImmuneBomb },
+            "IMMUNE_TRAP" => new() { Action = EffectAction.ImmuneTrap },
+            "DISABLE_EQUIPMENT" => new() { Action = EffectAction.DisableEquipment, Value = ParseInt(val) },
+            "SPAWN_SPIDER" or "SPAWN_MONSTER" => new() { Action = EffectAction.SpawnMonster, Value = ParseInt(val) },
+            "SWAP_ASSIGNMENTS" => new() { Action = EffectAction.SwapAssignments },
+            "FORCE_DISCARD_OR_EXILE_WEAKEST" => new() { Action = EffectAction.ForceDiscardOrExile },
+            "RETURN_ALLY_TO_HAND" => new() { Action = EffectAction.ReturnAllyToHand, Value = ParseInt(val) },
+            "ATTACK_TWO_TARGETS" => new() { Action = EffectAction.AttackTwoTargets },
+            "SWAP_WITH_MONSTER" => new() { Action = EffectAction.SwapWithMonster },
+            "ONLY_ELIM_BY_DOUBLE" => new() { Action = EffectAction.OnlyElimByDouble },
+            "TRAP_DOUBLE" => new() { Action = EffectAction.TrapDouble },
+            "RESTORE_CARD_FROM_DISCARD" => new() { Action = EffectAction.RecoverFromExile, Value = 1, Param = "DISCARD" },
+            "EXILE_TARGET" => new() { Action = EffectAction.ExileDeck, Value = 1, Target = EffectTarget.Enemy },
+            "IMMUNE" => new() { Action = EffectAction.ImmuneConsumable },
             _ => null
         };
     }
@@ -183,6 +222,7 @@ public static class EffectParser
         "ENEMY_GROUP" => EffectTarget.EnemyGroup,
         "MARKED" => EffectTarget.MarkedEnemy,
         "OPPONENT" => EffectTarget.Opponent,
+        "BOTH" => EffectTarget.Both,
         _ => EffectTarget.Self
     };
 
