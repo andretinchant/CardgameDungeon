@@ -139,13 +139,43 @@ public static class EffectParser
 
     private static EffectActionEntry? ParseAction(string token)
     {
-        // +STR:2 / -STR:1 / +HP:3 / +INIT:2
+        // +STR:2 / -STR:1 / +HP:3 / +INIT:2 / +STR:4:ALLY
         if (token.StartsWith("+STR:") || token.StartsWith("-STR:"))
-            return new EffectActionEntry { Action = EffectAction.ModStr, Value = ParseSignedInt(token[4..]) };
+        {
+            var rest = token[4..].TrimStart(':');
+            var valuePart = rest.Split(':')[0];
+            var targetPart = rest.Contains(':') ? rest[(rest.IndexOf(':') + 1)..] : "";
+            return new EffectActionEntry
+            {
+                Action = EffectAction.ModStr,
+                Value = ParseSignedInt(":" + valuePart),
+                Target = string.IsNullOrEmpty(targetPart) ? EffectTarget.Self : ParseTarget(targetPart)
+            };
+        }
         if (token.StartsWith("+HP:") || token.StartsWith("-HP:"))
-            return new EffectActionEntry { Action = EffectAction.ModHp, Value = ParseSignedInt(token[3..]) };
+        {
+            var rest = token[3..].TrimStart(':');
+            var valuePart = rest.Split(':')[0];
+            var targetPart = rest.Contains(':') ? rest[(rest.IndexOf(':') + 1)..] : "";
+            return new EffectActionEntry
+            {
+                Action = EffectAction.ModHp,
+                Value = ParseSignedInt(":" + valuePart),
+                Target = string.IsNullOrEmpty(targetPart) ? EffectTarget.Self : ParseTarget(targetPart)
+            };
+        }
         if (token.StartsWith("+INIT:") || token.StartsWith("-INIT:"))
-            return new EffectActionEntry { Action = EffectAction.ModInit, Value = ParseSignedInt(token[5..]) };
+        {
+            var rest = token[5..].TrimStart(':');
+            var valuePart = rest.Split(':')[0];
+            var targetPart = rest.Contains(':') ? rest[(rest.IndexOf(':') + 1)..] : "";
+            return new EffectActionEntry
+            {
+                Action = EffectAction.ModInit,
+                Value = ParseSignedInt(":" + valuePart),
+                Target = string.IsNullOrEmpty(targetPart) ? EffectTarget.Self : ParseTarget(targetPart)
+            };
+        }
 
         var parts = token.Split(':');
         var key = parts[0];

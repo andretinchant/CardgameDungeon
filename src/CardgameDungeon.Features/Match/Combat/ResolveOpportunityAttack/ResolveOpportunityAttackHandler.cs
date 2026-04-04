@@ -31,9 +31,10 @@ public class ResolveOpportunityAttackHandler(IMatchRepository matchRepo, CombatR
             attacker, fleeing, opponent.AlliesInPlay,
             new HashSet<Guid>()); // Already enforced via CombatBoard
 
-        // Remove the fleeing ally's existing assignment
-        var fleeingAssignments = match.CombatBoard.GetAssignmentsForAttacker(request.FleeingAllyId);
-        foreach (var assignment in fleeingAssignments.ToList())
+        // Remove the fleeing ally's existing assignments (could be as attacker or defender)
+        var fleeingAsAttacker = match.CombatBoard.GetAssignmentsForAttacker(request.FleeingAllyId);
+        var fleeingAsDefender = match.CombatBoard.GetAssignmentsForDefender(request.FleeingAllyId);
+        foreach (var assignment in fleeingAsAttacker.Concat(fleeingAsDefender).ToList())
             match.CombatBoard.RemoveAssignment(assignment.AttackerId, assignment.DefenderId);
 
         await matchRepo.UpdateAsync(match, ct);

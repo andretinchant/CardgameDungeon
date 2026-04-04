@@ -24,6 +24,60 @@ public static class TriggerProcessor
 
             foreach (var tag in tags)
             {
+                // Check condition
+                var ctx = new EffectContext
+                {
+                    SourceCardId = ally.Id,
+                    DeckCount = state.Deck.Count,
+                    HandCount = state.Hand.Count,
+                    AlliesInPlay = state.AlliesInPlay.Count
+                };
+                foreach (var a in state.AlliesInPlay)
+                    ctx.AddClassInPlay(a.Class.ToString());
+
+                if (tag.Condition != EffectCondition.None)
+                {
+                    // Simple condition evaluation
+                    var conditionMet = tag.Condition switch
+                    {
+                        EffectCondition.OncePerCombat => !ctx.HasTriggeredThisCombat(tag),
+                        EffectCondition.OncePerRoom => !ctx.HasTriggeredThisRoom(tag),
+                        EffectCondition.IfClass => ctx.HasClassInPlay(tag.ConditionParam),
+                        EffectCondition.IfRaging => true, // Simplified — would need rage state tracking
+                        _ => true
+                    };
+                    if (!conditionMet) continue;
+                }
+
+                // Check cost affordability
+                if (tag.Cost is not null)
+                {
+                    var canPay = tag.Cost.Type switch
+                    {
+                        EffectCostType.ExileDeck => state.Deck.Count >= tag.Cost.Amount,
+                        EffectCostType.ExileHand => state.Hand.Count >= tag.Cost.Amount,
+                        EffectCostType.DiscardHand => state.Hand.Count >= tag.Cost.Amount,
+                        _ => true
+                    };
+                    if (!canPay) continue;
+
+                    // Pay the cost
+                    switch (tag.Cost.Type)
+                    {
+                        case EffectCostType.ExileDeck:
+                            state.ExileFromTop(tag.Cost.Amount);
+                            break;
+                        case EffectCostType.ExileHand:
+                            for (var i = 0; i < tag.Cost.Amount && state.Hand.Count > 0; i++)
+                                state.DiscardFromHand(state.Hand[0]); // Simplified
+                            break;
+                        case EffectCostType.DiscardHand:
+                            for (var i = 0; i < tag.Cost.Amount && state.Hand.Count > 0; i++)
+                                state.DiscardFromHand(state.Hand[0]);
+                            break;
+                    }
+                }
+
                 foreach (var action in tag.Actions)
                 {
                     ExecuteAction(action, state, opponent, ally);

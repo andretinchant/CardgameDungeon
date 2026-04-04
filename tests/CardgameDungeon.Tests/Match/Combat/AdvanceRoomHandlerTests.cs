@@ -55,14 +55,16 @@ public class AdvanceRoomHandlerTests
 
         await BringToRoomResolution(match);
 
-        var defenderHandBefore = match.GetDefender().Hand.Count;
+        // Capture defender reference before AdvanceRoom resets roles
+        var defender = match.GetDefender();
+        var defenderHandBefore = defender.Hand.Count;
 
         await AdvanceHandler.Handle(
             new AdvanceRoomCommand(match.Id),
             CancellationToken.None);
 
         // Defender refills to 8 (or as many as deck allows)
-        Assert.True(match.GetDefender().Hand.Count >= defenderHandBefore);
+        Assert.True(defender.Hand.Count >= defenderHandBefore);
     }
 
     [Fact]

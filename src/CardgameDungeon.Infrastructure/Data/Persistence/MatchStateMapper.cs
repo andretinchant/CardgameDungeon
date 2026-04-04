@@ -66,6 +66,16 @@ internal static class MatchStateMapper
             AddToAlliesInPlay(player2, ally);
         }
 
+        // Restore equipped items
+        RestoreEquippedItems(player1, dto.Player1.EquippedItems);
+        RestoreEquippedItems(player2, dto.Player2.EquippedItems);
+
+        // Restore NextCostReduction
+        if (dto.Player1.NextCostReduction != 0)
+            SetPrivateProperty(player1, nameof(PlayerState.NextCostReduction), dto.Player1.NextCostReduction);
+        if (dto.Player2.NextCostReduction != 0)
+            SetPrivateProperty(player2, nameof(PlayerState.NextCostReduction), dto.Player2.NextCostReduction);
+
         var dungeonRooms = dto.DungeonRooms.Select(d => (DungeonRoomCard)FromCardDto(d));
         var boss = (BossCard)FromCardDto(dto.Boss);
 
@@ -132,7 +142,12 @@ internal static class MatchStateMapper
         Hand = ps.Hand.Select(ToCardDto).ToList(),
         Discard = ps.Discard.Select(ToCardDto).ToList(),
         Exile = ps.Exile.Select(ToCardDto).ToList(),
-        AlliesInPlay = ps.AlliesInPlay.Select(ToCardDto).ToList()
+        AlliesInPlay = ps.AlliesInPlay.Select(ToCardDto).ToList(),
+        EquippedItems = ps.AlliesInPlay
+            .SelectMany(a => ps.GetEquippedForAlly(a.Id)
+                .Select(e => new EquippedItemDto { AllyId = a.Id, Equipment = ToCardDto(e) }))
+            .ToList(),
+        NextCostReduction = ps.NextCostReduction
     };
 
     private static CardDto ToCardDto(Card card)
@@ -313,5 +328,23 @@ internal static class MatchStateMapper
     {
         foreach (var cardDto in cards)
             addAction(ps, FromCardDto(cardDto));
+    }
+
+    private static void RestoreEquippedItems(PlayerState ps, List<EquippedItemDto>? equippedItems)
+    {
+        if (equippedItems is null || equippedItems.Count == 0)
+            return;
+
+        var field = typeof(PlayerState).GetField("_equippedItems",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        var dict = (Dictionary<Guid, List<EquipmentCard>>)field.GetValue(ps)!;
+
+        foreach (var item in equippedItems)
+        {
+            var equipment = (EquipmentCard)FromCardDto(item.Equipment);
+            if (!dict.ContainsKey(item.AllyId))
+                dict[item.AllyId] = [];
+            dict[item.AllyId].Add(equipment);
+        }
     }
 }

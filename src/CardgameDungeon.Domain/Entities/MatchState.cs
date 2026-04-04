@@ -97,9 +97,9 @@ public class MatchState
             throw new InvalidOperationException("This player has already submitted their team.");
 
         var totalCost = team.Sum(a => a.Cost);
-        if (totalCost != SetupMaxCost)
+        if (totalCost > SetupMaxCost)
             throw new InvalidOperationException(
-                $"Setup team cost must be exactly {SetupMaxCost}, got {totalCost}.");
+                $"Setup team cost must be at most {SetupMaxCost}, got {totalCost}.");
 
         if (team.Any(a => a.Cost == 0))
             throw new InvalidOperationException("Setup team cannot include cards with cost 0.");
@@ -229,16 +229,18 @@ public class MatchState
         if (simultaneousElimination)
         {
             if (IsBossRoom)
-                WinnerId = InitiativeWinnerId; // attackers win boss room ties
+                WinnerId = AttackerId; // attackers win boss room ties
             else
-                WinnerId = InitiativeWinnerId == Player1.PlayerId
-                    ? Player2.PlayerId
-                    : Player1.PlayerId; // defender wins normal room ties
+                WinnerId = GetDefender().PlayerId; // defender wins normal room ties
         }
         else
         {
-            Player1.TakeDamage(defenderDamage);
-            Player2.TakeDamage(attackerDamage);
+            var attackerPlayer = GetAttacker();
+            var defenderPlayer = GetDefender();
+            // attackerDamage = damage dealt TO attacker (from defender's strength)
+            // defenderDamage = damage dealt TO defender (from attacker's strength)
+            attackerPlayer.TakeDamage(attackerDamage);
+            defenderPlayer.TakeDamage(defenderDamage);
         }
 
         CombatBoard.Clear();
@@ -257,18 +259,24 @@ public class MatchState
     public void AdvanceRoom()
     {
         CurrentRoom++;
-        Player1.RefillHand();
-        Player2.RefillHand();
+
+        // Only defender draws up to 8 when entering a new room
+        if (AttackerId.HasValue)
+            GetDefender().RefillHand();
+
+        // Reset roles for next room
+        AttackerId = null;
+        InitiativeWinnerId = null;
+
+        if (CurrentRoom > _dungeonRooms.Count + 1) // past boss = finished
+        {
+            Phase = MatchPhase.Finished;
+            return;
+        }
 
         if (IsBossRoom)
         {
             Phase = MatchPhase.Initiative;
-            return;
-        }
-
-        if (CurrentRoom > _dungeonRooms.Count + 1) // past boss
-        {
-            Phase = MatchPhase.Finished;
             return;
         }
 

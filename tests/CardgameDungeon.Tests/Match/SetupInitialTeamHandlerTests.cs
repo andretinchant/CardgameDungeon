@@ -49,13 +49,13 @@ public class SetupInitialTeamHandlerTests
     }
 
     [Fact]
-    public async Task CostNotExactly5_Throws()
+    public async Task CostExceedsMax_Throws()
     {
         var match = MatchTestHelper.MakeMatchInSetup();
         _matchRepo.Seed(match);
 
-        // Select only 3 allies (cost=3, not 5)
-        var allyIds = match.Player1.Hand.OfType<AllyCard>().Take(3).Select(a => a.Id).ToList();
+        // Select 6 allies (cost=6, exceeds max of 5)
+        var allyIds = match.Player1.Hand.OfType<AllyCard>().Take(6).Select(a => a.Id).ToList();
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             Handler.Handle(

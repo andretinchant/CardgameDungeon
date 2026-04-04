@@ -34,17 +34,22 @@ public class CombatResolver
     public BattleResolutionResult ResolveCombat(
         IReadOnlyList<AllyCard> attackers,
         IReadOnlyList<AllyCard> defenders,
-        bool isBossRoom)
+        bool isBossRoom,
+        PlayerState? attackerState = null,
+        PlayerState? defenderState = null)
     {
         var advantage = CombatAdvantage.Calculate(attackers.Count, defenders.Count);
 
         var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
         var defMods = CalculateGroupModifiers(defenders, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
 
-        var atkStrength = attackers.Sum(a => a.Strength) + atkMods.Strength;
-        var defStrength = defenders.Sum(a => a.Strength) + defMods.Strength;
-        var atkHp = attackers.Sum(a => a.HitPoints) + atkMods.HitPoints;
-        var defHp = defenders.Sum(a => a.HitPoints) + defMods.HitPoints;
+        var (atkBaseStr, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
+        var (defBaseStr, defBaseHp, _) = CalculateGroupStatsWithEquipment(defenders, defenderState);
+
+        var atkStrength = atkBaseStr + atkMods.Strength;
+        var defStrength = defBaseStr + defMods.Strength;
+        var atkHp = atkBaseHp + atkMods.HitPoints;
+        var defHp = defBaseHp + defMods.HitPoints;
 
         return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage,
             atkMods.EliminationDoubled, defMods.EliminationDoubled,
@@ -54,16 +59,19 @@ public class CombatResolver
     public BattleResolutionResult ResolveCombat(
         IReadOnlyList<AllyCard> attackers,
         IReadOnlyList<MonsterCard> defenders,
-        bool isBossRoom)
+        bool isBossRoom,
+        PlayerState? attackerState = null)
     {
         var advantage = CombatAdvantage.Calculate(attackers.Count, defenders.Count);
 
         var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
         var defMods = CalculateGroupModifiers(defenders, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
 
-        var atkStrength = attackers.Sum(a => a.Strength) + atkMods.Strength;
+        var (atkBaseStr, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
+
+        var atkStrength = atkBaseStr + atkMods.Strength;
         var defStrength = defenders.Sum(m => m.Strength) + defMods.Strength;
-        var atkHp = attackers.Sum(a => a.HitPoints) + atkMods.HitPoints;
+        var atkHp = atkBaseHp + atkMods.HitPoints;
         var defHp = defenders.Sum(m => m.HitPoints) + defMods.HitPoints;
 
         return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage,
@@ -73,16 +81,19 @@ public class CombatResolver
 
     public BattleResolutionResult ResolveCombat(
         IReadOnlyList<AllyCard> attackers,
-        BossCard boss)
+        BossCard boss,
+        PlayerState? attackerState = null)
     {
         var advantage = CombatAdvantage.Calculate(attackers.Count, 1);
 
         var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
         var bossMods = CalculateCardModifiers(boss, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
 
-        var atkStrength = attackers.Sum(a => a.Strength) + atkMods.Strength;
+        var (atkBaseStr, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
+
+        var atkStrength = atkBaseStr + atkMods.Strength;
         var defStrength = boss.Strength + bossMods.Strength;
-        var atkHp = attackers.Sum(a => a.HitPoints) + atkMods.HitPoints;
+        var atkHp = atkBaseHp + atkMods.HitPoints;
         var defHp = boss.HitPoints + bossMods.HitPoints;
 
         return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom: true, advantage,
@@ -225,6 +236,36 @@ public class CombatResolver
             primaryStrength,
             secondaryStrength,
             retargetCost);
+    }
+
+    #endregion
+
+    #region Equipment Stats
+
+    private static (int str, int hp, int init) CalculateGroupStatsWithEquipment(
+        IReadOnlyList<AllyCard> allies, PlayerState? ownerState)
+    {
+        var str = allies.Sum(a => a.Strength);
+        var hp = allies.Sum(a => a.HitPoints);
+        var init = allies.Sum(a => a.Initiative);
+
+        if (ownerState != null)
+        {
+            foreach (var ally in allies)
+            {
+                foreach (var equip in ownerState.GetEquippedForAlly(ally.Id))
+                {
+                    if (!equip.Slot.IsCompanionOrSummon() && !equip.Slot.IsShapeshift())
+                    {
+                        str += equip.StrengthModifier;
+                        hp += equip.HitPointsModifier;
+                        init += equip.InitiativeModifier;
+                    }
+                }
+            }
+        }
+
+        return (str, hp, init);
     }
 
     #endregion

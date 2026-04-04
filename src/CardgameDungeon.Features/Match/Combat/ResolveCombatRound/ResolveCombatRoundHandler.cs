@@ -30,6 +30,10 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
 
         var groupedByDefender = assignments.GroupBy(a => a.DefenderId);
 
+        // Track allies that have already contributed STR in a prior group (retarget rule:
+        // an ally participating in multiple combats only deals damage in the primary one).
+        var alliesAlreadyCounted = new HashSet<Guid>();
+
         foreach (var group in groupedByDefender)
         {
             var defenderAlly = defender.AlliesInPlay.FirstOrDefault(a => a.Id == group.Key);
@@ -43,8 +47,24 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
 
             if (attackerAllies.Count == 0) continue;
 
+            // For retargeted allies (appearing in multiple groups), only count their STR
+            // in the first group encountered (primary). In secondary groups, exclude them
+            // from damage contribution.
+            var primaryAllies = new List<AllyCard>();
+            foreach (var ally in attackerAllies)
+            {
+                if (alliesAlreadyCounted.Contains(ally.Id))
+                    continue; // Secondary group — retarget means 0 damage here
+                primaryAllies.Add(ally);
+                alliesAlreadyCounted.Add(ally.Id);
+            }
+
+            // Use primaryAllies for combat resolution (only primary damage contributors)
+            var combatAllies = primaryAllies.Count > 0 ? primaryAllies : attackerAllies;
+            if (primaryAllies.Count == 0) continue;
+
             var battleResult = combatResolver.ResolveCombat(
-                attackerAllies,
+                combatAllies,
                 new[] { defenderAlly },
                 match.IsBossRoom);
 
