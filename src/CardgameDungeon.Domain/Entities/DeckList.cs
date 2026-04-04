@@ -18,6 +18,9 @@ public class DeckList
     public IReadOnlyList<DungeonRoomCard> DungeonRooms => _dungeonRooms.AsReadOnly();
     public BossCard Boss { get; private set; }
 
+    /// <summary>All 80 cards combined (adventurer + enemy) for the single shuffled deck.</summary>
+    public IReadOnlyList<Card> AllCards => _adventurerCards.Concat(_enemyCards).ToList().AsReadOnly();
+
     private readonly List<Card> _adventurerCards;
     private readonly List<Card> _enemyCards;
     private readonly List<DungeonRoomCard> _dungeonRooms;

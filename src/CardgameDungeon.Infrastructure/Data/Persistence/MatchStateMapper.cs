@@ -66,6 +66,18 @@ internal static class MatchStateMapper
             AddToAlliesInPlay(player2, ally);
         }
 
+        // Restore monsters in play
+        foreach (var monsterDto in dto.Player1.MonstersInPlay)
+            AddToMonsters(player1, (MonsterCard)FromCardDto(monsterDto));
+        foreach (var monsterDto in dto.Player2.MonstersInPlay)
+            AddToMonsters(player2, (MonsterCard)FromCardDto(monsterDto));
+
+        // Restore traps set
+        foreach (var trapDto in dto.Player1.TrapsSet)
+            AddToTraps(player1, (TrapCard)FromCardDto(trapDto));
+        foreach (var trapDto in dto.Player2.TrapsSet)
+            AddToTraps(player2, (TrapCard)FromCardDto(trapDto));
+
         // Restore equipped items
         RestoreEquippedItems(player1, dto.Player1.EquippedItems);
         RestoreEquippedItems(player2, dto.Player2.EquippedItems);
@@ -143,6 +155,8 @@ internal static class MatchStateMapper
         Discard = ps.Discard.Select(ToCardDto).ToList(),
         Exile = ps.Exile.Select(ToCardDto).ToList(),
         AlliesInPlay = ps.AlliesInPlay.Select(ToCardDto).ToList(),
+        MonstersInPlay = ps.MonstersInPlay.Select(ToCardDto).ToList(),
+        TrapsSet = ps.TrapsSet.Select(ToCardDto).ToList(),
         EquippedItems = ps.AlliesInPlay
             .SelectMany(a => ps.GetEquippedForAlly(a.Id)
                 .Select(e => new EquippedItemDto { AllyId = a.Id, Equipment = ToCardDto(e) }))
@@ -322,6 +336,20 @@ internal static class MatchStateMapper
         var field = typeof(PlayerState).GetField("_alliesInPlay",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
         ((List<AllyCard>)field.GetValue(ps)!).Add(ally);
+    }
+
+    private static void AddToMonsters(PlayerState ps, MonsterCard monster)
+    {
+        var field = typeof(PlayerState).GetField("_monstersInPlay",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        ((List<MonsterCard>)field.GetValue(ps)!).Add(monster);
+    }
+
+    private static void AddToTraps(PlayerState ps, TrapCard trap)
+    {
+        var field = typeof(PlayerState).GetField("_trapsSet",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        ((List<TrapCard>)field.GetValue(ps)!).Add(trap);
     }
 
     private static void RestoreCardZone(PlayerState ps, List<CardDto> cards, Action<PlayerState, Card> addAction)

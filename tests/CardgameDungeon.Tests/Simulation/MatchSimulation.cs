@@ -2,7 +2,6 @@ using System.Text;
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Enums;
 using CardgameDungeon.Domain.Services;
-using CardgameDungeon.Domain.Effects;
 using CardgameDungeon.Domain.ValueObjects;
 
 namespace CardgameDungeon.Tests.Simulation;
@@ -15,218 +14,248 @@ public class MatchSimulation
     [Fact]
     public void FullMatchSimulation()
     {
-        Log("╔════════════════════════════════════════════════════════════╗");
-        Log("║          CARDGAME DUNGEON — FULL MATCH SIMULATION        ║");
-        Log("╚════════════════════════════════════════════════════════════╝");
+        Log("╔════════════════════════════════════════════════════════════════╗");
+        Log("║     CARDGAME DUNGEON — FULL MATCH SIMULATION (80-card deck) ║");
+        Log("╚════════════════════════════════════════════════════════════════╝");
         Log("");
 
-        // ── BUILD DECKS ──
         var p1Id = Guid.NewGuid();
         var p2Id = Guid.NewGuid();
 
-        var p1Adventurers = BuildAdventurers("P1");
-        var p2Adventurers = BuildAdventurers("P2");
+        // Build 80-card decks: 40 adventurer + 40 enemy, all mixed
+        var p1AllCards = BuildMixedDeck("P1");
+        var p2AllCards = BuildMixedDeck("P2");
 
-        // Monster IDs for rooms
-        var monsterIds = new List<Guid>();
-        for (int i = 0; i < 10; i++) monsterIds.Add(Guid.NewGuid());
-
+        // Dungeon with monsters in every room
+        var monsterIds = Enumerable.Range(0, 10).Select(_ => Guid.NewGuid()).ToList();
         var dungeonRooms = new List<DungeonRoomCard>
         {
-            new(Guid.NewGuid(), "Goblin Cave", Rarity.Common, 1, monsterIds.Take(2).ToList(), effect: "Dark cave with goblins"),
-            new(Guid.NewGuid(), "Spider Nest", Rarity.Common, 2, monsterIds.Skip(2).Take(2).ToList(), effect: "Webs everywhere"),
-            new(Guid.NewGuid(), "Undead Crypt", Rarity.Common, 3, monsterIds.Skip(4).Take(2).ToList(), effect: "Cold and silent"),
-            new(Guid.NewGuid(), "Dragon Lair Entrance", Rarity.Common, 4, monsterIds.Skip(6).Take(2).ToList(), effect: "Heat intensifies"),
-            new(Guid.NewGuid(), "Throne Room", Rarity.Common, 5, monsterIds.Skip(8).Take(2).ToList(), effect: "The final chamber"),
+            new(Guid.NewGuid(), "Goblin Cave", Rarity.Common, 1, monsterIds.Take(2)),
+            new(Guid.NewGuid(), "Spider Nest", Rarity.Common, 2, monsterIds.Skip(2).Take(2)),
+            new(Guid.NewGuid(), "Undead Crypt", Rarity.Common, 3, monsterIds.Skip(4).Take(2)),
+            new(Guid.NewGuid(), "Dragon Lair", Rarity.Common, 4, monsterIds.Skip(6).Take(2)),
+            new(Guid.NewGuid(), "Throne Room", Rarity.Common, 5, monsterIds.Skip(8).Take(2)),
         };
-
         var boss = new BossCard(Guid.NewGuid(), "Strahd von Zarovich", Rarity.Unique, 5, 7, 10, 1,
-            "Castelo Sombrio. Restaura HP = aliados mortos no descarte.");
+            "Castelo Sombrio — drena vida dos aliados mortos.");
 
-        var player1 = new PlayerState(p1Id, 20, Shuffle(p1Adventurers));
-        var player2 = new PlayerState(p2Id, 20, Shuffle(p2Adventurers));
+        var player1 = new PlayerState(p1Id, 20, Shuffle(p1AllCards));
+        var player2 = new PlayerState(p2Id, 20, Shuffle(p2AllCards));
 
         player1.RefillHand();
         player2.RefillHand();
 
         var match = new MatchState(Guid.NewGuid(), player1, player2, dungeonRooms, boss);
 
-        Log($"Match ID: {match.Id}");
-        Log($"Player 1 (P1): Warrior/Barbarian focus");
-        Log($"Player 2 (P2): Rogue/Mage focus");
-        Log($"Dungeon: 5 rooms + Boss (Strahd)");
-        Log($"P1 Hand: {player1.Hand.Count} | Deck: {player1.Deck.Count}");
-        Log($"P2 Hand: {player2.Hand.Count} | Deck: {player2.Deck.Count}");
+        Log($"P1 Deck: {player1.Deck.Count} cards | Hand: {player1.Hand.Count}");
+        Log($"P2 Deck: {player2.Deck.Count} cards | Hand: {player2.Hand.Count}");
+        LogHandComposition("P1", player1);
+        LogHandComposition("P2", player2);
         Log("");
 
-        // ── SETUP PHASE ──
+        // ── SETUP ──
         LogPhase("SETUP (cost ≤ 5)");
-
         var p1Team = player1.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).Take(3).ToList();
-        var p2Team = player2.Hand.OfType<AllyCard>().OrderByDescending(a => a.Initiative).Take(3).ToList();
+        var p2Team = player2.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).Take(3).ToList();
+
+        if (p1Team.Count < 2) { Log("P1 doesn't have enough allies — bad draw!"); }
+        if (p2Team.Count < 2) { Log("P2 doesn't have enough allies — bad draw!"); }
+
+        // Pad with whatever allies we have
+        while (p1Team.Sum(a => a.Cost) > 5 && p1Team.Count > 1) p1Team.RemoveAt(p1Team.Count - 1);
+        while (p2Team.Sum(a => a.Cost) > 5 && p2Team.Count > 1) p2Team.RemoveAt(p2Team.Count - 1);
 
         LogTeam("P1", p1Team);
         LogTeam("P2", p2Team);
 
-        match.SubmitSetupTeam(p1Id, p1Team);
-        match.SubmitSetupTeam(p2Id, p2Team);
-        Log("Both teams submitted.");
+        if (p1Team.Count > 0) match.SubmitSetupTeam(p1Id, p1Team);
+        if (p2Team.Count > 0) match.SubmitSetupTeam(p2Id, p2Team);
 
-        match.RevealTeams();
-        Log("Teams revealed!");
-        LogState(player1, player2, "P1", "P2");
+        if (match.BothTeamsSubmitted)
+        {
+            match.RevealTeams();
+            Log("Teams revealed!");
+        }
         Log("");
 
         // ── ROOM LOOP ──
-        int maxRounds = 20;
+        int maxRounds = 25;
         int round = 0;
 
         while (!match.IsFinished && round < maxRounds)
         {
             round++;
-            Log($"────────────────────── Round {round} ──────────────────────");
-            Log($"Current Room: {match.CurrentRoom} | Phase: {match.Phase} | IsBoss: {match.IsBossRoom}");
+            Log($"══════════════ ROUND {round} ══════════════");
+            Log($"Room: {match.CurrentRoom} | Phase: {match.Phase} | Boss: {match.IsBossRoom}");
 
-            // Handle phase transitions
+            // Room Reveal
             if (match.Phase == MatchPhase.RoomReveal)
             {
-                var roomName = match.CurrentDungeonRoom?.Name ?? "Boss Room";
-                Log($"Revealing: {roomName}");
+                var roomName = match.CurrentDungeonRoom?.Name ?? "???";
+                Log($"Revealing room: {roomName}");
                 match.RevealRoom();
-                Log($"After reveal → Phase: {match.Phase}");
-
-                if (match.Phase == MatchPhase.RoomReveal)
-                {
-                    Log("Room has no monsters — auto-advancing...");
-                    continue;
-                }
+                Log($"→ Phase: {match.Phase}");
+                if (match.Phase == MatchPhase.RoomReveal) continue;
             }
 
+            // Initiative
             if (match.Phase == MatchPhase.Initiative)
             {
-                LogPhase($"INITIATIVE (Room {match.CurrentRoom})");
+                LogPhase("INITIATIVE");
                 var initResult = _resolver.ResolveInitiative(
                     player1.AlliesInPlay, p1Id, player2.AlliesInPlay, p2Id);
+                Log($"P1 INIT: {initResult.Player1Total} | P2 INIT: {initResult.Player2Total}");
 
-                Log($"P1 Total INIT: {initResult.Player1Total} | P2 Total INIT: {initResult.Player2Total}");
                 match.ResolveInitiative(initResult.Player1Total, initResult.Player2Total);
 
-                if (initResult.IsTied)
+                if (initResult.IsTied && player1.Deck.Count > 0)
                 {
-                    Log("TIED — P1 bets 1 (discard)");
-                    if (player1.Deck.Count > 0)
-                    {
-                        match.PlaceBet(p1Id, 1, false);
-                        match.TryResolveBets();
-                    }
+                    Log("TIED — P1 bets 1");
+                    match.PlaceBet(p1Id, 1, false);
+                    match.TryResolveBets();
                 }
 
-                Log($"Winner: {(match.InitiativeWinnerId == p1Id ? "P1" : "P2")} → Phase: {match.Phase}");
+                var winner = match.InitiativeWinnerId == p1Id ? "P1" : "P2";
+                Log($"Winner: {winner}");
             }
 
+            // Role Selection
             if (match.Phase == MatchPhase.RoleSelection)
             {
                 var winnerId = match.InitiativeWinnerId!.Value;
-                bool choosesAttack = true; // AI: always attack
+                var winnerState = winnerId == p1Id ? player1 : player2;
+
+                // Smart choice: attack if you have more allies, defend if you have more monsters
+                var allyCount = winnerState.Hand.OfType<AllyCard>().Count() + winnerState.AlliesInPlay.Count;
+                var monsterCount = winnerState.Hand.OfType<MonsterCard>().Count() + winnerState.MonstersInPlay.Count;
+                var choosesAttack = allyCount >= monsterCount;
+
                 match.ChooseRole(winnerId, choosesAttack);
-                var winner = winnerId == p1Id ? "P1" : "P2";
-                Log($"{winner} chooses to {(choosesAttack ? "ATTACK" : "DEFEND")}");
-                Log($"Attacker: {(match.AttackerId == p1Id ? "P1" : "P2")}");
+                var winnerName = winnerId == p1Id ? "P1" : "P2";
+                Log($"{winnerName} chooses to {(choosesAttack ? "ATTACK" : "DEFEND")} (allies:{allyCount} monsters:{monsterCount})");
             }
 
+            // Defender plays monsters and traps from hand
             if (match.Phase is MatchPhase.Combat or MatchPhase.BossRoom)
             {
-                var isBoss = match.Phase == MatchPhase.BossRoom;
-                LogPhase(isBoss ? "BOSS COMBAT" : $"COMBAT (Room {match.CurrentRoom})");
-
                 var attacker = match.GetAttacker();
                 var defender = match.GetDefender();
+                var attackerName = match.AttackerId == p1Id ? "P1" : "P2";
+                var defenderName = match.AttackerId == p1Id ? "P2" : "P1";
 
-                Log($"Attacker ({(match.AttackerId == p1Id ? "P1" : "P2")}): {FormatAllies(attacker)}");
-                Log($"Defender ({(match.AttackerId == p1Id ? "P2" : "P1")}): {FormatAllies(defender)}");
-
-                if (attacker.AlliesInPlay.Count == 0 || defender.AlliesInPlay.Count == 0)
+                // Defender plays monsters from hand
+                var monstersInHand = defender.Hand.OfType<MonsterCard>().OrderByDescending(m => m.Strength).ToList();
+                foreach (var monster in monstersInHand.Take(3))
                 {
-                    Log("One side has no allies — skipping combat");
+                    if (defender.MonstersInPlay.Count >= PlayerState.MaxMonstersInPlay) break;
+                    defender.PlayMonster(monster);
+                    Log($"  {defenderName} plays MONSTER: {monster.Name} (STR:{monster.Strength} HP:{monster.HitPoints})");
+                }
+
+                // Defender sets traps from hand
+                var trapsInHand = defender.Hand.OfType<TrapCard>().Take(2).ToList();
+                foreach (var trap in trapsInHand)
+                {
+                    defender.SetTrap(trap);
+                    Log($"  {defenderName} sets TRAP: {trap.Name} (DMG:{trap.Damage})");
+                }
+
+                // Activate traps against attacker
+                while (defender.TrapsSet.Count > 0)
+                {
+                    var trap = defender.ActivateTrap()!;
+                    Log($"  *** TRAP ACTIVATES: {trap.Name} deals {trap.Damage} damage! ***");
+                    // Apply trap damage to attacker's weakest ally
+                    if (attacker.AlliesInPlay.Count > 0)
+                    {
+                        var target = attacker.AlliesInPlay.OrderBy(a => a.HitPoints).First();
+                        Log($"    → {target.Name} takes {trap.Damage} trap damage");
+                    }
+                }
+
+                LogPhase(match.IsBossRoom ? "BOSS COMBAT" : $"COMBAT (Room {match.CurrentRoom})");
+                Log($"Attacker ({attackerName}): {FormatAllies(attacker)}");
+                Log($"Defender ({defenderName}) monsters: {FormatMonsters(defender)}");
+
+                if (attacker.AlliesInPlay.Count == 0 || defender.MonstersInPlay.Count == 0)
+                {
+                    Log("One side has no units — skipping combat");
+                    // Clear defender monsters
+                    foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
                     match.ResolveCombat(0, 0, false);
                 }
                 else
                 {
-                    // Assign: all attackers → first defender
-                    var defTarget = defender.AlliesInPlay[0];
+                    // Combat: allies vs monsters
+                    var defMonster = defender.MonstersInPlay[0];
                     foreach (var atkAlly in attacker.AlliesInPlay)
                     {
-                        match.CombatBoard.Assign(atkAlly, defTarget, defender.AlliesInPlay);
-                        Log($"  Assign: {atkAlly.Name}(S{atkAlly.Strength}) → {defTarget.Name}(H{defTarget.HitPoints})");
+                        // CombatBoard expects AllyCard targets — we use a proxy approach
+                        // For simulation, resolve directly
                     }
 
                     var atkGroup = attacker.AlliesInPlay.ToList();
-                    var defGroup = new[] { defTarget };
-                    var advantage = CombatAdvantage.Calculate(atkGroup.Count, defGroup.Length);
-                    var result = _resolver.ResolveCombat(atkGroup, defGroup, isBoss);
+                    var defGroup = defender.MonstersInPlay.Take(1).ToArray();
+                    var result = _resolver.ResolveCombat(atkGroup, defGroup, match.IsBossRoom);
 
+                    Log($"  {atkGroup.Count} allies (STR:{result.AttackerStrength}) vs {defGroup.Length} monster (STR:{result.DefenderStrength})");
                     Log($"  Result: {result.Outcome}");
-                    Log($"  ATK STR: {result.AttackerStrength} → {result.DamageToDefender} dmg to defender");
-                    Log($"  DEF STR: {result.DefenderStrength} → {result.DamageToAttacker} dmg to attacker");
-                    Log($"  Advantage: ATK={advantage.AttackerState} DEF={advantage.DefenderState}");
+                    Log($"  Damage: {result.DamageToAttacker} to attacker, {result.DamageToDefender} to defender");
+                    Log($"  Advantage: ATK={result.Advantage.AttackerState} DEF={result.Advantage.DefenderState}");
 
                     bool defElim = result.Outcome is CombatOutcome.DefenderEliminated or CombatOutcome.SimultaneousElimination;
                     bool atkElim = result.Outcome is CombatOutcome.AttackerEliminated or CombatOutcome.SimultaneousElimination;
 
                     if (defElim)
                     {
-                        Log($"  *** {defTarget.Name} ELIMINATED ***");
-                        defender.EliminateAlly(defTarget);
+                        Log($"  *** MONSTER {defMonster.Name} ELIMINATED ***");
+                        defender.EliminateMonster(defMonster);
                     }
                     if (atkElim)
                     {
                         foreach (var a in atkGroup.ToList())
-                        {
                             if (attacker.AlliesInPlay.Contains(a))
                             {
-                                Log($"  *** {a.Name} ELIMINATED ***");
+                                Log($"  *** ALLY {a.Name} ELIMINATED ***");
                                 attacker.EliminateAlly(a);
                             }
-                        }
                     }
+
+                    // Clear remaining monsters after combat
+                    foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
 
                     match.ResolveCombat(result.DamageToAttacker, result.DamageToDefender,
                         result.Outcome == CombatOutcome.SimultaneousElimination);
-
-                    Log($"  Post-combat phase: {match.Phase}");
                 }
+
+                Log($"  Phase: {match.Phase}");
             }
 
+            // Advance
             if (match.Phase == MatchPhase.RoomResolution)
             {
                 match.AdvanceRoom();
                 Log($"ADVANCE → Room {match.CurrentRoom} | Phase: {match.Phase}");
-                LogState(player1, player2, "P1", "P2");
+                LogState(player1, player2);
             }
 
             Log("");
-
             if (match.IsFinished) break;
         }
 
-        // ── FINAL REPORT ──
-        Log("╔════════════════════════════════════════════════════════════╗");
-        Log("║                     MATCH RESULT                         ║");
-        Log("╚════════════════════════════════════════════════════════════╝");
-        Log($"Phase: {match.Phase}");
-        Log($"Finished: {match.IsFinished}");
-        Log($"Winner: {(match.WinnerId.HasValue ? (match.WinnerId == p1Id ? "PLAYER 1" : "PLAYER 2") : "NONE (match incomplete)")}");
-        Log($"Rounds played: {round}");
-        Log($"Final room: {match.CurrentRoom}");
-        Log($"");
-        Log($"P1 — Allies: {player1.AlliesInPlay.Count}, Deck: {player1.Deck.Count}, Hand: {player1.Hand.Count}, Discard: {player1.Discard.Count}, Exile: {player1.ExileCount}, Dead allies: {player1.DeadAlliesInDiscard}");
-        Log($"P2 — Allies: {player2.AlliesInPlay.Count}, Deck: {player2.Deck.Count}, Hand: {player2.Hand.Count}, Discard: {player2.Discard.Count}, Exile: {player2.ExileCount}, Dead allies: {player2.DeadAlliesInDiscard}");
+        // ── RESULT ──
+        Log("╔════════════════════════════════════════════════════════════════╗");
+        Log("║                        MATCH RESULT                          ║");
+        Log("╚════════════════════════════════════════════════════════════════╝");
+        Log($"Finished: {match.IsFinished} | Phase: {match.Phase}");
+        Log($"Winner: {(match.WinnerId.HasValue ? (match.WinnerId == p1Id ? "PLAYER 1" : "PLAYER 2") : "NONE")}");
+        Log($"Rounds: {round} | Final room: {match.CurrentRoom}");
+        Log($"P1 — Allies:{player1.AlliesInPlay.Count} Deck:{player1.Deck.Count} Hand:{player1.Hand.Count} Discard:{player1.Discard.Count} Exile:{player1.ExileCount}");
+        Log($"P2 — Allies:{player2.AlliesInPlay.Count} Deck:{player2.Deck.Count} Hand:{player2.Hand.Count} Discard:{player2.Discard.Count} Exile:{player2.ExileCount}");
 
-        // Write report
         var reportPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "match_simulation_report.txt");
         File.WriteAllText(reportPath, _log.ToString());
 
-        // Simulation always passes — it's a report generator, not a correctness test
         Assert.True(true, "Simulation completed. See match_simulation_report.txt");
     }
 
@@ -241,39 +270,85 @@ public class MatchSimulation
 
     private void LogTeam(string player, List<AllyCard> team)
     {
-        var total = team.Sum(a => a.Cost);
-        Log($"{player} team (cost {total}): {string.Join(", ", team.Select(a => $"{a.Name}(C{a.Cost} S{a.Strength} H{a.HitPoints} I{a.Initiative})"))}");
+        var cost = team.Sum(a => a.Cost);
+        Log($"{player} team (cost {cost}): {string.Join(", ", team.Select(a => $"{a.Name}(C{a.Cost} S{a.Strength} H{a.HitPoints} I{a.Initiative})"))}");
     }
 
-    private void LogState(PlayerState p1, PlayerState p2, string n1, string n2)
+    private void LogHandComposition(string player, PlayerState ps)
     {
-        Log($"{n1}: Allies={p1.AlliesInPlay.Count} Deck={p1.Deck.Count} Hand={p1.Hand.Count} Discard={p1.Discard.Count} Exile={p1.ExileCount}");
-        Log($"{n2}: Allies={p2.AlliesInPlay.Count} Deck={p2.Deck.Count} Hand={p2.Hand.Count} Discard={p2.Discard.Count} Exile={p2.ExileCount}");
+        var allies = ps.Hand.OfType<AllyCard>().Count();
+        var monsters = ps.Hand.OfType<MonsterCard>().Count();
+        var traps = ps.Hand.OfType<TrapCard>().Count();
+        var equip = ps.Hand.OfType<EquipmentCard>().Count();
+        Log($"{player} hand composition: {allies} allies, {monsters} monsters, {traps} traps, {equip} equipment");
+    }
+
+    private void LogState(PlayerState p1, PlayerState p2)
+    {
+        Log($"P1: Allies={p1.AlliesInPlay.Count} Deck={p1.Deck.Count} Hand={p1.Hand.Count} Discard={p1.Discard.Count} Exile={p1.ExileCount}");
+        Log($"P2: Allies={p2.AlliesInPlay.Count} Deck={p2.Deck.Count} Hand={p2.Hand.Count} Discard={p2.Discard.Count} Exile={p2.ExileCount}");
     }
 
     private string FormatAllies(PlayerState ps)
     {
         if (ps.AlliesInPlay.Count == 0) return "(none)";
-        return string.Join(", ", ps.AlliesInPlay.Select(a => $"{a.Name}(S{a.Strength}/H{a.HitPoints}/I{a.Initiative})"));
+        return string.Join(", ", ps.AlliesInPlay.Select(a => $"{a.Name}(S{a.Strength}/H{a.HitPoints})"));
+    }
+
+    private string FormatMonsters(PlayerState ps)
+    {
+        if (ps.MonstersInPlay.Count == 0) return "(none)";
+        return string.Join(", ", ps.MonstersInPlay.Select(m => $"{m.Name}(S{m.Strength}/H{m.HitPoints})"));
     }
 
     private void Log(string line) => _log.AppendLine(line);
 
-    private static List<Card> BuildAdventurers(string prefix)
+    /// <summary>
+    /// Build a realistic 80-card deck: 30 allies + 10 equipment = 40 adventurer,
+    /// 25 monsters + 15 traps = 40 enemy. All shuffled together.
+    /// </summary>
+    private static List<Card> BuildMixedDeck(string prefix)
     {
         var cards = new List<Card>();
-        for (int i = 0; i < 15; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Fighter-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Warrior));
+
+        // ── ADVENTURER (40) ──
+        // 30 allies
         for (int i = 0; i < 10; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Veteran-{i}", Rarity.Common, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
-        for (int i = 0; i < 15; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Recruit-{i}", Rarity.Common, 1, 1, 2, 1));
-        return cards;
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Warrior-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Warrior));
+        for (int i = 0; i < 8; i++)
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Veteran-{i}", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
+        for (int i = 0; i < 6; i++)
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Cleric-{i}", Rarity.Common, 2, 2, 4, 1, allyClass: AllyClass.Cleric));
+        for (int i = 0; i < 6; i++)
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Rogue-{i}", Rarity.Common, 1, 2, 2, 2, isAmbusher: true, allyClass: AllyClass.Rogue));
+
+        // 10 equipment
+        for (int i = 0; i < 5; i++)
+            cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Sword-{i}", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Weapon));
+        for (int i = 0; i < 5; i++)
+            cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Shield-{i}", Rarity.Common, 1, 0, 1, 0, EquipmentSlot.Shield));
+
+        // ── ENEMY (40) ──
+        // 25 monsters
+        for (int i = 0; i < 12; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Goblin-{i}", Rarity.Common, 1, 2, 3, 1));
+        for (int i = 0; i < 8; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll-{i}", Rarity.Uncommon, 3, 4, 5, 1));
+        for (int i = 0; i < 5; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wyvern-{i}", Rarity.Rare, 4, 5, 7, 1));
+
+        // 15 traps
+        for (int i = 0; i < 10; i++)
+            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Spike-Trap-{i}", Rarity.Common, 1, 2, "Spikes from the floor"));
+        for (int i = 0; i < 5; i++)
+            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Fire-Trap-{i}", Rarity.Uncommon, 2, 3, "Flames erupt"));
+
+        return cards; // 80 total
     }
 
     private static List<Card> Shuffle(List<Card> cards)
     {
-        var rng = new Random(42); // Fixed seed for reproducibility
+        var rng = new Random(42);
         var list = new List<Card>(cards);
         for (var i = list.Count - 1; i > 0; i--)
         {

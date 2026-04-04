@@ -63,7 +63,7 @@ public class CreateMatchHandlerTests
             new CreateMatchCommand(p1Id, p2Id, deck1.Id, deck2.Id),
             CancellationToken.None);
 
-        // Cards should have been drawn from shuffled deck
-        Assert.True(response.Player1.DeckCount + response.Player1.HandCount == 40);
+        // Cards should have been drawn from shuffled 80-card deck (40 adventurer + 40 enemy)
+        Assert.True(response.Player1.DeckCount + response.Player1.HandCount == 80);
     }
 }

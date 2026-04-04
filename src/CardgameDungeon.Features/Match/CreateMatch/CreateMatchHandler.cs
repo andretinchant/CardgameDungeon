@@ -15,9 +15,9 @@ public class CreateMatchHandler(IDeckRepository deckRepo, IMatchRepository match
         var deck2 = await deckRepo.GetByIdAsync(request.Player2DeckId, ct)
             ?? throw new KeyNotFoundException($"Deck {request.Player2DeckId} not found.");
 
-        // Shuffle adventurer cards for each player's draw deck
-        var p1Deck = Shuffle(deck1.AdventurerCards);
-        var p2Deck = Shuffle(deck2.AdventurerCards);
+        // Shuffle ALL cards (adventurer + enemy) into a single 80-card deck
+        var p1Deck = Shuffle(deck1.AllCards);
+        var p2Deck = Shuffle(deck2.AllCards);
 
         var player1 = new PlayerState(request.Player1Id, request.StartingHitPoints, p1Deck);
         var player2 = new PlayerState(request.Player2Id, request.StartingHitPoints, p2Deck);

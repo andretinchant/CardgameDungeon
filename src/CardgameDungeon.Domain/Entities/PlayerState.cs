@@ -5,21 +5,26 @@ namespace CardgameDungeon.Domain.Entities;
 public class PlayerState
 {
     public const int MaxAlliesInPlay = 5;
+    public const int MaxMonstersInPlay = 5;
     public const int HandRefillSize = 8;
 
     public Guid PlayerId { get; private set; }
     public int HitPoints { get; private set; }
 
+    /// <summary>Single 80-card deck: allies + equipment + monsters + traps all shuffled together.</summary>
     public IReadOnlyList<Card> Deck => _deck.AsReadOnly();
     public IReadOnlyList<Card> Hand => _hand.AsReadOnly();
     public IReadOnlyList<Card> Discard => _discard.AsReadOnly();
     public IReadOnlyList<Card> Exile => _exile.AsReadOnly();
     public IReadOnlyList<AllyCard> AlliesInPlay => _alliesInPlay.AsReadOnly();
+    public IReadOnlyList<MonsterCard> MonstersInPlay => _monstersInPlay.AsReadOnly();
+    public IReadOnlyList<TrapCard> TrapsSet => _trapsSet.AsReadOnly();
     public IReadOnlyList<AllyCard> MaterializedAllies => _materializedAllies.AsReadOnly();
     public int ExileCount => _exile.Count;
     public int DeadAlliesInDiscard => _discard.Count(c => c is AllyCard);
+    public int DeadMonstersInDiscard => _discard.Count(c => c is MonsterCard);
 
-    /// <summary>Equipment cards currently attached to allies. Key = ally ID, Value = list of equipment.</summary>
+    /// <summary>Equipment cards currently attached to allies/monsters. Key = card ID, Value = list of equipment.</summary>
     public IReadOnlyDictionary<Guid, List<EquipmentCard>> EquippedItems => _equippedItems;
 
     /// <summary>Cost reduction for the next card played (from Druid effects).</summary>
@@ -30,6 +35,8 @@ public class PlayerState
     private readonly List<Card> _discard = [];
     private readonly List<Card> _exile = [];
     private readonly List<AllyCard> _alliesInPlay = [];
+    private readonly List<MonsterCard> _monstersInPlay = [];
+    private readonly List<TrapCard> _trapsSet = [];
     private readonly List<AllyCard> _materializedAllies = [];
     private readonly Dictionary<Guid, List<EquipmentCard>> _equippedItems = new();
 
@@ -120,6 +127,62 @@ public class PlayerState
 
         _discard.Add(ally);
         return null;
+    }
+
+    // ── Monster Management (defender plays monsters from hand) ──
+
+    public void PlayMonster(MonsterCard monster)
+    {
+        if (_monstersInPlay.Count >= MaxMonstersInPlay)
+            throw new InvalidOperationException($"Cannot have more than {MaxMonstersInPlay} monsters in play.");
+
+        if (!_hand.Remove(monster))
+            throw new InvalidOperationException($"Monster '{monster.Name}' is not in hand.");
+
+        _monstersInPlay.Add(monster);
+    }
+
+    public void EliminateMonster(MonsterCard monster)
+    {
+        if (!_monstersInPlay.Remove(monster))
+            throw new InvalidOperationException($"Monster '{monster.Name}' is not in play.");
+
+        _discard.Add(monster);
+    }
+
+    public void RemoveMonster(MonsterCard monster)
+    {
+        if (!_monstersInPlay.Remove(monster))
+            throw new InvalidOperationException($"Monster '{monster.Name}' is not in play.");
+
+        _discard.Add(monster);
+    }
+
+    // ── Trap Management (defender sets traps from hand) ──
+
+    public void SetTrap(TrapCard trap)
+    {
+        if (!_hand.Remove(trap))
+            throw new InvalidOperationException($"Trap '{trap.Name}' is not in hand.");
+
+        _trapsSet.Add(trap);
+    }
+
+    /// <summary>Activate a set trap against the attacker. Trap goes to discard after use.</summary>
+    public TrapCard? ActivateTrap(int index = 0)
+    {
+        if (index < 0 || index >= _trapsSet.Count) return null;
+        var trap = _trapsSet[index];
+        _trapsSet.RemoveAt(index);
+        _discard.Add(trap);
+        return trap;
+    }
+
+    public void ClearTraps()
+    {
+        foreach (var trap in _trapsSet)
+            _discard.Add(trap);
+        _trapsSet.Clear();
     }
 
     // ── Equipment ──

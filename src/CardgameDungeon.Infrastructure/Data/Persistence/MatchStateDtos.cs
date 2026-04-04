@@ -29,6 +29,8 @@ internal class PlayerStateDto
     public List<CardDto> Discard { get; set; } = [];
     public List<CardDto> Exile { get; set; } = [];
     public List<CardDto> AlliesInPlay { get; set; } = [];
+    public List<CardDto> MonstersInPlay { get; set; } = [];
+    public List<CardDto> TrapsSet { get; set; } = [];
     public List<EquippedItemDto>? EquippedItems { get; set; }
     public int NextCostReduction { get; set; }
 }
