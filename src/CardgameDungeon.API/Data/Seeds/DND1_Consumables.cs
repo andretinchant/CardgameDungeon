@@ -19,7 +19,7 @@ public static partial class CardSetSeeder
             // Budget: STR0 + HP0 + INIT0×1.5 + Effect13 = 13 (modal choice is worth ~13)
             new(new Guid("00000000-0000-0000-0007-000000000001"),
                 "Scroll of Wish", Rarity.Unique, 5, 0, 0, 0, EquipmentSlot.Scroll,
-                "Choose ONE: restore all HP to one ally, OR deal 5 damage to one enemy, OR draw 3 cards. Exile this scroll and 2 cards from your deck after use"),
+                "Search your deck, discard pile, or exile: take any 1 card and put it in your hand. Exile this scroll after use"),
 
             // Budget: STR0 + HP4 + INIT0×1.5 + Effect9 = 13 (cannot-die effect ~7, self-damage -2 offset)
             new(new Guid("00000000-0000-0000-0007-000000000002"),

@@ -149,14 +149,14 @@ public static partial class CardSetSeeder
             //  UNIQUE (2)
             // ═══════════════════════════════════════════════════════════════
 
-            // Budget 17: Damage8 + Effect9 = 17 (Cost 6, Unique)
+            // Budget 17: Damage5 + Effect8 + single-use downside = 17 (Cost 6, Unique)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000001"),
                 "Sphere of Annihilation Trap",
                 Rarity.Unique,
                 cost: 6,
-                damage: 8,
-                "Exiles the target ally permanently. Equipped gear is exiled with them"),
+                damage: 5,
+                "Exiles the target ally permanently. Equipped gear is exiled with them. This trap is exiled after use (single use)"),
 
             // Budget 15: Damage5 + Effect10 = 15 (Cost 5, Unique)
             new TrapCard(

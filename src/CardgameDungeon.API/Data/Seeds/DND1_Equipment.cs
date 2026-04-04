@@ -63,10 +63,10 @@ public static partial class CardSetSeeder
                 0, 1, 2, EquipmentSlot.Accessory,
                 "First attack against wielder each round deals 0 damage"),
 
-            // Budget: STR1 + HP0 + INIT3×1.5 + Effect1 = 8 (rounded)
+            // Budget: STR1 + HP0 + INIT2×1.5 + Effect2 = 6 (Cost 3)
             new(new Guid("00000000-0000-0000-0002-000000000008"),
-                "Boots of Speed", Rarity.Rare, 4,
-                1, 0, 3, EquipmentSlot.Boots,
+                "Boots of Speed", Rarity.Rare, 3,
+                1, 0, 2, EquipmentSlot.Boots,
                 "Wielder may retarget once per round without paying a cost"),
 
             // Budget: STR0 + HP4 + INIT1×1.5 + Effect2 = 8 (rounded)
