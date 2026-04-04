@@ -13,4 +13,9 @@ public record CollectionResponse(
 public record OwnedCardDto(
     Guid OwnedCardId,
     Guid CardId,
-    bool IsReserved);
+    bool IsReserved,
+    string CardName,
+    string CardType,
+    string Rarity,
+    int Cost,
+    string DetailText);

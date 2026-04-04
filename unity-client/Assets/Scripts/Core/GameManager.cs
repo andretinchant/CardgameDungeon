@@ -11,6 +11,14 @@ namespace CardgameDungeon.Unity.Core
     /// </summary>
     public class GameManager : MonoBehaviour
     {
+        public sealed class MarketplaceFocusContext
+        {
+            public string CardId { get; set; } = string.Empty;
+            public string CardName { get; set; } = string.Empty;
+            public string CardType { get; set; } = string.Empty;
+            public string Rarity { get; set; } = string.Empty;
+        }
+
         private static GameManager _instance;
 
         public static GameManager Instance
@@ -49,6 +57,11 @@ namespace CardgameDungeon.Unity.Core
         /// The current match ID, if any.
         /// </summary>
         public Guid? CurrentMatchId { get; set; }
+
+        /// <summary>
+        /// One-time marketplace deep-link context set by collection UI.
+        /// </summary>
+        private MarketplaceFocusContext _pendingMarketplaceFocus;
 
         private void Awake()
         {
@@ -113,6 +126,32 @@ namespace CardgameDungeon.Unity.Core
         public void GoToScene(string sceneName)
         {
             SceneLoader.LoadScene(sceneName);
+        }
+
+        /// <summary>
+        /// Backward-compatible alias for legacy scripts.
+        /// </summary>
+        public void LoadScene(string sceneName)
+        {
+            GoToScene(sceneName);
+        }
+
+        public void SetMarketplaceFocus(string cardId, string cardName, string cardType, string rarity)
+        {
+            _pendingMarketplaceFocus = new MarketplaceFocusContext
+            {
+                CardId = cardId ?? string.Empty,
+                CardName = cardName ?? string.Empty,
+                CardType = cardType ?? string.Empty,
+                Rarity = rarity ?? string.Empty
+            };
+        }
+
+        public MarketplaceFocusContext ConsumeMarketplaceFocus()
+        {
+            var context = _pendingMarketplaceFocus;
+            _pendingMarketplaceFocus = null;
+            return context;
         }
 
         /// <summary>

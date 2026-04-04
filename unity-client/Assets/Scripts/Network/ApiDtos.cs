@@ -218,6 +218,11 @@ namespace CardgameDungeon.Unity.Network
         public string ownedCardId;
         public string cardId;
         public bool isReserved;
+        public string cardName;
+        public string cardType;
+        public string rarity;
+        public int cost;
+        public string detailText;
     }
 
     [Serializable]
