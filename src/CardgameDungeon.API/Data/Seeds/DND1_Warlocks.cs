@@ -21,7 +21,7 @@ public static partial class CardSetSeeder
                 "Magus, the Tormented", Rarity.Unique, 7,
                 6, 8, 3, treasure: 2,
                 effect: "During initiative: mark up to 2 enemies. For EACH marked enemy eliminated this round: restore 3 HP to Magus, deal 2 damage to all other enemies in same combat group, exile 1 card from opponent's deck, and draw 1 card. If no marks triggered: exile 1 card from your own deck (the torment consumes)",
-                race: Race.Tiefling, allyClass: AllyClass.Warlock),
+                race: Race.Drow, allyClass: AllyClass.Warlock),
 
             // ── RARE (2) ── Budget 14-18
             // STR3(3) + HP5(5) + INIT2(3) + Treasure1(1) = 12. Effect = 6 ✓ Budget 18

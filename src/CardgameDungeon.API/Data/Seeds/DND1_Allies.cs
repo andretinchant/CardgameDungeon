@@ -18,8 +18,8 @@ public static partial class CardSetSeeder
             // Effect budget: 30 - 20.5 = 9.5 → 8 with rounding ✓
             new AllyCard(new Guid("00000000-0000-0000-0001-000000000001"), "Drizzt Do'Urden", Rarity.Unique, 6, 6, 7, 3,
                 isAmbusher: true, treasure: 1,
-                effect: "With Advantage: +4 STR. On kill: exile the defeated enemy. If another Elf ally in play: +2 INIT. Immune to opportunity attacks",
-                race: Race.Elf, allyClass: AllyClass.Rogue),
+                effect: "With Advantage: +4 STR. On kill: exile the defeated enemy. If another Drow or Elf ally in play: +2 INIT. Immune to opportunity attacks",
+                race: Race.Drow, allyClass: AllyClass.Rogue),
 
             // Elminster Aumar: Mage, Human — Cost 6, Unique Budget = 30
             // Stats: STR 5(5) + HP 8(8) + INIT 3(4.5) + Treasure 1(1) = 18.5

@@ -17,5 +17,6 @@ public enum Race
     Elemental,
     Giant,
     Aberration,
-    Dragon
+    Dragon,
+    Drow
 }
