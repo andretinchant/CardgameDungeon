@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using CardgameDungeon.API.Data.Seeds;
 using CardgameDungeon.Domain.Entities;
 using CardgameDungeon.Domain.Enums;
 using CardgameDungeon.Domain.Repositories;
@@ -212,16 +213,56 @@ public class InMemoryTournamentRepository : ITournamentRepository
 
 public class RandomBoosterCardPool : IBoosterCardPool
 {
-    public Task<Card> GetRandomCardByRarityAsync(Rarity rarity, CancellationToken ct = default)
+    private readonly Dictionary<string, Dictionary<Rarity, List<Card>>> _cardsBySetAndRarity;
+    private readonly Dictionary<Rarity, List<Card>> _globalByRarity;
+
+    public RandomBoosterCardPool()
     {
-        Card card = new AllyCard(
-            Guid.NewGuid(),
-            $"{rarity}-{Guid.NewGuid():N}"[..16],
-            rarity,
-            cost: rarity switch { Rarity.Common => 1, Rarity.Uncommon => 2, Rarity.Rare => 3, _ => 5 },
-            strength: Random.Shared.Next(1, 10),
-            hitPoints: Random.Shared.Next(1, 10),
-            initiative: Random.Shared.Next(1, 5));
+        _cardsBySetAndRarity = new Dictionary<string, Dictionary<Rarity, List<Card>>>(StringComparer.OrdinalIgnoreCase);
+        _globalByRarity = new Dictionary<Rarity, List<Card>>();
+
+        foreach (var set in CardSetSeeder.CreateAllSets())
+        {
+            var byRarity = set.Cards
+                .Where(card => card.Type is not (CardType.DungeonRoom or CardType.Boss))
+                .GroupBy(card => card.Rarity)
+                .ToDictionary(group => group.Key, group => group.ToList());
+
+            _cardsBySetAndRarity[set.Code] = byRarity;
+
+            foreach (var (rarity, cards) in byRarity)
+            {
+                if (!_globalByRarity.TryGetValue(rarity, out var global))
+                {
+                    global = [];
+                    _globalByRarity[rarity] = global;
+                }
+
+                global.AddRange(cards);
+            }
+        }
+    }
+
+    public Task<Card> GetRandomCardByRarityAsync(Rarity rarity, string setCode, CancellationToken ct = default)
+    {
+        var normalizedCode = string.IsNullOrWhiteSpace(setCode) ? "DND1" : setCode.Trim().ToUpperInvariant();
+
+        List<Card>? pool = null;
+        if (_cardsBySetAndRarity.TryGetValue(normalizedCode, out var setPools) &&
+            setPools.TryGetValue(rarity, out var fromSet) &&
+            fromSet.Count > 0)
+        {
+            pool = fromSet;
+        }
+        else if (_globalByRarity.TryGetValue(rarity, out var global) && global.Count > 0)
+        {
+            pool = global;
+        }
+
+        if (pool is null || pool.Count == 0)
+            throw new InvalidOperationException($"No cards available for rarity '{rarity}' in set '{normalizedCode}'.");
+
+        var card = pool[Random.Shared.Next(pool.Count)];
         return Task.FromResult(card);
     }
 }

@@ -22,6 +22,7 @@ public static class DependencyInjection
 
         // Repositories
         services.AddScoped<ICardRepository, EfCardRepository>();
+        services.AddScoped<ICardSetRepository, EfCardSetRepository>();
         services.AddScoped<IDeckRepository, EfDeckRepository>();
         services.AddScoped<IMatchRepository, EfMatchRepository>();
         services.AddScoped<ICollectionRepository, EfCollectionRepository>();

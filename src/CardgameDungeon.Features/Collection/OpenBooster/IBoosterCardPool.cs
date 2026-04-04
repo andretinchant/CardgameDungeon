@@ -5,5 +5,5 @@ namespace CardgameDungeon.Features.Collection.OpenBooster;
 
 public interface IBoosterCardPool
 {
-    Task<Card> GetRandomCardByRarityAsync(Rarity rarity, CancellationToken ct = default);
+    Task<Card> GetRandomCardByRarityAsync(Rarity rarity, string setCode, CancellationToken ct = default);
 }

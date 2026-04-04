@@ -135,6 +135,12 @@ namespace CardgameDungeon.Unity.Network
             return host.StartCoroutine(Get<CollectionResponse>($"/api/collection/{playerId}", onSuccess, onError));
         }
 
+        /// <summary>GET /api/collection/booster-sets</summary>
+        public Coroutine GetBoosterSets(MonoBehaviour host, Action<BoosterSetsResponse> onSuccess, Action<string> onError = null)
+        {
+            return host.StartCoroutine(Get<BoosterSetsResponse>("/api/collection/booster-sets", onSuccess, onError));
+        }
+
         /// <summary>POST /api/collection/open-booster</summary>
         public Coroutine OpenBooster(MonoBehaviour host, OpenBoosterRequest request, Action<OpenBoosterResponse> onSuccess, Action<string> onError = null)
         {

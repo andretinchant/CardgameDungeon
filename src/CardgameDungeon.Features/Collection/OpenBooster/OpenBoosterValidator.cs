@@ -8,5 +8,6 @@ public class OpenBoosterValidator : AbstractValidator<OpenBoosterCommand>
     {
         RuleFor(x => x.PlayerId).NotEmpty();
         RuleFor(x => x.BoosterPrice).GreaterThan(0);
+        RuleFor(x => x.SetCode).NotEmpty().MaximumLength(20);
     }
 }

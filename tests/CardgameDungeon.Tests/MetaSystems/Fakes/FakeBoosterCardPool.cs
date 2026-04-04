@@ -6,7 +6,7 @@ namespace CardgameDungeon.Tests.MetaSystems.Fakes;
 
 public class FakeBoosterCardPool : IBoosterCardPool
 {
-    public Task<Card> GetRandomCardByRarityAsync(Rarity rarity, CancellationToken ct = default)
+    public Task<Card> GetRandomCardByRarityAsync(Rarity rarity, string setCode, CancellationToken ct = default)
     {
         Card card = rarity switch
         {

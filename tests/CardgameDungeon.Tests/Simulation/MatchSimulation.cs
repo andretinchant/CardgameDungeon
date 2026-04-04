@@ -37,7 +37,8 @@ public class MatchSimulation
             new(Guid.NewGuid(), "Throne Room", Rarity.Common, 5, monsterIds.Skip(8).Take(2)),
         };
         var boss = new BossCard(Guid.NewGuid(), "Strahd von Zarovich", Rarity.Unique, 5, 7, 10, 1,
-            "Castelo Sombrio — drena vida dos aliados mortos.");
+            "Necrotic Aura — drains 1 HP from each ally at the start of boss combat.",
+            race: Race.Undead);
 
         var player1 = new PlayerState(p1Id, 20, Shuffle(p1AllCards));
         var player2 = new PlayerState(p2Id, 20, Shuffle(p2AllCards));
@@ -120,21 +121,44 @@ public class MatchSimulation
 
                 LogPhase($"DEFENDER SETUP ({defenderName})");
 
-                // Defender plays monsters from hand
-                var monstersInHand = defender.Hand.OfType<MonsterCard>().OrderByDescending(m => m.Strength).ToList();
-                foreach (var monster in monstersInHand.Take(3))
+                if (match.IsBossRoom)
                 {
-                    if (defender.MonstersInPlay.Count >= PlayerState.MaxMonstersInPlay) break;
-                    defender.PlayMonster(monster);
-                    Log($"  {defenderName} plays MONSTER: {monster.Name} (STR:{monster.Strength} HP:{monster.HitPoints})");
+                    // Boss room: the boss defends, not regular monsters
+                    Log($"  BOSS ROOM — {match.Boss.Name} awaits! (STR:{match.Boss.Strength} HP:{match.Boss.HitPoints})");
+                    Log($"  Boss effect: {match.Boss.Effect}");
                 }
-
-                // Defender sets traps from hand
-                var trapsInHand = defender.Hand.OfType<TrapCard>().Take(2).ToList();
-                foreach (var trap in trapsInHand)
+                else
                 {
-                    defender.SetTrap(trap);
-                    Log($"  {defenderName} sets TRAP: {trap.Name} (DMG:{trap.Damage})");
+                    // Defender plays ALL available monsters from hand (up to 3)
+                    var monstersInHand = defender.Hand.OfType<MonsterCard>().OrderByDescending(m => m.Strength).ToList();
+                    if (monstersInHand.Count == 0)
+                    {
+                        Log($"  {defenderName} has NO MONSTERS in hand! Room is undefended by monsters.");
+                    }
+                    else
+                    {
+                        foreach (var monster in monstersInHand.Take(3))
+                        {
+                            if (defender.MonstersInPlay.Count >= PlayerState.MaxMonstersInPlay) break;
+                            defender.PlayMonster(monster);
+                            Log($"  {defenderName} plays MONSTER: {monster.Name} (STR:{monster.Strength} HP:{monster.HitPoints})");
+                        }
+                    }
+
+                    // Defender sets ALL available traps from hand (up to 2)
+                    var trapsInHand = defender.Hand.OfType<TrapCard>().OrderByDescending(t => t.Damage).ToList();
+                    if (trapsInHand.Count == 0)
+                    {
+                        Log($"  {defenderName} has no traps to set.");
+                    }
+                    else
+                    {
+                        foreach (var trap in trapsInHand.Take(2))
+                        {
+                            defender.SetTrap(trap);
+                            Log($"  {defenderName} sets TRAP: {trap.Name} (DMG:{trap.Damage})");
+                        }
+                    }
                 }
 
                 match.FinishDefenderSetup();
@@ -149,62 +173,122 @@ public class MatchSimulation
                 var attackerName = activeName;
                 var defenderName = activeId == p1Id ? "P2" : "P1";
 
-                // Activate traps against attacker
-                while (defender.TrapsSet.Count > 0)
+                // Activate traps against attacker (not in boss room — boss has its own mechanics)
+                if (!match.IsBossRoom)
                 {
-                    var trap = defender.ActivateTrap()!;
-                    Log($"  *** TRAP ACTIVATES: {trap.Name} deals {trap.Damage} damage! ***");
-                    if (attacker.AlliesInPlay.Count > 0)
+                    while (defender.TrapsSet.Count > 0)
                     {
-                        var target = attacker.AlliesInPlay.OrderBy(a => a.HitPoints).First();
-                        Log($"    → {target.Name} takes {trap.Damage} trap damage");
+                        var trap = defender.ActivateTrap()!;
+                        Log($"  *** TRAP ACTIVATES: {trap.Name} deals {trap.Damage} damage! ***");
+                        if (attacker.AlliesInPlay.Count > 0)
+                        {
+                            var target = attacker.AlliesInPlay.OrderBy(a => a.HitPoints).First();
+                            Log($"    -> {target.Name} takes {trap.Damage} trap damage");
+                        }
                     }
                 }
 
-                LogPhase(match.IsBossRoom ? "BOSS COMBAT" : $"COMBAT (Room {match.CurrentRoom})");
-                Log($"Attacker ({attackerName}): {FormatAllies(attacker)}");
-                Log($"Defender ({defenderName}) monsters: {FormatMonsters(defender)}");
-
-                if (attacker.AlliesInPlay.Count == 0 || defender.MonstersInPlay.Count == 0)
+                if (match.IsBossRoom)
                 {
-                    Log("One side has no units — skipping combat");
-                    foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
-                    match.ResolveCombat(0, 0, false);
+                    // ── BOSS COMBAT ──
+                    LogPhase("BOSS COMBAT");
+                    var bossCard = match.Boss;
+                    Log($"Attacker ({attackerName}): {FormatAllies(attacker)}");
+                    Log($"BOSS: {bossCard.Name} (STR:{bossCard.Strength} HP:{bossCard.HitPoints} INIT:{bossCard.Initiative})");
+                    Log($"Boss effect: {bossCard.Effect}");
+
+                    if (attacker.AlliesInPlay.Count == 0)
+                    {
+                        Log("Attacker has no allies — boss wins by default!");
+                        match.ResolveCombat(0, 0, false);
+                    }
+                    else
+                    {
+                        var atkGroup = attacker.AlliesInPlay.ToList();
+                        var result = _resolver.ResolveCombat(atkGroup, bossCard);
+
+                        Log($"  {atkGroup.Count} allies (STR:{result.AttackerStrength}) vs BOSS (STR:{result.DefenderStrength})");
+                        Log($"  Result: {result.Outcome}");
+                        Log($"  Damage: {result.DamageToAttacker} to attacker, {result.DamageToDefender} to boss");
+                        Log($"  Advantage: ATK={result.Advantage.AttackerState} DEF={result.Advantage.DefenderState}");
+
+                        bool atkElim = result.Outcome is CombatOutcome.AttackerEliminated or CombatOutcome.SimultaneousElimination;
+
+                        if (result.Outcome is CombatOutcome.DefenderEliminated or CombatOutcome.SimultaneousElimination)
+                        {
+                            Log($"  *** BOSS {bossCard.Name} DEFEATED! ***");
+                        }
+                        if (atkElim)
+                        {
+                            foreach (var a in atkGroup.ToList())
+                                if (attacker.AlliesInPlay.Contains(a))
+                                {
+                                    Log($"  *** ALLY {a.Name} ELIMINATED by boss ***");
+                                    attacker.EliminateAlly(a);
+                                }
+                        }
+
+                        // Clear any leftover defender monsters
+                        foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
+
+                        match.ResolveCombat(result.DamageToAttacker, result.DamageToDefender,
+                            result.Outcome == CombatOutcome.SimultaneousElimination);
+                    }
                 }
                 else
                 {
-                    var atkGroup = attacker.AlliesInPlay.ToList();
-                    var defGroup = defender.MonstersInPlay.Take(1).ToArray();
-                    var defMonster = defGroup[0];
-                    var result = _resolver.ResolveCombat(atkGroup, defGroup, match.IsBossRoom);
+                    // ── NORMAL ROOM COMBAT ──
+                    LogPhase($"COMBAT (Room {match.CurrentRoom})");
+                    Log($"Attacker ({attackerName}): {FormatAllies(attacker)}");
+                    Log($"Defender ({defenderName}) monsters: {FormatMonsters(defender)}");
 
-                    Log($"  {atkGroup.Count} allies (STR:{result.AttackerStrength}) vs {defGroup.Length} monster (STR:{result.DefenderStrength})");
-                    Log($"  Result: {result.Outcome}");
-                    Log($"  Damage: {result.DamageToAttacker} to attacker, {result.DamageToDefender} to defender");
-                    Log($"  Advantage: ATK={result.Advantage.AttackerState} DEF={result.Advantage.DefenderState}");
-
-                    bool defElim = result.Outcome is CombatOutcome.DefenderEliminated or CombatOutcome.SimultaneousElimination;
-                    bool atkElim = result.Outcome is CombatOutcome.AttackerEliminated or CombatOutcome.SimultaneousElimination;
-
-                    if (defElim)
+                    if (attacker.AlliesInPlay.Count == 0 || defender.MonstersInPlay.Count == 0)
                     {
-                        Log($"  *** MONSTER {defMonster.Name} ELIMINATED ***");
-                        defender.EliminateMonster(defMonster);
+                        if (attacker.AlliesInPlay.Count == 0)
+                            Log("Attacker has no allies — defender wins room!");
+                        else
+                            Log("Defender has no monsters — room undefended, attacker wins!");
+                        foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
+                        match.ResolveCombat(0, 0, false);
                     }
-                    if (atkElim)
+                    else
                     {
-                        foreach (var a in atkGroup.ToList())
-                            if (attacker.AlliesInPlay.Contains(a))
+                        var atkGroup = attacker.AlliesInPlay.ToList();
+                        var defGroup = defender.MonstersInPlay.ToList();
+                        var result = _resolver.ResolveCombat(atkGroup, defGroup, false);
+
+                        Log($"  {atkGroup.Count} allies (STR:{result.AttackerStrength}) vs {defGroup.Count} monsters (STR:{result.DefenderStrength})");
+                        Log($"  Result: {result.Outcome}");
+                        Log($"  Damage: {result.DamageToAttacker} to attacker, {result.DamageToDefender} to defender");
+                        Log($"  Advantage: ATK={result.Advantage.AttackerState} DEF={result.Advantage.DefenderState}");
+
+                        bool defElim = result.Outcome is CombatOutcome.DefenderEliminated or CombatOutcome.SimultaneousElimination;
+                        bool atkElim = result.Outcome is CombatOutcome.AttackerEliminated or CombatOutcome.SimultaneousElimination;
+
+                        if (defElim)
+                        {
+                            foreach (var m in defGroup)
                             {
-                                Log($"  *** ALLY {a.Name} ELIMINATED ***");
-                                attacker.EliminateAlly(a);
+                                Log($"  *** MONSTER {m.Name} ELIMINATED ***");
+                                if (defender.MonstersInPlay.Contains(m))
+                                    defender.EliminateMonster(m);
                             }
+                        }
+                        if (atkElim)
+                        {
+                            foreach (var a in atkGroup.ToList())
+                                if (attacker.AlliesInPlay.Contains(a))
+                                {
+                                    Log($"  *** ALLY {a.Name} ELIMINATED ***");
+                                    attacker.EliminateAlly(a);
+                                }
+                        }
+
+                        foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
+
+                        match.ResolveCombat(result.DamageToAttacker, result.DamageToDefender,
+                            result.Outcome == CombatOutcome.SimultaneousElimination);
                     }
-
-                    foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
-
-                    match.ResolveCombat(result.DamageToAttacker, result.DamageToDefender,
-                        result.Outcome == CombatOutcome.SimultaneousElimination);
                 }
 
                 Log($"  Phase: {match.Phase}");
@@ -291,44 +375,107 @@ public class MatchSimulation
     private void Log(string line) => _log.AppendLine(line);
 
     /// <summary>
-    /// Build a realistic 80-card deck: 30 allies + 10 equipment = 40 adventurer,
-    /// 25 monsters + 15 traps = 40 enemy. All shuffled together.
+    /// Build a realistic 80-card deck: 25 allies + 10 equipment + 5 consumables = 40 adventurer,
+    /// 25 monsters + 15 traps = 40 enemy. Named, varied cards with mixed rarities.
     /// </summary>
     private static List<Card> BuildMixedDeck(string prefix)
     {
         var cards = new List<Card>();
 
         // ── ADVENTURER (40) ──
-        // 30 allies
-        for (int i = 0; i < 10; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Warrior-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Warrior));
-        for (int i = 0; i < 8; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Veteran-{i}", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
-        for (int i = 0; i < 6; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Cleric-{i}", Rarity.Common, 2, 2, 4, 1, allyClass: AllyClass.Cleric));
-        for (int i = 0; i < 6; i++)
-            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Rogue-{i}", Rarity.Common, 1, 2, 2, 2, isAmbusher: true, allyClass: AllyClass.Rogue));
 
-        // 10 equipment
-        for (int i = 0; i < 5; i++)
-            cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Sword-{i}", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Weapon));
-        for (int i = 0; i < 5; i++)
-            cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Shield-{i}", Rarity.Common, 1, 0, 1, 0, EquipmentSlot.Shield));
+        // 5 Rare allies (cost 3-4, STR 4-5, HP 4-5)
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Paladin Kael", Rarity.Rare, 4, 5, 5, 2, allyClass: AllyClass.Warrior, effect: "Divine shield protects adjacent allies"));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Archmage Vex", Rarity.Rare, 4, 4, 4, 3, allyClass: AllyClass.Mage, effect: "Chain lightning hits all enemies"));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Shadow Dancer", Rarity.Rare, 3, 5, 4, 3, isAmbusher: true, allyClass: AllyClass.Rogue, effect: "Sneak attack deals double on first strike"));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-High Priestess", Rarity.Rare, 3, 4, 5, 2, allyClass: AllyClass.Cleric, effect: "Heals 2 HP to all allies after combat"));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Beastmaster Thorn", Rarity.Rare, 3, 4, 4, 3, allyClass: AllyClass.Ranger, effect: "Companion wolf joins the fight"));
+
+        // 10 Uncommon allies (cost 2-3, STR 3-4, HP 3-4, various classes)
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Knight Errant", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Shieldbearer", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Battle Mage", Rarity.Uncommon, 3, 4, 3, 2, allyClass: AllyClass.Mage));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Evoker", Rarity.Uncommon, 2, 3, 3, 2, allyClass: AllyClass.Mage));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-War Cleric", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Cleric));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Acolyte", Rarity.Uncommon, 2, 3, 3, 1, allyClass: AllyClass.Cleric));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Cutthroat", Rarity.Uncommon, 2, 4, 3, 2, isAmbusher: true, allyClass: AllyClass.Rogue));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Scout", Rarity.Uncommon, 2, 3, 3, 3, allyClass: AllyClass.Ranger));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Druid of the Grove", Rarity.Uncommon, 3, 3, 4, 2, allyClass: AllyClass.Druid));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Berserker", Rarity.Uncommon, 2, 4, 3, 1, allyClass: AllyClass.Warrior));
+
+        // 10 Common allies (cost 1-2, STR 2-3, HP 2-3)
+        for (int i = 0; i < 3; i++)
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Militia-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Warrior));
+        for (int i = 0; i < 2; i++)
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Apprentice-{i}", Rarity.Common, 1, 2, 2, 2, allyClass: AllyClass.Mage));
+        for (int i = 0; i < 2; i++)
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Novice Healer-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Cleric));
+        for (int i = 0; i < 2; i++)
+            cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Pickpocket-{i}", Rarity.Common, 1, 2, 2, 2, isAmbusher: true, allyClass: AllyClass.Rogue));
+        cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Trapper", Rarity.Common, 1, 2, 2, 2, allyClass: AllyClass.Ranger));
+
+        // 5 Uncommon equipment (Weapon, Armor, Shield with +2 mods)
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Flamebrand Sword", Rarity.Uncommon, 2, 2, 0, 0, EquipmentSlot.Weapon, effect: "Burns enemies on hit"));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Enchanted Longsword", Rarity.Uncommon, 2, 2, 0, 1, EquipmentSlot.Weapon));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Mithril Chainmail", Rarity.Uncommon, 2, 0, 2, 0, EquipmentSlot.Armor));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Tower Shield", Rarity.Uncommon, 2, 0, 2, -1, EquipmentSlot.Shield));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Winged Boots", Rarity.Uncommon, 2, 0, 0, 2, EquipmentSlot.Boots));
+
+        // 5 Common equipment (basic +1 mods)
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Iron Sword", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Weapon));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Wooden Shield", Rarity.Common, 1, 0, 1, 0, EquipmentSlot.Shield));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Leather Armor", Rarity.Common, 1, 0, 1, 0, EquipmentSlot.Armor));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Iron Helm", Rarity.Common, 1, 0, 1, 0, EquipmentSlot.Helmet));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Lucky Charm", Rarity.Common, 1, 0, 0, 1, EquipmentSlot.Accessory));
+
+        // 5 Consumables (Scrolls, Potions — using equipment with Accessory slot)
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Scroll of Fireball", Rarity.Uncommon, 2, 2, 0, 0, EquipmentSlot.Accessory, effect: "Deals fire damage to all enemies"));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Potion of Might", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Accessory, effect: "Temporary STR boost"));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Healing Potion", Rarity.Common, 1, 0, 1, 0, EquipmentSlot.Accessory, effect: "Restores HP"));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Scroll of Haste", Rarity.Common, 1, 0, 0, 1, EquipmentSlot.Accessory, effect: "Grants extra initiative"));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Smoke Bomb", Rarity.Uncommon, 1, 0, 1, 1, EquipmentSlot.Accessory, effect: "Grants evasion"));
 
         // ── ENEMY (40) ──
-        // 25 monsters
-        for (int i = 0; i < 12; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Goblin-{i}", Rarity.Common, 1, 2, 3, 1));
-        for (int i = 0; i < 8; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll-{i}", Rarity.Uncommon, 3, 4, 5, 1));
-        for (int i = 0; i < 5; i++)
-            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wyvern-{i}", Rarity.Rare, 4, 5, 7, 1));
 
-        // 15 traps
-        for (int i = 0; i < 10; i++)
-            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Spike-Trap-{i}", Rarity.Common, 1, 2, "Spikes from the floor"));
+        // 3 Rare monsters (STR 5-6, HP 6-7)
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ancient Wyvern", Rarity.Rare, 4, 6, 7, 1, effect: "Breath attack hits all allies"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Death Knight", Rarity.Rare, 4, 5, 7, 2, effect: "Drains life on hit"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Beholder", Rarity.Rare, 4, 6, 6, 1, effect: "Antimagic cone disables spells"));
+
+        // 10 Uncommon monsters (STR 3-4, HP 4-5)
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ogre Chieftain", Rarity.Uncommon, 3, 4, 5, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll Berserker", Rarity.Uncommon, 3, 4, 5, 1, effect: "Regenerates 1 HP per round"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wraith", Rarity.Uncommon, 2, 3, 4, 2, effect: "Incorporeal — half physical damage"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Minotaur", Rarity.Uncommon, 3, 4, 5, 1, effect: "Charge attack on first strike"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Harpy Screecher", Rarity.Uncommon, 2, 3, 4, 3, effect: "Screech reduces enemy initiative"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Phase Spider", Rarity.Uncommon, 2, 3, 4, 2, effect: "Teleports between combats"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Orc Warlord", Rarity.Uncommon, 3, 4, 4, 1));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Dark Elf Assassin", Rarity.Uncommon, 2, 3, 4, 3, effect: "Poison blade"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ghoul Pack", Rarity.Uncommon, 2, 3, 5, 1, effect: "Paralyzing touch"));
+        cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Manticore", Rarity.Uncommon, 3, 4, 5, 2, effect: "Tail spikes deal ranged damage"));
+
+        // 12 Common monsters (STR 2-3, HP 2-3)
+        for (int i = 0; i < 3; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Goblin Raider-{i}", Rarity.Common, 1, 2, 3, 1));
+        for (int i = 0; i < 3; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Skeleton Warrior-{i}", Rarity.Common, 1, 2, 2, 1));
+        for (int i = 0; i < 3; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Kobold-{i}", Rarity.Common, 1, 2, 2, 2));
+        for (int i = 0; i < 3; i++)
+            cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Giant Rat-{i}", Rarity.Common, 1, 3, 2, 1));
+
+        // 5 Uncommon traps (damage 3)
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Flame Geyser", Rarity.Uncommon, 2, 3, "Fire erupts from the floor"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Poison Dart Wall", Rarity.Uncommon, 2, 3, "Darts coated in venom"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Collapsing Ceiling", Rarity.Uncommon, 2, 3, "Stones rain down from above"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Lightning Rune", Rarity.Uncommon, 2, 3, "Arcane sigil discharges electricity"));
+        cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Acid Pool", Rarity.Uncommon, 2, 3, "Corrosive liquid covers the floor"));
+
+        // 10 Common traps (damage 1-2)
         for (int i = 0; i < 5; i++)
-            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Fire-Trap-{i}", Rarity.Uncommon, 2, 3, "Flames erupt"));
+            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Spike Pit-{i}", Rarity.Common, 1, 2, "Concealed pit with iron spikes"));
+        for (int i = 0; i < 5; i++)
+            cards.Add(new TrapCard(Guid.NewGuid(), $"{prefix}-Tripwire-{i}", Rarity.Common, 1, 1, "Thin wire triggers a falling net"));
 
         return cards; // 80 total
     }

@@ -21,7 +21,7 @@ public class OpenBoosterHandlerTests
         _collectionRepo.Seed(new PlayerCollection(playerId));
 
         var response = await Handler.Handle(
-            new OpenBoosterCommand(playerId, 50), CancellationToken.None);
+            new OpenBoosterCommand(playerId, 50, "DND1"), CancellationToken.None);
 
         Assert.Equal(10, response.Cards.Count);
     }
@@ -34,7 +34,7 @@ public class OpenBoosterHandlerTests
         _collectionRepo.Seed(new PlayerCollection(playerId));
 
         var response = await Handler.Handle(
-            new OpenBoosterCommand(playerId, 50), CancellationToken.None);
+            new OpenBoosterCommand(playerId, 50, "DND1"), CancellationToken.None);
 
         Assert.Equal(1, response.Cards.Count(c => c.Rarity == Rarity.Rare));
         Assert.Equal(3, response.Cards.Count(c => c.Rarity == Rarity.Uncommon));
@@ -49,7 +49,7 @@ public class OpenBoosterHandlerTests
         _walletRepo.Seed(wallet);
         _collectionRepo.Seed(new PlayerCollection(playerId));
 
-        await Handler.Handle(new OpenBoosterCommand(playerId, 50), CancellationToken.None);
+        await Handler.Handle(new OpenBoosterCommand(playerId, 50, "DND1"), CancellationToken.None);
 
         Assert.Equal(50, wallet.Balance);
     }
@@ -62,7 +62,7 @@ public class OpenBoosterHandlerTests
         var collection = new PlayerCollection(playerId);
         _collectionRepo.Seed(collection);
 
-        await Handler.Handle(new OpenBoosterCommand(playerId, 50), CancellationToken.None);
+        await Handler.Handle(new OpenBoosterCommand(playerId, 50, "DND1"), CancellationToken.None);
 
         Assert.Equal(10, collection.Cards.Count);
     }
@@ -75,6 +75,6 @@ public class OpenBoosterHandlerTests
         _collectionRepo.Seed(new PlayerCollection(playerId));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            Handler.Handle(new OpenBoosterCommand(playerId, 50), CancellationToken.None));
+            Handler.Handle(new OpenBoosterCommand(playerId, 50, "DND1"), CancellationToken.None));
     }
 }

@@ -1,4 +1,5 @@
 using CardgameDungeon.Features.Collection.GetCollection;
+using CardgameDungeon.Features.Collection.GetBoosterSets;
 using CardgameDungeon.Features.Collection.OpenBooster;
 using MediatR;
 
@@ -12,6 +13,9 @@ public static class CollectionEndpoints
 
         group.MapGet("/{playerId:guid}", async (Guid playerId, IMediator mediator) =>
             Results.Ok(await mediator.Send(new GetCollectionQuery(playerId))));
+
+        group.MapGet("/booster-sets", async (IMediator mediator) =>
+            Results.Ok(await mediator.Send(new GetBoosterSetsQuery())));
 
         group.MapPost("/open-booster", async (OpenBoosterCommand command, IMediator mediator) =>
             Results.Ok(await mediator.Send(command)));

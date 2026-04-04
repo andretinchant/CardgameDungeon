@@ -224,6 +224,7 @@ namespace CardgameDungeon.Unity.Network
     public class OpenBoosterResponse
     {
         public string playerId;
+        public string setCode;
         public List<BoosterCardDto> cards;
     }
 
@@ -234,6 +235,25 @@ namespace CardgameDungeon.Unity.Network
         public string name;
         public string rarity;
         public string type;
+        public string setCode;
+    }
+
+    [Serializable]
+    public class BoosterSetsResponse
+    {
+        public List<BoosterSetDto> sets;
+    }
+
+    [Serializable]
+    public class BoosterSetDto
+    {
+        public string setId;
+        public string setCode;
+        public string setName;
+        public string description;
+        public string releaseDate;
+        public int boosterPrice;
+        public int totalCards;
     }
 
     // ──────────────────────────────────────────────
@@ -488,6 +508,7 @@ namespace CardgameDungeon.Unity.Network
     {
         public string playerId;
         public int boosterPrice;
+        public string setCode;
     }
 
     [Serializable]
