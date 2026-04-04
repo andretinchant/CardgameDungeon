@@ -46,12 +46,20 @@ public class MatchState
     // Combat board
     public CombatBoard CombatBoard { get; } = new();
 
+    /// <summary>
+    /// Tracks ongoing combat state (HP damage per card, rounds fought).
+    /// Non-null when combat is active or suspended. Allows pause/resume between turns.
+    /// </summary>
+    public ActiveCombatState? ActiveCombat { get; private set; }
+
     public IReadOnlyList<DungeonRoomCard> DungeonRooms => _dungeonRooms.AsReadOnly();
     public BossCard Boss => _boss;
     public bool IsFinished => Phase == MatchPhase.Finished;
     public bool IsBossRoom => CurrentRoom > _dungeonRooms.Count;
     public bool BothTeamsSubmitted => _setupSubmitted.Count == 2;
     public bool CanAdvance => RoomsClearedThisTurn < MaxRoomsPerTurn;
+    public bool HasActiveCombat => ActiveCombat is not null && !ActiveCombat.IsSuspended;
+    public bool HasSuspendedCombat => ActiveCombat is { IsSuspended: true };
 
     /// <summary>The active player's current room (each player tracks separately).</summary>
     public int GetPlayerRoom(Guid playerId) =>
@@ -189,8 +197,60 @@ public class MatchState
         }
 
         CombatBoard.Clear();
+        EndCombat();
         // After combat resolves, room is cleared
         Phase = MatchPhase.RoomCleared;
+    }
+
+    /// <summary>
+    /// Begin a new combat in the current room. Creates the ActiveCombat tracker.
+    /// Called automatically when entering Combat/BossRoom phase.
+    /// </summary>
+    public void BeginCombat()
+    {
+        EnsurePhase(MatchPhase.Combat, MatchPhase.BossRoom);
+        if (ActiveCombat is null)
+            ActiveCombat = new ActiveCombatState(CurrentRoom, IsBossRoom);
+    }
+
+    /// <summary>
+    /// Pause combat and pass the turn. Allies and monsters keep their damage.
+    /// The player can reinforce on their next turn and resume.
+    /// </summary>
+    public void PauseCombat()
+    {
+        EnsurePhase(MatchPhase.Combat, MatchPhase.BossRoom);
+
+        if (ActiveCombat is null)
+            throw new InvalidOperationException("No active combat to pause.");
+
+        ActiveCombat.Suspend();
+        CombatBoard.Clear();
+        PassTurn();
+    }
+
+    /// <summary>
+    /// Resume a suspended combat. Player has had a chance to play new cards.
+    /// Returns to Combat/BossRoom phase with the same ActiveCombat state.
+    /// </summary>
+    public void ResumeCombat()
+    {
+        EnsurePhase(MatchPhase.PlayCards);
+
+        if (ActiveCombat is not { IsSuspended: true })
+            throw new InvalidOperationException("No suspended combat to resume.");
+
+        ActiveCombat.Resume();
+        Phase = ActiveCombat.IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
+    }
+
+    /// <summary>
+    /// End the active combat (room cleared or all units eliminated).
+    /// Clears the ActiveCombat state.
+    /// </summary>
+    public void EndCombat()
+    {
+        ActiveCombat = null;
     }
 
     public void ConcedeRoom()
@@ -235,6 +295,9 @@ public class MatchState
     {
         EnsurePhase(MatchPhase.DefenderSetup);
         Phase = IsBossRoom ? MatchPhase.BossRoom : MatchPhase.Combat;
+        // Initialize combat state tracker for this room
+        if (ActiveCombat is null)
+            ActiveCombat = new ActiveCombatState(CurrentRoom, IsBossRoom);
     }
 
     /// <summary>

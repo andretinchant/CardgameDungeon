@@ -101,6 +101,111 @@ public class CombatResolver
             atkMods.DamageReduction, bossMods.DamageReduction);
     }
 
+    /// <summary>
+    /// Resolves a single round of combat, applying damage to the ActiveCombatState.
+    /// Returns the round result including whether either side was eliminated.
+    /// Used for round-by-round combat where the attacker can pause between rounds.
+    /// </summary>
+    public CombatRoundResult ResolveSingleRound(
+        IReadOnlyList<AllyCard> attackers,
+        IReadOnlyList<MonsterCard> defenders,
+        ActiveCombatState combatState,
+        PlayerState? attackerState = null)
+    {
+        var advantage = CombatAdvantage.Calculate(attackers.Count, defenders.Count);
+        var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
+        var defMods = CalculateGroupModifiers(defenders, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
+
+        var (atkBaseAtk, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
+        var atkAttack = atkBaseAtk + atkMods.Attack;
+        var defAttack = defenders.Sum(m => m.Attack) + defMods.Attack;
+
+        // Calculate current HP (base - accumulated damage from previous rounds)
+        var atkCurrentHp = atkBaseHp + atkMods.HitPoints;
+        foreach (var ally in attackers)
+            atkCurrentHp -= combatState.GetDamageTaken(ally.Id);
+
+        var defCurrentHp = defenders.Sum(m => m.HitPoints) + defMods.HitPoints;
+        foreach (var monster in defenders)
+            defCurrentHp -= combatState.GetDamageTaken(monster.Id);
+
+        atkCurrentHp = Math.Max(0, atkCurrentHp);
+        defCurrentHp = Math.Max(0, defCurrentHp);
+
+        // Check instant elimination (2x rule)
+        var atkEffAtk = atkMods.EliminationDoubled ? atkAttack * 2 : atkAttack;
+        var defEffAtk = defMods.EliminationDoubled ? defAttack * 2 : defAttack;
+        var atkInstantElim = defEffAtk >= atkAttack * EliminationMultiplier && atkAttack > 0;
+        var defInstantElim = atkEffAtk >= defAttack * EliminationMultiplier && defAttack > 0;
+
+        if (atkInstantElim || defInstantElim)
+        {
+            // Apply all remaining HP as damage
+            if (atkInstantElim)
+                foreach (var ally in attackers)
+                    combatState.ApplyDamage(ally.Id, ally.HitPoints);
+            if (defInstantElim)
+                foreach (var monster in defenders)
+                    combatState.ApplyDamage(monster.Id, monster.HitPoints);
+
+            combatState.CompleteRound();
+            return new CombatRoundResult(
+                atkAttack, defAttack, atkInstantElim, defInstantElim,
+                true, combatState.RoundsCompleted, advantage);
+        }
+
+        // Resolve 1 round of attrition
+        var dmgReductionAtk = atkMods.DamageReduction;
+        var dmgReductionDef = defMods.DamageReduction;
+        int damageToAttacker = 0, damageToDefender = 0;
+
+        if (atkAttack > defAttack)
+        {
+            damageToDefender = Math.Max(0, 1 - dmgReductionDef);
+        }
+        else if (defAttack > atkAttack)
+        {
+            damageToAttacker = Math.Max(0, 1 - dmgReductionAtk);
+        }
+        else
+        {
+            damageToAttacker = Math.Max(0, 1 - dmgReductionAtk);
+            damageToDefender = Math.Max(0, 1 - dmgReductionDef);
+        }
+
+        // Distribute damage across cards (weakest first)
+        if (damageToAttacker > 0)
+        {
+            var weakest = attackers
+                .Where(a => combatState.GetRemainingHp(a.Id, a.HitPoints) > 0)
+                .OrderBy(a => combatState.GetRemainingHp(a.Id, a.HitPoints))
+                .FirstOrDefault();
+            if (weakest != null)
+                combatState.ApplyDamage(weakest.Id, damageToAttacker);
+        }
+
+        if (damageToDefender > 0)
+        {
+            var weakest = defenders
+                .Where(m => combatState.GetRemainingHp(m.Id, m.HitPoints) > 0)
+                .OrderBy(m => combatState.GetRemainingHp(m.Id, m.HitPoints))
+                .FirstOrDefault();
+            if (weakest != null)
+                combatState.ApplyDamage(weakest.Id, damageToDefender);
+        }
+
+        combatState.CompleteRound();
+
+        // Check if either side is fully eliminated
+        var atkEliminated = attackers.All(a => combatState.GetRemainingHp(a.Id, a.HitPoints) <= 0);
+        var defEliminated = defenders.All(m => combatState.GetRemainingHp(m.Id, m.HitPoints) <= 0);
+
+        return new CombatRoundResult(
+            atkAttack, defAttack, atkEliminated, defEliminated,
+            atkEliminated || defEliminated,
+            combatState.RoundsCompleted, advantage);
+    }
+
     private static BattleResolutionResult ResolveCore(
         int attackerAttack,
         int defenderAttack,

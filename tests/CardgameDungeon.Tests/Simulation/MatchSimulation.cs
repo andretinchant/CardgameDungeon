@@ -137,7 +137,16 @@ public class MatchSimulation
                 else
                     Log($"  {activeName} total field: {active.AlliesInPlay.Count} allies (ATK:{active.AlliesInPlay.Sum(a => a.Attack)} HP:{active.AlliesInPlay.Sum(a => a.HitPoints)})");
 
-                match.FinishPlayingCards();
+                // Check if there's a suspended combat to resume
+                if (match.HasSuspendedCombat)
+                {
+                    Log($"  ** RESUMING suspended combat in Room {match.ActiveCombat!.RoomNumber} (round {match.ActiveCombat.RoundsCompleted}) **");
+                    match.ResumeCombat();
+                }
+                else
+                {
+                    match.FinishPlayingCards();
+                }
                 Log($"→ Phase: {match.Phase}");
             }
 
@@ -272,7 +281,7 @@ public class MatchSimulation
                 }
                 else
                 {
-                    // ── NORMAL ROOM COMBAT ──
+                    // ── NORMAL ROOM COMBAT (round-by-round with pause option) ──
                     LogPhase($"COMBAT (Room {match.CurrentRoom})");
                     Log($"Attacker ({attackerName}): {FormatAllies(attacker)}");
                     Log($"Defender ({defenderName}) monsters: {FormatMonsters(defender)}");
@@ -288,41 +297,82 @@ public class MatchSimulation
                     }
                     else
                     {
+                        var combatState = match.ActiveCombat!;
                         var atkGroup = attacker.AlliesInPlay.ToList();
                         var defGroup = defender.MonstersInPlay.ToList();
-                        var result = _resolver.ResolveCombat(atkGroup, defGroup, false);
+                        var combatResolved = false;
 
-                        Log($"  {atkGroup.Count} allies (ATK:{result.AttackerAttack}) vs {defGroup.Count} monsters (ATK:{result.DefenderAttack})");
-                        Log($"  Result: {result.Outcome} ({result.Rounds} rounds)");
-                        Log($"  Damage: {result.DamageToAttacker} HP to attacker, {result.DamageToDefender} HP to defender");
-                        Log($"  Advantage: ATK={result.Advantage.AttackerState} DEF={result.Advantage.DefenderState}");
-
-                        bool defElim = result.Outcome is CombatOutcome.DefenderEliminated or CombatOutcome.SimultaneousElimination;
-                        bool atkElim = result.Outcome is CombatOutcome.AttackerEliminated or CombatOutcome.SimultaneousElimination;
-
-                        if (defElim)
+                        // Fight round by round
+                        while (!combatResolved)
                         {
+                            var roundResult = _resolver.ResolveSingleRound(atkGroup, defGroup, combatState, attacker);
+
+                            Log($"  Round {combatState.RoundsCompleted}: ATK {roundResult.AttackerAttack} vs DEF {roundResult.DefenderAttack}");
+
+                            // Log HP status per card
+                            foreach (var a in atkGroup)
+                            {
+                                var remaining = combatState.GetRemainingHp(a.Id, a.HitPoints);
+                                if (remaining <= 0)
+                                    Log($"    {a.Name} ☠ ELIMINATED");
+                                else if (combatState.GetDamageTaken(a.Id) > 0)
+                                    Log($"    {a.Name} HP:{remaining}/{a.HitPoints}");
+                            }
                             foreach (var m in defGroup)
                             {
-                                Log($"  *** MONSTER {m.Name} ELIMINATED ***");
-                                if (defender.MonstersInPlay.Contains(m))
-                                    defender.EliminateMonster(m);
+                                var remaining = combatState.GetRemainingHp(m.Id, m.HitPoints);
+                                if (remaining <= 0)
+                                    Log($"    {m.Name} ☠ ELIMINATED");
+                                else if (combatState.GetDamageTaken(m.Id) > 0)
+                                    Log($"    {m.Name} HP:{remaining}/{m.HitPoints}");
+                            }
+
+                            if (roundResult.CombatEnded)
+                            {
+                                // Combat finished — apply eliminations
+                                if (roundResult.DefenderEliminated)
+                                {
+                                    foreach (var m in defGroup.Where(m => combatState.GetRemainingHp(m.Id, m.HitPoints) <= 0))
+                                    {
+                                        Log($"  *** MONSTER {m.Name} ELIMINATED ***");
+                                        if (defender.MonstersInPlay.Contains(m))
+                                            defender.EliminateMonster(m);
+                                    }
+                                }
+                                if (roundResult.AttackerEliminated)
+                                {
+                                    foreach (var a in atkGroup.Where(a => combatState.GetRemainingHp(a.Id, a.HitPoints) <= 0).ToList())
+                                    {
+                                        Log($"  *** ALLY {a.Name} ELIMINATED ***");
+                                        if (attacker.AlliesInPlay.Contains(a))
+                                            attacker.EliminateAlly(a);
+                                    }
+                                }
+
+                                foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
+
+                                var simultaneous = roundResult.AttackerEliminated && roundResult.DefenderEliminated;
+                                match.ResolveCombat(0, 0, simultaneous);
+                                combatResolved = true;
+                            }
+                            else
+                            {
+                                // Combat ongoing — AI decides: pause if losing and rounds > 2
+                                var atkTotalHp = atkGroup.Sum(a => combatState.GetRemainingHp(a.Id, a.HitPoints));
+                                var defTotalHp = defGroup.Sum(m => combatState.GetRemainingHp(m.Id, m.HitPoints));
+                                var losing = roundResult.DefenderAttack > roundResult.AttackerAttack;
+                                var shouldPause = losing && combatState.RoundsCompleted >= 2 && atkTotalHp < atkGroup.Sum(a => a.HitPoints);
+
+                                if (shouldPause)
+                                {
+                                    Log($"  ** {attackerName} PAUSES COMBAT after {combatState.RoundsCompleted} rounds (losing, HP:{atkTotalHp}) **");
+                                    Log($"  ** Monsters remain with HP:{defTotalHp} — combat suspended **");
+                                    match.PauseCombat();
+                                    combatResolved = true; // exit loop — turn passes
+                                }
+                                // Otherwise continue to next round
                             }
                         }
-                        if (atkElim)
-                        {
-                            foreach (var a in atkGroup.ToList())
-                                if (attacker.AlliesInPlay.Contains(a))
-                                {
-                                    Log($"  *** ALLY {a.Name} ELIMINATED ***");
-                                    attacker.EliminateAlly(a);
-                                }
-                        }
-
-                        foreach (var m in defender.MonstersInPlay.ToList()) defender.RemoveMonster(m);
-
-                        match.ResolveCombat(result.DamageToAttacker, result.DamageToDefender,
-                            result.Outcome == CombatOutcome.SimultaneousElimination);
                     }
                 }
 
