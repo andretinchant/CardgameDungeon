@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using CardgameDungeon.Unity.Network;
 
 namespace CardgameDungeon.Unity.Core
@@ -36,7 +36,17 @@ namespace CardgameDungeon.Unity.Core
         [Header("API")]
         [SerializeField] private string _apiBaseUrl = "http://localhost:5214";
 
+        [Header("Scenes")]
+        [SerializeField] private string _loadingSceneName = "Loading";
+        [SerializeField] private string _loginSceneName = "Login";
+        [SerializeField] private string _mainMenuSceneName = "MainMenu";
+
         private ApiClient _apiClient;
+
+        private const string PlayerIdPrefKey = "PlayerId";
+        private const string AccessTokenPrefKey = "AccessToken";
+        private const string RefreshTokenPrefKey = "RefreshToken";
+        private const string UsernamePrefKey = "Username";
 
         /// <summary>
         /// The API client used for all server communication.
@@ -63,6 +73,13 @@ namespace CardgameDungeon.Unity.Core
         /// </summary>
         private MarketplaceFocusContext _pendingMarketplaceFocus;
 
+        public string AccessToken { get; private set; }
+        public string RefreshToken { get; private set; }
+        public string Username { get; private set; }
+        public bool IsAuthenticated => !string.IsNullOrWhiteSpace(AccessToken) && CurrentPlayerId != Guid.Empty;
+        public string LoginSceneName => _loginSceneName;
+        public string MainMenuSceneName => _mainMenuSceneName;
+
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -84,22 +101,29 @@ namespace CardgameDungeon.Unity.Core
         {
             _apiClient = new ApiClient(_apiBaseUrl);
 
-            string savedPlayerId = PlayerPrefs.GetString("PlayerId", string.Empty);
-            if (!string.IsNullOrEmpty(savedPlayerId) && Guid.TryParse(savedPlayerId, out var playerId))
+            var savedPlayerId = PlayerPrefs.GetString(PlayerIdPrefKey, string.Empty);
+            if (!string.IsNullOrWhiteSpace(savedPlayerId) && Guid.TryParse(savedPlayerId, out var playerId))
             {
                 CurrentPlayerId = playerId;
             }
             else
             {
                 CurrentPlayerId = Guid.NewGuid();
-                PlayerPrefs.SetString("PlayerId", CurrentPlayerId.ToString());
+                PlayerPrefs.SetString(PlayerIdPrefKey, CurrentPlayerId.ToString());
                 PlayerPrefs.Save();
             }
+
+            AccessToken = PlayerPrefs.GetString(AccessTokenPrefKey, string.Empty);
+            RefreshToken = PlayerPrefs.GetString(RefreshTokenPrefKey, string.Empty);
+            Username = PlayerPrefs.GetString(UsernamePrefKey, string.Empty);
+
+            if (!string.IsNullOrWhiteSpace(AccessToken))
+                _apiClient.SetAccessToken(AccessToken);
 
             IsConnected = false;
             CurrentMatchId = null;
 
-            Debug.Log($"[GameManager] Initialized. PlayerId: {CurrentPlayerId}");
+            Debug.Log($"[GameManager] Initialized. PlayerId: {CurrentPlayerId}, Auth: {IsAuthenticated}");
         }
 
         /// <summary>
@@ -108,8 +132,92 @@ namespace CardgameDungeon.Unity.Core
         public void SetPlayerId(Guid playerId)
         {
             CurrentPlayerId = playerId;
-            PlayerPrefs.SetString("PlayerId", playerId.ToString());
+            PlayerPrefs.SetString(PlayerIdPrefKey, playerId.ToString());
             PlayerPrefs.Save();
+        }
+
+        public void ApplyAuth(AuthResponse authResponse)
+        {
+            if (authResponse == null)
+                throw new ArgumentNullException(nameof(authResponse));
+
+            if (!Guid.TryParse(authResponse.playerId, out var parsedPlayerId))
+                throw new InvalidOperationException("Auth response returned invalid playerId.");
+
+            CurrentPlayerId = parsedPlayerId;
+            Username = authResponse.username ?? string.Empty;
+            AccessToken = authResponse.accessToken ?? string.Empty;
+            RefreshToken = authResponse.refreshToken ?? string.Empty;
+
+            _apiClient.SetAccessToken(AccessToken);
+
+            PlayerPrefs.SetString(PlayerIdPrefKey, CurrentPlayerId.ToString());
+            PlayerPrefs.SetString(UsernamePrefKey, Username);
+            PlayerPrefs.SetString(AccessTokenPrefKey, AccessToken);
+            PlayerPrefs.SetString(RefreshTokenPrefKey, RefreshToken);
+            PlayerPrefs.Save();
+        }
+
+        public void ClearAuth()
+        {
+            AccessToken = string.Empty;
+            RefreshToken = string.Empty;
+            Username = string.Empty;
+            _apiClient.SetAccessToken(string.Empty);
+
+            PlayerPrefs.DeleteKey(AccessTokenPrefKey);
+            PlayerPrefs.DeleteKey(RefreshTokenPrefKey);
+            PlayerPrefs.DeleteKey(UsernamePrefKey);
+            PlayerPrefs.Save();
+        }
+
+        public IEnumerator TryRefreshSession(Action<bool, string> onCompleted)
+        {
+            if (string.IsNullOrWhiteSpace(AccessToken) || string.IsNullOrWhiteSpace(RefreshToken))
+            {
+                onCompleted?.Invoke(false, "No persisted auth session.");
+                yield break;
+            }
+
+            var completed = false;
+            var success = false;
+            string errorMessage = null;
+
+            var request = new RefreshTokenRequest
+            {
+                accessToken = AccessToken,
+                refreshToken = RefreshToken
+            };
+
+            yield return _apiClient.Refresh(this, request,
+                auth =>
+                {
+                    try
+                    {
+                        ApplyAuth(auth);
+                        success = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        errorMessage = ex.Message;
+                        success = false;
+                    }
+                    finally
+                    {
+                        completed = true;
+                    }
+                },
+                error =>
+                {
+                    errorMessage = error;
+                    success = false;
+                    completed = true;
+                });
+
+            while (!completed)
+                yield return null;
+
+            onCompleted?.Invoke(success, errorMessage);
         }
 
         /// <summary>
@@ -126,6 +234,17 @@ namespace CardgameDungeon.Unity.Core
         public void GoToScene(string sceneName)
         {
             SceneLoader.LoadScene(sceneName);
+        }
+
+        public void GoToSceneWithLoading(string sceneName)
+        {
+            if (string.IsNullOrWhiteSpace(_loadingSceneName))
+            {
+                GoToScene(sceneName);
+                return;
+            }
+
+            SceneLoader.LoadSceneWithLoadingScreen(sceneName, _loadingSceneName);
         }
 
         /// <summary>

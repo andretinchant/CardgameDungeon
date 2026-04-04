@@ -10,6 +10,10 @@ namespace CardgameDungeon.Unity.Core
     /// </summary>
     public static class SceneLoader
     {
+        public static bool IsLoading { get; private set; }
+        public static float Progress { get; private set; }
+        public static string TargetScene { get; private set; }
+
         /// <summary>
         /// Load a scene synchronously by name.
         /// </summary>
@@ -22,6 +26,9 @@ namespace CardgameDungeon.Unity.Core
             }
 
             SceneManager.LoadScene(sceneName);
+            IsLoading = false;
+            Progress = 1f;
+            TargetScene = sceneName;
         }
 
         /// <summary>
@@ -70,6 +77,10 @@ namespace CardgameDungeon.Unity.Core
 
         private static IEnumerator LoadSceneCoroutine(string sceneName, string loadingScreenScene, Action onComplete)
         {
+            IsLoading = true;
+            Progress = 0f;
+            TargetScene = sceneName;
+
             if (!string.IsNullOrEmpty(loadingScreenScene))
             {
                 SceneManager.LoadScene(loadingScreenScene);
@@ -87,9 +98,12 @@ namespace CardgameDungeon.Unity.Core
 
             while (!asyncOp.isDone)
             {
+                Progress = Mathf.Clamp01(asyncOp.progress / 0.9f);
                 yield return null;
             }
 
+            Progress = 1f;
+            IsLoading = false;
             onComplete?.Invoke();
         }
     }

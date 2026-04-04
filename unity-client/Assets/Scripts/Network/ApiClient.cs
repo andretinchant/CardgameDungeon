@@ -15,10 +15,44 @@ namespace CardgameDungeon.Unity.Network
     public class ApiClient
     {
         private readonly string _baseUrl;
+        private string _accessToken;
 
         public ApiClient(string baseUrl = "http://localhost:5214")
         {
             _baseUrl = baseUrl.TrimEnd('/');
+        }
+
+        public void SetAccessToken(string accessToken)
+        {
+            _accessToken = accessToken;
+        }
+
+        // ──────────────────────────────────────────────
+        //  AUTH ENDPOINTS  /api/auth
+        // ──────────────────────────────────────────────
+
+        /// <summary>POST /api/auth/register</summary>
+        public Coroutine Register(MonoBehaviour host, RegisterRequest request, Action<AuthResponse> onSuccess, Action<string> onError = null)
+        {
+            return host.StartCoroutine(Post<AuthResponse>("/api/auth/register", request, onSuccess, onError, includeAuth: false));
+        }
+
+        /// <summary>POST /api/auth/login</summary>
+        public Coroutine Login(MonoBehaviour host, LoginRequest request, Action<AuthResponse> onSuccess, Action<string> onError = null)
+        {
+            return host.StartCoroutine(Post<AuthResponse>("/api/auth/login", request, onSuccess, onError, includeAuth: false));
+        }
+
+        /// <summary>POST /api/auth/refresh</summary>
+        public Coroutine Refresh(MonoBehaviour host, RefreshTokenRequest request, Action<AuthResponse> onSuccess, Action<string> onError = null)
+        {
+            return host.StartCoroutine(Post<AuthResponse>("/api/auth/refresh", request, onSuccess, onError, includeAuth: false));
+        }
+
+        /// <summary>POST /api/auth/revoke</summary>
+        public Coroutine Revoke(MonoBehaviour host, RevokeTokenRequest request, Action<RevokeTokenResponse> onSuccess, Action<string> onError = null)
+        {
+            return host.StartCoroutine(Post<RevokeTokenResponse>("/api/auth/revoke", request, onSuccess, onError, includeAuth: false));
         }
 
         // ──────────────────────────────────────────────
@@ -268,14 +302,13 @@ namespace CardgameDungeon.Unity.Network
         //  HTTP HELPERS
         // ──────────────────────────────────────────────
 
-        private IEnumerator Get<TResponse>(string path, Action<TResponse> onSuccess, Action<string> onError)
+        private IEnumerator Get<TResponse>(string path, Action<TResponse> onSuccess, Action<string> onError, bool includeAuth = true)
         {
             string url = _baseUrl + path;
 
             using (var request = UnityWebRequest.Get(url))
             {
-                request.SetRequestHeader("Content-Type", "application/json");
-                request.SetRequestHeader("Accept", "application/json");
+                ConfigureJsonHeaders(request, includeAuth);
 
                 yield return request.SendWebRequest();
 
@@ -283,7 +316,7 @@ namespace CardgameDungeon.Unity.Network
             }
         }
 
-        private IEnumerator Post<TResponse>(string path, object body, Action<TResponse> onSuccess, Action<string> onError)
+        private IEnumerator Post<TResponse>(string path, object body, Action<TResponse> onSuccess, Action<string> onError, bool includeAuth = true)
         {
             string url = _baseUrl + path;
             string json = body != null ? JsonUtility.ToJson(body) : "{}";
@@ -293,8 +326,7 @@ namespace CardgameDungeon.Unity.Network
             {
                 request.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 request.downloadHandler = new DownloadHandlerBuffer();
-                request.SetRequestHeader("Content-Type", "application/json");
-                request.SetRequestHeader("Accept", "application/json");
+                ConfigureJsonHeaders(request, includeAuth);
 
                 yield return request.SendWebRequest();
 
@@ -302,7 +334,7 @@ namespace CardgameDungeon.Unity.Network
             }
         }
 
-        private IEnumerator Put<TResponse>(string path, object body, Action<TResponse> onSuccess, Action<string> onError)
+        private IEnumerator Put<TResponse>(string path, object body, Action<TResponse> onSuccess, Action<string> onError, bool includeAuth = true)
         {
             string url = _baseUrl + path;
             string json = body != null ? JsonUtility.ToJson(body) : "{}";
@@ -312,8 +344,7 @@ namespace CardgameDungeon.Unity.Network
             {
                 request.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 request.downloadHandler = new DownloadHandlerBuffer();
-                request.SetRequestHeader("Content-Type", "application/json");
-                request.SetRequestHeader("Accept", "application/json");
+                ConfigureJsonHeaders(request, includeAuth);
 
                 yield return request.SendWebRequest();
 
@@ -321,20 +352,30 @@ namespace CardgameDungeon.Unity.Network
             }
         }
 
-        private IEnumerator Delete<TResponse>(string path, Action<TResponse> onSuccess, Action<string> onError)
+        private IEnumerator Delete<TResponse>(string path, Action<TResponse> onSuccess, Action<string> onError, bool includeAuth = true)
         {
             string url = _baseUrl + path;
 
             using (var request = UnityWebRequest.Delete(url))
             {
                 request.downloadHandler = new DownloadHandlerBuffer();
-                request.SetRequestHeader("Content-Type", "application/json");
-                request.SetRequestHeader("Accept", "application/json");
+                ConfigureJsonHeaders(request, includeAuth);
 
                 yield return request.SendWebRequest();
 
                 HandleResponse(request, onSuccess, onError);
             }
+        }
+
+        private void ConfigureJsonHeaders(UnityWebRequest request, bool includeAuth)
+        {
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Accept", "application/json");
+
+            if (!includeAuth || string.IsNullOrWhiteSpace(_accessToken))
+                return;
+
+            request.SetRequestHeader("Authorization", $"Bearer {_accessToken}");
         }
 
         private void HandleResponse<TResponse>(UnityWebRequest request, Action<TResponse> onSuccess, Action<string> onError)

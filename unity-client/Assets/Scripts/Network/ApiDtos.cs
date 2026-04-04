@@ -18,6 +18,25 @@ namespace CardgameDungeon.Unity.Network
     }
 
     // ──────────────────────────────────────────────
+    //  Auth
+    // ──────────────────────────────────────────────
+
+    [Serializable]
+    public class AuthResponse
+    {
+        public string accessToken;
+        public string refreshToken;
+        public string playerId;
+        public string username;
+    }
+
+    [Serializable]
+    public class RevokeTokenResponse
+    {
+        public bool revoked;
+    }
+
+    // ──────────────────────────────────────────────
     //  Deck
     // ──────────────────────────────────────────────
 
@@ -87,7 +106,7 @@ namespace CardgameDungeon.Unity.Network
     {
         public string id;
         public string name;
-        public int strength;
+        public int attack;
         public int hitPoints;
         public int initiative;
         public int cost;
@@ -161,8 +180,8 @@ namespace CardgameDungeon.Unity.Network
     {
         public string attackerId;
         public string defenderId;
-        public int attackerStrength;
-        public int defenderStrength;
+        public int attackerAttack;
+        public int defenderAttack;
         public int damageToAttacker;
         public int damageToDefender;
         public string outcome;
@@ -577,5 +596,33 @@ namespace CardgameDungeon.Unity.Network
     {
         public string winnerId;
         public string loserId;
+    }
+
+    [Serializable]
+    public class RegisterRequest
+    {
+        public string username;
+        public string email;
+        public string password;
+    }
+
+    [Serializable]
+    public class LoginRequest
+    {
+        public string username;
+        public string password;
+    }
+
+    [Serializable]
+    public class RefreshTokenRequest
+    {
+        public string accessToken;
+        public string refreshToken;
+    }
+
+    [Serializable]
+    public class RevokeTokenRequest
+    {
+        public string refreshToken;
     }
 }

@@ -10,44 +10,77 @@ namespace CardgameDungeon.Unity.UI
         [SerializeField] private Button collectionButton;
         [SerializeField] private Button deckBuilderButton;
         [SerializeField] private Button marketplaceButton;
+        [SerializeField] private Button boosterShopButton;
+        [SerializeField] private Button profileButton;
+        [SerializeField] private Button settingsButton;
+        [SerializeField] private Button logoutButton;
         [SerializeField] private Button quitButton;
 
         private void OnEnable()
         {
-            playButton.onClick.AddListener(OnPlayClicked);
-            collectionButton.onClick.AddListener(OnCollectionClicked);
-            deckBuilderButton.onClick.AddListener(OnDeckBuilderClicked);
-            marketplaceButton.onClick.AddListener(OnMarketplaceClicked);
-            quitButton.onClick.AddListener(OnQuitClicked);
+            if (playButton != null) playButton.onClick.AddListener(OnPlayClicked);
+            if (collectionButton != null) collectionButton.onClick.AddListener(OnCollectionClicked);
+            if (deckBuilderButton != null) deckBuilderButton.onClick.AddListener(OnDeckBuilderClicked);
+            if (marketplaceButton != null) marketplaceButton.onClick.AddListener(OnMarketplaceClicked);
+            if (boosterShopButton != null) boosterShopButton.onClick.AddListener(OnBoosterShopClicked);
+            if (profileButton != null) profileButton.onClick.AddListener(OnProfileClicked);
+            if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
+            if (logoutButton != null) logoutButton.onClick.AddListener(OnLogoutClicked);
+            if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
         }
 
         private void OnDisable()
         {
-            playButton.onClick.RemoveListener(OnPlayClicked);
-            collectionButton.onClick.RemoveListener(OnCollectionClicked);
-            deckBuilderButton.onClick.RemoveListener(OnDeckBuilderClicked);
-            marketplaceButton.onClick.RemoveListener(OnMarketplaceClicked);
-            quitButton.onClick.RemoveListener(OnQuitClicked);
+            if (playButton != null) playButton.onClick.RemoveListener(OnPlayClicked);
+            if (collectionButton != null) collectionButton.onClick.RemoveListener(OnCollectionClicked);
+            if (deckBuilderButton != null) deckBuilderButton.onClick.RemoveListener(OnDeckBuilderClicked);
+            if (marketplaceButton != null) marketplaceButton.onClick.RemoveListener(OnMarketplaceClicked);
+            if (boosterShopButton != null) boosterShopButton.onClick.RemoveListener(OnBoosterShopClicked);
+            if (profileButton != null) profileButton.onClick.RemoveListener(OnProfileClicked);
+            if (settingsButton != null) settingsButton.onClick.RemoveListener(OnSettingsClicked);
+            if (logoutButton != null) logoutButton.onClick.RemoveListener(OnLogoutClicked);
+            if (quitButton != null) quitButton.onClick.RemoveListener(OnQuitClicked);
         }
 
         private void OnPlayClicked()
         {
-            GameManager.Instance.LoadScene("Match");
+            GameManager.Instance.GoToSceneWithLoading("Match");
         }
 
         private void OnCollectionClicked()
         {
-            GameManager.Instance.LoadScene("Collection");
+            GameManager.Instance.GoToSceneWithLoading("Collection");
         }
 
         private void OnDeckBuilderClicked()
         {
-            GameManager.Instance.LoadScene("DeckBuilder");
+            GameManager.Instance.GoToSceneWithLoading("DeckBuilder");
         }
 
         private void OnMarketplaceClicked()
         {
-            GameManager.Instance.LoadScene("Marketplace");
+            GameManager.Instance.GoToSceneWithLoading("Marketplace");
+        }
+
+        private void OnBoosterShopClicked()
+        {
+            GameManager.Instance.GoToSceneWithLoading("BoosterShop");
+        }
+
+        private void OnProfileClicked()
+        {
+            GameManager.Instance.GoToSceneWithLoading("Profile");
+        }
+
+        private void OnSettingsClicked()
+        {
+            GameManager.Instance.GoToSceneWithLoading("Settings");
+        }
+
+        private void OnLogoutClicked()
+        {
+            GameManager.Instance.ClearAuth();
+            GameManager.Instance.GoToScene("Login");
         }
 
         private void OnQuitClicked()
