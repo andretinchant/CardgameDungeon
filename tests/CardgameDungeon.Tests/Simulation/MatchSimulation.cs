@@ -102,12 +102,40 @@ public class MatchSimulation
             {
                 LogPhase($"PLAY CARDS ({activeName})");
                 var active = match.GetActivePlayer();
-                var alliesInHand = active.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).Take(2).ToList();
+
+                // Play allies from hand (up to max 5 in play)
+                var alliesInHand = active.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).ToList();
                 foreach (var ally in alliesInHand)
                 {
                     if (active.AlliesInPlay.Count >= PlayerState.MaxAlliesInPlay) break;
-                    Log($"  {activeName} could play ally: {ally.Name} (STR:{ally.Strength} HP:{ally.HitPoints})");
+                    active.PlayAlly(ally);
+                    Log($"  {activeName} plays ALLY: {ally.Name} (STR:{ally.Strength} HP:{ally.HitPoints} INIT:{ally.Initiative} Class:{ally.Class})");
                 }
+
+                // Equip equipment on allies (simple: equip weapons on strongest ally)
+                var equipInHand = active.Hand.OfType<EquipmentCard>()
+                    .Where(e => e.Slot.IsGear())
+                    .OrderByDescending(e => e.StrengthModifier + e.HitPointsModifier)
+                    .Take(2).ToList();
+                foreach (var equip in equipInHand)
+                {
+                    var targetAlly = active.AlliesInPlay.FirstOrDefault(a =>
+                        !active.HasEquipmentSlot(a.Id, equip.Slot));
+                    if (targetAlly != null)
+                    {
+                        try
+                        {
+                            active.EquipItem(targetAlly.Id, equip);
+                            Log($"  {activeName} equips {equip.Name} (+{equip.StrengthModifier}S/+{equip.HitPointsModifier}H) on {targetAlly.Name}");
+                        }
+                        catch { /* slot occupied or class restriction */ }
+                    }
+                }
+
+                if (active.AlliesInPlay.Count == 0)
+                    Log($"  {activeName} has NO ALLIES to play!");
+                else
+                    Log($"  {activeName} total field: {active.AlliesInPlay.Count} allies (STR:{active.AlliesInPlay.Sum(a => a.Strength)} HP:{active.AlliesInPlay.Sum(a => a.HitPoints)})");
 
                 match.FinishPlayingCards();
                 Log($"→ Phase: {match.Phase}");
