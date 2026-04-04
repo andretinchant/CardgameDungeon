@@ -17,11 +17,11 @@ public static partial class CardSetSeeder
             // ═══════════════════════════════════════════════════════
 
             // ── UNIQUE (1) ── Budget 30
-            // STR8(8) + HP9(9) + INIT1(1.5) + Treasure1(1) = 19.5. Effect = 8 ✓
+            // STR9(9) + HP9(9) + INIT0(0) + Treasure5(5) = 23. Effect = 7 ✓
             new AllyCard(new Guid("00000000-0000-0000-000C-000000000001"),
                 "Uthgar, Blood of the Ancestors", Rarity.Unique, 6,
-                8, 9, 1, treasure: 1,
-                effect: "Born from a bloodline that predates the gods. Exile 1 from hand to enter Rage: +3 STR, take 2 less damage from all sources, and this ally's STR counts as double for elimination checks. Rage lasts until end of room or until no cards remain in hand. While raging, Uthgar cannot use equipment or consumables",
+                9, 9, 0, treasure: 5,
+                effect: "Born from a bloodline that predates the gods. Exile 4 cards from top of deck once per combat: +2 STR until end of this combat and Uthgar's STR counts as double for elimination checks. If Uthgar eliminates a monster while raging, he can join another fight immediately",
                 race: Race.Human, allyClass: AllyClass.Barbarian),
 
             // ── RARE (2) ── Budget 14-18
