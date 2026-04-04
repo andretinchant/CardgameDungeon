@@ -91,6 +91,7 @@
   "equipment_slot.totem": "Totem",
   "equipment_slot.companion": "Companion",
   "equipment_slot.summon": "Summon",
+  "equipment_slot.shapeshift": "Shapeshift",
   "equipment.consumable": "Single-Use",
   "equipment.gear": "Gear",
   "equipment.companion_summon": "Materializes as ally in combat",

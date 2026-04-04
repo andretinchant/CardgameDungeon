@@ -37,7 +37,7 @@ namespace CardgameDungeon.Unity.Cards
         // Gear — 1 per slot per ally
         Weapon, Armor, Shield, Helmet, Boots, Accessory,
         // Companion/Summon — equip on specific classes, materializes as ally in combat
-        Companion, Summon,
+        Companion, Summon, Shapeshift,
         // Consumables — no limit, single-use
         Scroll, Potion, Balm, Bomb, Totem
     }

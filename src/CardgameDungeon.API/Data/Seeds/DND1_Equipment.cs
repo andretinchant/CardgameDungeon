@@ -251,26 +251,6 @@ public static partial class CardSetSeeder
                 "Longbow", Rarity.Common, 1, 2, 0, 0, EquipmentSlot.Weapon,
                 effectTags: "PASSIVE|+STR:2"),
 
-            // Budget: STR0 + HP0 + INIT2×1.5 = 3
-            new(new Guid("00000000-0000-0000-0002-000000000036"),
-                "Rope of Climbing", Rarity.Common, 1, 0, 0, 2, EquipmentSlot.Accessory,
-                effectTags: "PASSIVE|+INIT:2"),
-
-            // Budget: STR0 + HP0 + INIT2×1.5 = 3
-            new(new Guid("00000000-0000-0000-0002-000000000040"),
-                "Grappling Hook", Rarity.Common, 1, 0, 0, 2, EquipmentSlot.Accessory,
-                effectTags: "PASSIVE|+INIT:2"),
-
-            // Budget: STR1 + HP0 + INIT1×1.5 = 2.5 ≈ 3
-            new(new Guid("00000000-0000-0000-0002-000000000046"),
-                "Throwing Knife", Rarity.Common, 1, 1, 0, 1, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:1|+INIT:1"),
-
-            // Budget: STR2 + HP0 + INIT0×1.5 = 2 ≈ 3
-            new(new Guid("00000000-0000-0000-0002-000000000047"),
-                "Sling Bullets", Rarity.Common, 1, 2, 0, 0, EquipmentSlot.Weapon,
-                effectTags: "PASSIVE|+STR:2"),
-
             // Budget: STR0 + HP2 + INIT0×1.5 = 2 ≈ 3
             new(new Guid("00000000-0000-0000-0002-000000000048"),
                 "Padded Armor", Rarity.Common, 1, 0, 2, 0, EquipmentSlot.Armor,
@@ -281,10 +261,41 @@ public static partial class CardSetSeeder
                 "Buckler", Rarity.Common, 1, 0, 2, 0, EquipmentSlot.Shield,
                 effectTags: "PASSIVE|+HP:2"),
 
-            // Budget: STR0 + HP1 + INIT1×1.5 = 2.5 ≈ 3
+            // ═══════════════════════════════════════════════════════════════
+            //  SHAPESHIFTS (5) — Druid only. Always cost 2. Equip budget = 5.
+            //  Replaces Druid on field with beast form. Druid returns when form dies.
+            //  STR/HP/INIT modifiers become the form's actual stats.
+            // ═══════════════════════════════════════════════════════════════
+
+            // Bear Form — tanky, high HP
+            new(new Guid("00000000-0000-0000-0002-000000000036"),
+                "Bear Form", Rarity.Uncommon, 2, 4, 5, 0, EquipmentSlot.Shapeshift,
+                effect: "Druid only. Replaces Druid with Bear Form (STR 4, HP 5, INIT 0). When eliminated: Druid returns with all equipment. With Disadvantage: +2 HP",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Druid\nON_ACTIVATE|MATERIALIZE_ALLY:STR4:HP5:INIT0\nWITH_DISADVANTAGE|+HP:2"),
+
+            // Wolf Form — balanced, initiative
+            new(new Guid("00000000-0000-0000-0002-000000000040"),
+                "Dire Wolf Form", Rarity.Common, 2, 3, 3, 1, EquipmentSlot.Shapeshift,
+                effect: "Druid only. Replaces Druid with Dire Wolf Form (STR 3, HP 3, INIT 1). When eliminated: Druid returns. With Advantage: +2 STR",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Druid\nON_ACTIVATE|MATERIALIZE_ALLY:STR3:HP3:INIT1\nWITH_ADVANTAGE|+STR:2"),
+
+            // Eagle Form — fast, scouting
+            new(new Guid("00000000-0000-0000-0002-000000000046"),
+                "Giant Eagle Form", Rarity.Common, 2, 2, 2, 2, EquipmentSlot.Shapeshift,
+                effect: "Druid only. Replaces Druid with Giant Eagle Form (STR 2, HP 2, INIT 2). When eliminated: Druid returns. Reveals top 2 cards of opponent's deck",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Druid\nON_ACTIVATE|MATERIALIZE_ALLY:STR2:HP2:INIT2\nON_PLAY|REVEAL_DECK:2"),
+
+            // Elemental Form — rare, powerful
+            new(new Guid("00000000-0000-0000-0002-000000000047"),
+                "Fire Elemental Form", Rarity.Uncommon, 2, 5, 3, 0, EquipmentSlot.Shapeshift,
+                effect: "Druid only. Replaces Druid with Fire Elemental Form (STR 5, HP 3, INIT 0). When eliminated: Druid returns and deal 2 damage to all enemies in combat group",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Druid\nON_ACTIVATE|MATERIALIZE_ALLY:STR5:HP3:INIT0\nON_DEATH|DAMAGE:2:ENEMY_GROUP"),
+
+            // Spider Form — ambusher
             new(new Guid("00000000-0000-0000-0002-000000000050"),
-                "Studded Leather", Rarity.Common, 1, 0, 1, 1, EquipmentSlot.Armor,
-                effectTags: "PASSIVE|+HP:1|+INIT:1"),
+                "Giant Spider Form", Rarity.Common, 2, 3, 3, 1, EquipmentSlot.Shapeshift,
+                effect: "Druid only. Replaces Druid with Giant Spider Form (STR 3, HP 3, INIT 1). Gains Ambusher. When eliminated: Druid returns. Target enemy -1 INIT (web)",
+                effectTags: "PASSIVE|REQUIRE_CLASS:Druid\nON_ACTIVATE|MATERIALIZE_ALLY:STR3:HP3:INIT1:AMBUSHER\nON_COMBAT_START|-INIT:1:ENEMY"),
 
             // ═══════════════════════════════════════════════════════════════
             //  COMPANIONS (5) — Equip on Ranger/Druid. Materializes as ally in combat.

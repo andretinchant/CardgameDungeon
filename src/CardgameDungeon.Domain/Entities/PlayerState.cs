@@ -33,6 +33,12 @@ public class PlayerState
     private readonly List<AllyCard> _materializedAllies = [];
     private readonly Dictionary<Guid, List<EquipmentCard>> _equippedItems = new();
 
+    /// <summary>Druids currently in Shapeshift form. Key = shapeshift form ID, Value = (original druid, equipment).</summary>
+    private readonly Dictionary<Guid, (AllyCard Druid, List<EquipmentCard> Equipment)> _shapeshiftedDruids = new();
+
+    /// <summary>Active shapeshift forms on the field (replacements for Druids).</summary>
+    public IReadOnlyList<AllyCard> ShapeshiftForms => _alliesInPlay.Where(a => _shapeshiftedDruids.ContainsKey(a.Id)).ToList();
+
     public bool IsAlive => HitPoints > 0;
     public bool IsDeckEmpty => _deck.Count == 0;
 
@@ -94,7 +100,7 @@ public class PlayerState
         _discard.Add(ally);
     }
 
-    public void EliminateAlly(AllyCard ally)
+    public AllyCard? EliminateAlly(AllyCard ally)
     {
         if (!_alliesInPlay.Remove(ally))
             throw new InvalidOperationException($"Ally '{ally.Name}' is not in play.");
@@ -102,7 +108,15 @@ public class PlayerState
         // Also remove any materialized allies attached to this ally
         RemoveMaterializedForAlly(ally.Id);
 
+        // If this is a shapeshift form, revert to the original Druid instead of discarding
+        if (_shapeshiftedDruids.ContainsKey(ally.Id))
+        {
+            var druid = RevertShapeshift(ally.Id);
+            return druid; // Returns the restored Druid (or null)
+        }
+
         _discard.Add(ally);
+        return null; // Normal elimination, no revert
     }
 
     // ── Equipment ──
@@ -155,6 +169,90 @@ public class PlayerState
     {
         return _alliesInPlay.Any(a => a.Class == allyClass);
     }
+
+    // ── Shapeshift ──
+
+    /// <summary>
+    /// Activates a Shapeshift equipment on a Druid. The Druid is removed from the field
+    /// and replaced by a temporary AllyCard with the Shapeshift's stats.
+    /// All Druid equipment is stored and restored when the form is eliminated.
+    /// </summary>
+    public AllyCard ActivateShapeshift(Guid druidId, EquipmentCard shapeshiftEquip)
+    {
+        var druid = _alliesInPlay.FirstOrDefault(a => a.Id == druidId)
+            ?? throw new InvalidOperationException("Druid not in play.");
+
+        if (druid.Class != AllyClass.Druid)
+            throw new InvalidOperationException("Shapeshift can only be used by Druids.");
+
+        if (shapeshiftEquip.Slot != EquipmentSlot.Shapeshift)
+            throw new InvalidOperationException("Card is not a Shapeshift equipment.");
+
+        // Remove shapeshift from hand
+        if (!_hand.Remove(shapeshiftEquip))
+            throw new InvalidOperationException($"Shapeshift '{shapeshiftEquip.Name}' is not in hand.");
+
+        // Store the druid and all equipment
+        var storedEquipment = _equippedItems.TryGetValue(druidId, out var equips) ? new List<EquipmentCard>(equips) : [];
+        _equippedItems.Remove(druidId);
+
+        // Remove druid from field (but NOT to discard — stored inside the form)
+        _alliesInPlay.Remove(druid);
+
+        // Create the shapeshift form as a temporary ally
+        var form = new AllyCard(
+            shapeshiftEquip.Id,
+            shapeshiftEquip.Name,
+            shapeshiftEquip.Rarity,
+            shapeshiftEquip.Cost,
+            shapeshiftEquip.StrengthModifier,
+            Math.Max(1, shapeshiftEquip.HitPointsModifier),
+            shapeshiftEquip.InitiativeModifier,
+            effect: shapeshiftEquip.Effect,
+            race: Race.Beast,
+            allyClass: AllyClass.Druid,
+            effectTags: shapeshiftEquip.EffectTags);
+
+        // Track the stored druid
+        _shapeshiftedDruids[form.Id] = (druid, storedEquipment);
+
+        // Put the form on the field (takes the druid's slot)
+        _alliesInPlay.Add(form);
+
+        return form;
+    }
+
+    /// <summary>
+    /// Called when a Shapeshift form is eliminated. Returns the original Druid
+    /// to the field with all stored equipment restored.
+    /// </summary>
+    public AllyCard? RevertShapeshift(Guid shapeshiftFormId)
+    {
+        if (!_shapeshiftedDruids.TryGetValue(shapeshiftFormId, out var stored))
+            return null; // Not a shapeshift form, normal elimination
+
+        // Remove the form from field
+        var form = _alliesInPlay.FirstOrDefault(a => a.Id == shapeshiftFormId);
+        if (form != null)
+            _alliesInPlay.Remove(form);
+
+        // Discard the shapeshift equipment card
+        _discard.Add(form ?? (Card)stored.Druid);
+
+        // Restore the druid to the field
+        _alliesInPlay.Add(stored.Druid);
+
+        // Restore equipment
+        if (stored.Equipment.Count > 0)
+            _equippedItems[stored.Druid.Id] = stored.Equipment;
+
+        _shapeshiftedDruids.Remove(shapeshiftFormId);
+
+        return stored.Druid;
+    }
+
+    /// <summary>Check if an ally is actually a shapeshift form.</summary>
+    public bool IsShapeshiftForm(Guid allyId) => _shapeshiftedDruids.ContainsKey(allyId);
 
     // ── Companion/Summon Materialization ──
 
