@@ -7,15 +7,15 @@ public class DeckListTests
 {
     private static AllyCard MakeAlly(Rarity rarity = Rarity.Common, string? name = null, int cost = 1)
         => new(Guid.NewGuid(), name ?? $"Ally-{Guid.NewGuid():N}"[..12],
-            rarity, cost, strength: 3, hitPoints: 5, initiative: 2);
+            rarity, cost, attack: 3, hitPoints: 5, initiative: 2);
 
     private static EquipmentCard MakeEquipment(Rarity rarity = Rarity.Common, string? name = null, int cost = 1)
         => new(Guid.NewGuid(), name ?? $"Equip-{Guid.NewGuid():N}"[..12],
-            rarity, cost, strengthModifier: 1, hitPointsModifier: 1, initiativeModifier: 0);
+            rarity, cost, attackModifier: 1, hitPointsModifier: 1, initiativeModifier: 0);
 
     private static MonsterCard MakeMonster(Rarity rarity = Rarity.Common, string? name = null, int cost = 1)
         => new(Guid.NewGuid(), name ?? $"Monster-{Guid.NewGuid():N}"[..12],
-            rarity, cost, strength: 3, hitPoints: 5, initiative: 2);
+            rarity, cost, attack: 3, hitPoints: 5, initiative: 2);
 
     private static TrapCard MakeTrap(Rarity rarity = Rarity.Common, string? name = null, int cost = 1)
         => new(Guid.NewGuid(), name ?? $"Trap-{Guid.NewGuid():N}"[..12],
@@ -25,7 +25,7 @@ public class DeckListTests
         => new(Guid.NewGuid(), $"Room-{order}", Rarity.Common, order);
 
     private static BossCard MakeBoss(Rarity rarity = Rarity.Unique)
-        => new(Guid.NewGuid(), "TheBoss", rarity, cost: 1, strength: 10, hitPoints: 20, initiative: 5);
+        => new(Guid.NewGuid(), "TheBoss", rarity, cost: 1, attack: 10, hitPoints: 20, initiative: 5);
 
     private static List<Card> MakeAdventurers(int allyCount = 30, int equipCount = 10)
     {

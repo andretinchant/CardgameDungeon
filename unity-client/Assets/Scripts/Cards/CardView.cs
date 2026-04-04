@@ -211,17 +211,17 @@ namespace CardgameDungeon.Unity.Cards
 
             string body = card switch
             {
-                AllyCardData a => $"STR: {a.Strength}  HP: {a.HitPoints}  INIT: {a.Initiative}\n" +
+                AllyCardData a => $"ATK: {a.Attack}  HP: {a.HitPoints}  INIT: {a.Initiative}\n" +
                                   (a.IsAmbusher ? "<color=#FF8800>Ambusher</color>\n" : "") +
                                   (a.Treasure > 0 ? $"Treasure: {a.Treasure}\n" : "") +
                                   (!string.IsNullOrEmpty(a.Effect) ? $"<i>{a.Effect}</i>" : ""),
 
                 EquipmentCardData e => $"[{e.Slot}]{(e.IsConsumable ? " <color=#FF6600>Single-Use</color>" : "")}\n" +
-                                       $"STR: {Signed(e.StrengthModifier)}  HP: {Signed(e.HitPointsModifier)}  " +
+                                       $"ATK: {Signed(e.AttackModifier)}  HP: {Signed(e.HitPointsModifier)}  " +
                                        $"INIT: {Signed(e.InitiativeModifier)}\n" +
                                        (!string.IsNullOrEmpty(e.Effect) ? $"<i>{e.Effect}</i>" : ""),
 
-                MonsterCardData m => $"STR: {m.Strength}  HP: {m.HitPoints}  INIT: {m.Initiative}\n" +
+                MonsterCardData m => $"ATK: {m.Attack}  HP: {m.HitPoints}  INIT: {m.Initiative}\n" +
                                      (m.Treasure > 0 ? $"Treasure: {m.Treasure}\n" : "") +
                                      (!string.IsNullOrEmpty(m.Effect) ? $"<i>{m.Effect}</i>" : ""),
 
@@ -231,7 +231,7 @@ namespace CardgameDungeon.Unity.Cards
                 DungeonRoomCardData r => $"Room #{r.Order}  Budget: {r.MonsterCostBudget}\n" +
                                           (!string.IsNullOrEmpty(r.Effect) ? $"<i>{r.Effect}</i>" : ""),
 
-                BossCardData b => $"STR: {b.Strength}  HP: {b.HitPoints}  INIT: {b.Initiative}\n" +
+                BossCardData b => $"ATK: {b.Attack}  HP: {b.HitPoints}  INIT: {b.Initiative}\n" +
                                   (!string.IsNullOrEmpty(b.Effect) ? $"<i>{b.Effect}</i>" : ""),
 
                 _ => ""
@@ -422,10 +422,10 @@ namespace CardgameDungeon.Unity.Cards
         {
             return cardData switch
             {
-                AllyCardData a => $"{a.Strength}/{a.HitPoints}/{a.Initiative}",
-                MonsterCardData m => $"{m.Strength}/{m.HitPoints}/{m.Initiative}",
-                BossCardData b => $"{b.Strength}/{b.HitPoints}/{b.Initiative}",
-                EquipmentCardData e => $"{Signed(e.StrengthModifier)}/{Signed(e.HitPointsModifier)}/{Signed(e.InitiativeModifier)}",
+                AllyCardData a => $"{a.Attack}/{a.HitPoints}/{a.Initiative}",
+                MonsterCardData m => $"{m.Attack}/{m.HitPoints}/{m.Initiative}",
+                BossCardData b => $"{b.Attack}/{b.HitPoints}/{b.Initiative}",
+                EquipmentCardData e => $"{Signed(e.AttackModifier)}/{Signed(e.HitPointsModifier)}/{Signed(e.InitiativeModifier)}",
                 TrapCardData t => $"DMG:{t.Damage}",
                 _ => ""
             };

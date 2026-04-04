@@ -4,13 +4,16 @@ namespace CardgameDungeon.Domain.ValueObjects;
 
 public record BattleResolutionResult
 {
-    public int AttackerStrength { get; }
-    public int DefenderStrength { get; }
+    public int AttackerAttack { get; }
+    public int DefenderAttack { get; }
     public int DamageToAttacker { get; }
     public int DamageToDefender { get; }
     public CombatOutcome Outcome { get; }
     public bool IsBossRoom { get; }
     public CombatAdvantage Advantage { get; }
+
+    /// <summary>Number of ATK comparison rounds fought before combat ended.</summary>
+    public int Rounds { get; }
 
     /// <summary>
     /// The side that wins in case of simultaneous elimination.
@@ -20,20 +23,22 @@ public record BattleResolutionResult
         IsBossRoom ? "Attacker" : "Defender";
 
     public BattleResolutionResult(
-        int attackerStrength,
-        int defenderStrength,
+        int attackerAttack,
+        int defenderAttack,
         int damageToAttacker,
         int damageToDefender,
         CombatOutcome outcome,
         bool isBossRoom,
-        CombatAdvantage? advantage = null)
+        CombatAdvantage? advantage = null,
+        int rounds = 0)
     {
-        AttackerStrength = attackerStrength;
-        DefenderStrength = defenderStrength;
+        AttackerAttack = attackerAttack;
+        DefenderAttack = defenderAttack;
         DamageToAttacker = damageToAttacker;
         DamageToDefender = damageToDefender;
         Outcome = outcome;
         IsBossRoom = isBossRoom;
         Advantage = advantage ?? CombatAdvantage.Calculate(0, 0);
+        Rounds = rounds;
     }
 }

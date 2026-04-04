@@ -6,7 +6,7 @@ public class MonsterCard : Card
 {
     public override CardType Type => CardType.Monster;
     public Race Race { get; private set; }
-    public int Strength { get; private set; }
+    public int Attack { get; private set; }
     public int HitPoints { get; private set; }
     public int Initiative { get; private set; }
     public int Treasure { get; private set; }
@@ -19,7 +19,7 @@ public class MonsterCard : Card
         string name,
         Rarity rarity,
         int cost,
-        int strength,
+        int attack,
         int hitPoints,
         int initiative,
         int treasure = 0,
@@ -28,15 +28,15 @@ public class MonsterCard : Card
         string? effectTags = null)
         : base(id, name, rarity, cost, effectTags)
     {
-        if (strength < 0)
-            throw new ArgumentOutOfRangeException(nameof(strength));
+        if (attack < 0)
+            throw new ArgumentOutOfRangeException(nameof(attack));
         if (hitPoints <= 0)
             throw new ArgumentOutOfRangeException(nameof(hitPoints), "Hit points must be positive.");
         if (initiative < 0)
             throw new ArgumentOutOfRangeException(nameof(initiative));
 
         Race = race;
-        Strength = strength;
+        Attack = attack;
         HitPoints = hitPoints;
         Initiative = initiative;
         Treasure = treasure;

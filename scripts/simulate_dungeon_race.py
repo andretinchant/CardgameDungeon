@@ -28,7 +28,7 @@ class EncounterContext:
     attackers_count: int
     total_creatures: int
     attacker_initiative: int
-    attacker_strength: int
+    attacker_attack: int
     attacker_cost: int
     attacker_exile: int
     played_consumable: bool
@@ -84,15 +84,15 @@ class DeckState:
 
 def card_score_attacker(card: seed_parser.CardDefinition) -> float:
     if card.card_type == "Ally":
-        return float((card.strength or 0) + (card.hit_points or 0) + 0.35 * (card.initiative or 0))
+        return float((card.attack or 0) + (card.hit_points or 0) + 0.35 * (card.initiative or 0))
     if card.card_type == "Equipment":
-        return float((card.strength_mod or 0) + (card.hit_points_mod or 0) + 0.25 * (card.initiative_mod or 0))
+        return float((card.attack_mod or 0) + (card.hit_points_mod or 0) + 0.25 * (card.initiative_mod or 0))
     return 0.0
 
 
 def card_score_defender(card: seed_parser.CardDefinition) -> float:
     if card.card_type == "Monster":
-        return float((card.strength or 0) + (card.hit_points or 0) + 0.25 * (card.initiative or 0))
+        return float((card.attack or 0) + (card.hit_points or 0) + 0.25 * (card.initiative or 0))
     if card.card_type == "Trap":
         return float((card.damage or 0) * 1.1)
     return 0.0
@@ -150,11 +150,11 @@ def load_cards(set_code: str) -> dict[str, list[seed_parser.CardDefinition]]:
 
     for card in cards:
         if card.card_type == "Ally" and all(
-            isinstance(v, int) for v in (card.strength, card.hit_points, card.initiative, card.cost)
+            isinstance(v, int) for v in (card.attack, card.hit_points, card.initiative, card.cost)
         ):
             grouped["ally"].append(card)
         elif card.card_type == "Monster" and all(
-            isinstance(v, int) for v in (card.strength, card.hit_points, card.initiative, card.cost)
+            isinstance(v, int) for v in (card.attack, card.hit_points, card.initiative, card.cost)
         ):
             grouped["monster"].append(card)
         elif card.card_type == "Trap" and isinstance(card.damage, int) and isinstance(card.cost, int):
@@ -164,7 +164,7 @@ def load_cards(set_code: str) -> dict[str, list[seed_parser.CardDefinition]]:
                     card.effect = f"{trap_conditions[card.name]} {card.effect or ''}".strip()
                 grouped["trap"].append(card)
         elif card.card_type == "Equipment" and all(
-            isinstance(v, int) for v in (card.strength_mod, card.hit_points_mod, card.initiative_mod, card.cost)
+            isinstance(v, int) for v in (card.attack_mod, card.hit_points_mod, card.initiative_mod, card.cost)
         ):
             grouped["equipment"].append(card)
         elif card.card_type == "DungeonRoom" and isinstance(card.room_order, int) and isinstance(
@@ -172,7 +172,7 @@ def load_cards(set_code: str) -> dict[str, list[seed_parser.CardDefinition]]:
         ):
             grouped["room"].append(card)
         elif card.card_type == "Boss" and all(
-            isinstance(v, int) for v in (card.strength, card.hit_points, card.initiative, card.cost)
+            isinstance(v, int) for v in (card.attack, card.hit_points, card.initiative, card.cost)
         ):
             grouped["boss"].append(card)
 
@@ -215,8 +215,8 @@ def sample_room_path(
     return [rng.choice(by_order[i]) for i in range(1, 6)]
 
 
-def is_eliminated(own_strength: int, opponent_strength: int, own_hp: int) -> bool:
-    return opponent_strength >= own_strength * 2 or opponent_strength >= own_hp
+def is_eliminated(own_attack: int, opponent_attack: int, own_hp: int) -> bool:
+    return opponent_attack >= own_attack * 2 or opponent_attack >= own_hp
 
 
 def attacker_wins(att_str: int, att_hp: int, def_str: int, def_hp: int) -> bool:
@@ -263,10 +263,10 @@ def trap_triggers(
         return context.attacker_initiative >= 3
     if "initiative 3 or lower" in condition:
         return context.attacker_initiative <= 3
-    if "current strength 5 or higher" in condition:
-        return context.attacker_strength >= 5
-    if "current strength 4 or higher" in condition:
-        return context.attacker_strength >= 4
+    if "current attack 5 or higher" in condition:
+        return context.attacker_attack >= 5
+    if "current attack 4 or higher" in condition:
+        return context.attacker_attack >= 4
     if "cost 2 or lower" in condition:
         return context.attacker_cost <= 2
     if "target is ambusher" in condition:
@@ -323,10 +323,10 @@ def trap_triggers(
         return not context.has_shield
     if "first attacking ally of the round" in condition:
         return True
-    if "target has current strength 4 or higher" in condition:
-        return context.attacker_strength >= 4
-    if "target has current strength 5 or higher" in condition:
-        return context.attacker_strength >= 5
+    if "target has current attack 4 or higher" in condition:
+        return context.attacker_attack >= 4
+    if "target has current attack 5 or higher" in condition:
+        return context.attacker_attack >= 5
     if "front-line attacker" in condition:
         return context.front_line_attacker
     if "attacker attempts to loot this room" in condition:
@@ -358,10 +358,10 @@ def run_duel_estimate(
         c = rng.choice(consumables)
         trap = rng.choice(traps)
 
-        att_str = (ally.strength or 0) + (g.strength_mod or 0) + (c.strength_mod or 0)
+        att_str = (ally.attack or 0) + (g.attack_mod or 0) + (c.attack_mod or 0)
         att_hp = (ally.hit_points or 0) + (g.hit_points_mod or 0) + (c.hit_points_mod or 0)
         att_init = (ally.initiative or 0) + (g.initiative_mod or 0) + (c.initiative_mod or 0)
-        def_str = monster.strength or 0
+        def_str = monster.attack or 0
         def_hp = monster.hit_points or 0
 
         context = EncounterContext(
@@ -369,7 +369,7 @@ def run_duel_estimate(
             attackers_count=1,
             total_creatures=2,
             attacker_initiative=att_init,
-            attacker_strength=att_str,
+            attacker_attack=att_str,
             attacker_cost=ally.cost or 1,
             attacker_exile=6,
             played_consumable=True,
@@ -515,16 +515,16 @@ def run_match_simulation(
             total_attack_cards_played += len(cards_to_play)
 
             team_size = len(attacking_team)
-            base_att_str = sum(a.strength or 0 for a in attacking_team)
+            base_att_str = sum(a.attack or 0 for a in attacking_team)
             base_att_hp = sum(a.hit_points or 0 for a in attacking_team)
             base_att_init = sum(a.initiative or 0 for a in attacking_team)
             avg_att_cost = max(1, sum(a.cost or 1 for a in attacking_team) // max(1, team_size))
             target_is_ambusher = bool(rng.choice(attacking_team).is_ambusher)
 
-            gear_str = sum(e.strength_mod or 0 for e in selected_gear)
+            gear_str = sum(e.attack_mod or 0 for e in selected_gear)
             gear_hp = sum(e.hit_points_mod or 0 for e in selected_gear)
             gear_init = sum(e.initiative_mod or 0 for e in selected_gear)
-            cons_str = sum(e.strength_mod or 0 for e in selected_consumables)
+            cons_str = sum(e.attack_mod or 0 for e in selected_consumables)
             cons_hp = sum(e.hit_points_mod or 0 for e in selected_consumables)
             cons_init = sum(e.initiative_mod or 0 for e in selected_consumables)
 
@@ -568,7 +568,7 @@ def run_match_simulation(
                 total_defense_monsters_played += len(defenders)
                 total_defense_traps_played += len(selected_traps)
 
-                def_str = sum(m.strength or 0 for m in defenders)
+                def_str = sum(m.attack or 0 for m in defenders)
                 def_hp = sum(m.hit_points or 0 for m in defenders)
                 def_init = sum(m.initiative or 0 for m in defenders)
                 trap = max(selected_traps, key=lambda t: t.damage or 0) if selected_traps else None
@@ -601,7 +601,7 @@ def run_match_simulation(
                     attackers_count=team_size,
                     total_creatures=team_size + len(defenders),
                     attacker_initiative=att_init,
-                    attacker_strength=att_str,
+                    attacker_attack=att_str,
                     attacker_cost=avg_att_cost,
                     attacker_exile=attacker.exile_count,
                     played_consumable=len(selected_consumables) > 0,
@@ -678,7 +678,7 @@ def run_match_simulation(
 
             else:
                 boss = bosses_for_match[attacker_index]
-                def_str = boss.strength or 0
+                def_str = boss.attack or 0
                 def_hp = boss.hit_points or 0
                 def_init = boss.initiative or 0
                 if att_init > def_init:

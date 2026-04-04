@@ -57,8 +57,8 @@ public class MatchSimulation
         // ── SETUP (search DECK for allies, not hand) ──
         LogPhase("SETUP — search deck for allies (cost ≤ 5)");
 
-        var p1Available = player1.GetAlliesInDeck().OrderByDescending(a => a.Strength).ToList();
-        var p2Available = player2.GetAlliesInDeck().OrderByDescending(a => a.Strength).ToList();
+        var p1Available = player1.GetAlliesInDeck().OrderByDescending(a => a.Attack).ToList();
+        var p2Available = player2.GetAlliesInDeck().OrderByDescending(a => a.Attack).ToList();
         Log($"P1 has {p1Available.Count} allies in deck to choose from");
         Log($"P2 has {p2Available.Count} allies in deck to choose from");
 
@@ -104,18 +104,18 @@ public class MatchSimulation
                 var active = match.GetActivePlayer();
 
                 // Play allies from hand (up to max 5 in play)
-                var alliesInHand = active.Hand.OfType<AllyCard>().OrderByDescending(a => a.Strength).ToList();
+                var alliesInHand = active.Hand.OfType<AllyCard>().OrderByDescending(a => a.Attack).ToList();
                 foreach (var ally in alliesInHand)
                 {
                     if (active.AlliesInPlay.Count >= PlayerState.MaxAlliesInPlay) break;
                     active.PlayAlly(ally);
-                    Log($"  {activeName} plays ALLY: {ally.Name} (STR:{ally.Strength} HP:{ally.HitPoints} INIT:{ally.Initiative} Class:{ally.Class})");
+                    Log($"  {activeName} plays ALLY: {ally.Name} (ATK:{ally.Attack} HP:{ally.HitPoints} INIT:{ally.Initiative} Class:{ally.Class})");
                 }
 
                 // Equip equipment on allies (simple: equip weapons on strongest ally)
                 var equipInHand = active.Hand.OfType<EquipmentCard>()
                     .Where(e => e.Slot.IsGear())
-                    .OrderByDescending(e => e.StrengthModifier + e.HitPointsModifier)
+                    .OrderByDescending(e => e.AttackModifier + e.HitPointsModifier)
                     .Take(2).ToList();
                 foreach (var equip in equipInHand)
                 {
@@ -126,7 +126,7 @@ public class MatchSimulation
                         try
                         {
                             active.EquipItem(targetAlly.Id, equip);
-                            Log($"  {activeName} equips {equip.Name} (+{equip.StrengthModifier}S/+{equip.HitPointsModifier}H) on {targetAlly.Name}");
+                            Log($"  {activeName} equips {equip.Name} (+{equip.AttackModifier}S/+{equip.HitPointsModifier}H) on {targetAlly.Name}");
                         }
                         catch { /* slot occupied or class restriction */ }
                     }
@@ -135,7 +135,7 @@ public class MatchSimulation
                 if (active.AlliesInPlay.Count == 0)
                     Log($"  {activeName} has NO ALLIES to play!");
                 else
-                    Log($"  {activeName} total field: {active.AlliesInPlay.Count} allies (STR:{active.AlliesInPlay.Sum(a => a.Strength)} HP:{active.AlliesInPlay.Sum(a => a.HitPoints)})");
+                    Log($"  {activeName} total field: {active.AlliesInPlay.Count} allies (ATK:{active.AlliesInPlay.Sum(a => a.Attack)} HP:{active.AlliesInPlay.Sum(a => a.HitPoints)})");
 
                 match.FinishPlayingCards();
                 Log($"→ Phase: {match.Phase}");
@@ -151,14 +151,14 @@ public class MatchSimulation
 
                 if (match.IsBossRoom)
                 {
-                    Log($"  BOSS ROOM — {match.Boss.Name} awaits! (STR:{match.Boss.Strength} HP:{match.Boss.HitPoints})");
+                    Log($"  BOSS ROOM — {match.Boss.Name} awaits! (ATK:{match.Boss.Attack} HP:{match.Boss.HitPoints})");
                     Log($"  Boss effect: {match.Boss.Effect}");
                 }
 
                 // Defender also plays monsters and traps (even in boss room — they assist the boss)
                 {
                     // Defender plays ALL available monsters from hand (up to 3)
-                    var monstersInHand = defender.Hand.OfType<MonsterCard>().OrderByDescending(m => m.Strength).ToList();
+                    var monstersInHand = defender.Hand.OfType<MonsterCard>().OrderByDescending(m => m.Attack).ToList();
                     if (monstersInHand.Count == 0)
                     {
                         Log($"  {defenderName} has NO MONSTERS in hand! Room is undefended by monsters.");
@@ -169,7 +169,7 @@ public class MatchSimulation
                         {
                             if (defender.MonstersInPlay.Count >= PlayerState.MaxMonstersInPlay) break;
                             defender.PlayMonster(monster);
-                            Log($"  {defenderName} plays MONSTER: {monster.Name} (STR:{monster.Strength} HP:{monster.HitPoints})");
+                            Log($"  {defenderName} plays MONSTER: {monster.Name} (ATK:{monster.Attack} HP:{monster.HitPoints})");
                         }
                     }
 
@@ -219,14 +219,14 @@ public class MatchSimulation
                     LogPhase("BOSS COMBAT");
                     var bossCard = match.Boss;
                     var bossMonsters = defender.MonstersInPlay.ToList();
-                    var totalDefStr = bossCard.Strength + bossMonsters.Sum(m => m.Strength);
+                    var totalDefStr = bossCard.Attack + bossMonsters.Sum(m => m.Attack);
                     var totalDefHp = bossCard.HitPoints + bossMonsters.Sum(m => m.HitPoints);
 
                     Log($"Attacker ({attackerName}): {FormatAllies(attacker)}");
-                    Log($"BOSS: {bossCard.Name} (STR:{bossCard.Strength} HP:{bossCard.HitPoints})");
+                    Log($"BOSS: {bossCard.Name} (ATK:{bossCard.Attack} HP:{bossCard.HitPoints})");
                     if (bossMonsters.Count > 0)
-                        Log($"Boss minions: {string.Join(", ", bossMonsters.Select(m => $"{m.Name}(S{m.Strength}/H{m.HitPoints})"))}");
-                    Log($"Total defense: STR:{totalDefStr} HP:{totalDefHp}");
+                        Log($"Boss minions: {string.Join(", ", bossMonsters.Select(m => $"{m.Name}(S{m.Attack}/H{m.HitPoints})"))}");
+                    Log($"Total defense: ATK:{totalDefStr} HP:{totalDefHp}");
                     Log($"Boss effect: {bossCard.Effect}");
 
                     if (attacker.AlliesInPlay.Count == 0)
@@ -240,9 +240,9 @@ public class MatchSimulation
                         var atkGroup = attacker.AlliesInPlay.ToList();
                         var result = _resolver.ResolveCombat(atkGroup, bossCard);
 
-                        Log($"  {atkGroup.Count} allies (STR:{result.AttackerStrength}) vs BOSS (STR:{result.DefenderStrength})");
-                        Log($"  Result: {result.Outcome}");
-                        Log($"  Damage: {result.DamageToAttacker} to attacker, {result.DamageToDefender} to boss");
+                        Log($"  {atkGroup.Count} allies (ATK:{result.AttackerAttack}) vs BOSS (ATK:{result.DefenderAttack})");
+                        Log($"  Result: {result.Outcome} ({result.Rounds} rounds)");
+                        Log($"  Damage: {result.DamageToAttacker} HP to attacker, {result.DamageToDefender} HP to boss");
                         Log($"  Advantage: ATK={result.Advantage.AttackerState} DEF={result.Advantage.DefenderState}");
 
                         bool atkElim = result.Outcome is CombatOutcome.AttackerEliminated or CombatOutcome.SimultaneousElimination;
@@ -292,9 +292,9 @@ public class MatchSimulation
                         var defGroup = defender.MonstersInPlay.ToList();
                         var result = _resolver.ResolveCombat(atkGroup, defGroup, false);
 
-                        Log($"  {atkGroup.Count} allies (STR:{result.AttackerStrength}) vs {defGroup.Count} monsters (STR:{result.DefenderStrength})");
-                        Log($"  Result: {result.Outcome}");
-                        Log($"  Damage: {result.DamageToAttacker} to attacker, {result.DamageToDefender} to defender");
+                        Log($"  {atkGroup.Count} allies (ATK:{result.AttackerAttack}) vs {defGroup.Count} monsters (ATK:{result.DefenderAttack})");
+                        Log($"  Result: {result.Outcome} ({result.Rounds} rounds)");
+                        Log($"  Damage: {result.DamageToAttacker} HP to attacker, {result.DamageToDefender} HP to defender");
                         Log($"  Advantage: ATK={result.Advantage.AttackerState} DEF={result.Advantage.DefenderState}");
 
                         bool defElim = result.Outcome is CombatOutcome.DefenderEliminated or CombatOutcome.SimultaneousElimination;
@@ -390,7 +390,7 @@ public class MatchSimulation
     private void LogTeam(string player, List<AllyCard> team)
     {
         var cost = team.Sum(a => a.Cost);
-        Log($"{player} team (cost {cost}): {string.Join(", ", team.Select(a => $"{a.Name}(C{a.Cost} S{a.Strength} H{a.HitPoints} I{a.Initiative})"))}");
+        Log($"{player} team (cost {cost}): {string.Join(", ", team.Select(a => $"{a.Name}(C{a.Cost} S{a.Attack} H{a.HitPoints} I{a.Initiative})"))}");
     }
 
     private void LogHandComposition(string player, PlayerState ps)
@@ -411,13 +411,13 @@ public class MatchSimulation
     private string FormatAllies(PlayerState ps)
     {
         if (ps.AlliesInPlay.Count == 0) return "(none)";
-        return string.Join(", ", ps.AlliesInPlay.Select(a => $"{a.Name}(S{a.Strength}/H{a.HitPoints})"));
+        return string.Join(", ", ps.AlliesInPlay.Select(a => $"{a.Name}(S{a.Attack}/H{a.HitPoints})"));
     }
 
     private string FormatMonsters(PlayerState ps)
     {
         if (ps.MonstersInPlay.Count == 0) return "(none)";
-        return string.Join(", ", ps.MonstersInPlay.Select(m => $"{m.Name}(S{m.Strength}/H{m.HitPoints})"));
+        return string.Join(", ", ps.MonstersInPlay.Select(m => $"{m.Name}(S{m.Attack}/H{m.HitPoints})"));
     }
 
     private void Log(string line) => _log.AppendLine(line);
@@ -438,7 +438,7 @@ public class MatchSimulation
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Paladin Kael", Rarity.Rare, 4, 5, 5, 2, allyClass: AllyClass.Paladin, effect: "Divine shield protects adjacent allies"));
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Archmage Vex", Rarity.Rare, 4, 4, 4, 3, allyClass: AllyClass.Mage, effect: "Chain lightning hits all enemies"));
 
-        // 10 Uncommon allies (cost 2-3, STR 3-4, HP 3-4, various classes)
+        // 10 Uncommon allies (cost 2-3, ATK 3-4, HP 3-4, various classes)
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Knight Errant", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Shieldbearer", Rarity.Uncommon, 2, 3, 4, 1, allyClass: AllyClass.Warrior));
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Battle Mage", Rarity.Uncommon, 3, 4, 3, 2, allyClass: AllyClass.Mage));
@@ -450,7 +450,7 @@ public class MatchSimulation
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Druid of the Grove", Rarity.Uncommon, 3, 3, 4, 2, allyClass: AllyClass.Druid));
         cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Berserker", Rarity.Uncommon, 2, 4, 3, 1, allyClass: AllyClass.Warrior));
 
-        // 10 Common allies (cost 1-2, STR 2-3, HP 2-3)
+        // 10 Common allies (cost 1-2, ATK 2-3, HP 2-3)
         for (int i = 0; i < 3; i++)
             cards.Add(new AllyCard(Guid.NewGuid(), $"{prefix}-Militia-{i}", Rarity.Common, 1, 2, 3, 1, allyClass: AllyClass.Warrior));
         for (int i = 0; i < 2; i++)
@@ -477,7 +477,7 @@ public class MatchSimulation
 
         // 5 Consumables (Scrolls, Potions — using equipment with Accessory slot)
         cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Scroll of Fireball", Rarity.Uncommon, 2, 2, 0, 0, EquipmentSlot.Accessory, effect: "Deals fire damage to all enemies"));
-        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Potion of Might", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Accessory, effect: "Temporary STR boost"));
+        cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Potion of Might", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Accessory, effect: "Temporary ATK boost"));
         cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Healing Potion", Rarity.Common, 1, 0, 1, 0, EquipmentSlot.Accessory, effect: "Restores HP"));
         cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Scroll of Haste", Rarity.Common, 1, 0, 0, 1, EquipmentSlot.Accessory, effect: "Grants extra initiative"));
         cards.Add(new EquipmentCard(Guid.NewGuid(), $"{prefix}-Smoke Bomb", Rarity.Uncommon, 1, 0, 1, 1, EquipmentSlot.Accessory, effect: "Grants evasion"));
@@ -485,12 +485,12 @@ public class MatchSimulation
         // ═══ ENEMY (40): 32 monsters + 8 traps ═══
 
         // ── 32 Monsters ──
-        // 4 Rare (STR 5-6, HP 6-7)
+        // 4 Rare (ATK 5-6, HP 6-7)
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ancient Wyvern", Rarity.Rare, 4, 6, 7, 1, effect: "Breath attack hits all allies"));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Death Knight", Rarity.Rare, 4, 5, 7, 2, effect: "Drains life on hit"));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Beholder", Rarity.Rare, 4, 6, 6, 1, effect: "Antimagic cone"));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Lich", Rarity.Rare, 4, 5, 6, 2, effect: "Raises dead as undead"));
-        // 12 Uncommon (STR 3-4, HP 4-5)
+        // 12 Uncommon (ATK 3-4, HP 4-5)
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Ogre Chieftain", Rarity.Uncommon, 3, 4, 5, 1));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Troll Berserker", Rarity.Uncommon, 3, 4, 5, 1));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Wraith", Rarity.Uncommon, 2, 3, 4, 2));
@@ -503,7 +503,7 @@ public class MatchSimulation
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Manticore", Rarity.Uncommon, 3, 4, 5, 2));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Basilisk", Rarity.Uncommon, 3, 4, 5, 1));
         cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Displacer Beast", Rarity.Uncommon, 2, 3, 4, 2));
-        // 16 Common (STR 2-3, HP 2-3)
+        // 16 Common (ATK 2-3, HP 2-3)
         for (int i = 0; i < 4; i++)
             cards.Add(new MonsterCard(Guid.NewGuid(), $"{prefix}-Goblin Raider-{i}", Rarity.Common, 1, 2, 3, 1));
         for (int i = 0; i < 4; i++)
@@ -534,7 +534,7 @@ public class MatchSimulation
         var team = new List<AllyCard>();
         var budget = 5;
 
-        foreach (var ally in available.OrderByDescending(a => a.Strength))
+        foreach (var ally in available.OrderByDescending(a => a.Attack))
         {
             if (ally.Cost <= budget && ally.Cost >= 1)
             {

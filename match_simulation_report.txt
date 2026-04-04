@@ -23,17 +23,17 @@ Room: 1 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 plays ALLY: P1-War Cleric (STR:3 HP:4 INIT:1 Class:Cleric)
-  P1 plays ALLY: P1-Militia-2 (STR:2 HP:3 INIT:1 Class:Warrior)
-  P1 plays ALLY: P1-Novice Healer-0 (STR:2 HP:3 INIT:1 Class:Cleric)
+  P1 plays ALLY: P1-War Cleric (ATK:3 HP:4 INIT:1 Class:Cleric)
+  P1 plays ALLY: P1-Militia-2 (ATK:2 HP:3 INIT:1 Class:Warrior)
+  P1 plays ALLY: P1-Novice Healer-0 (ATK:2 HP:3 INIT:1 Class:Cleric)
   P1 equips P1-Winged Boots (+0S/+0H) on P1-Paladin Kael
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
 ═══════════════════════════════════════
-  P2 plays MONSTER: P2-Manticore (STR:4 HP:5)
-  P2 plays MONSTER: P2-Goblin Raider-0 (STR:2 HP:3)
+  P2 plays MONSTER: P2-Manticore (ATK:4 HP:5)
+  P2 plays MONSTER: P2-Goblin Raider-0 (ATK:2 HP:3)
   P2 sets TRAP: P2-Lightning Rune (DMG:3)
   P2 sets TRAP: P2-Spike Pit-2 (DMG:2)
 → Phase: Combat
@@ -46,15 +46,15 @@ Room: 1 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
 Attacker (P1): P1-Paladin Kael(S5/H5), P1-Trapper(S2/H2), P1-War Cleric(S3/H4), P1-Militia-2(S2/H3), P1-Novice Healer-0(S2/H3)
 Defender (P2) monsters: P2-Manticore(S4/H5), P2-Goblin Raider-0(S2/H3)
-  5 allies (STR:14) vs 2 monsters (STR:6)
-  Result: DefenderEliminated
-  Damage: 6 to attacker, 14 to defender
+  5 allies (ATK:14) vs 2 monsters (ATK:6)
+  Result: DefenderEliminated (0 rounds)
+  Damage: 0 HP to attacker, 8 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
   *** MONSTER P2-Manticore ELIMINATED ***
   *** MONSTER P2-Goblin Raider-0 ELIMINATED ***
   Phase: RoomCleared
 ADVANCE → Room 2 | P2 RESHUFFLES hand (0 monsters was too few) and draws 8 fresh cards
-P2 hand composition: 0 allies, 4 monsters, 0 traps, 0 equipment
+P2 hand composition: 1 allies, 2 monsters, 0 traps, 1 equipment
 Phase: PlayCards
 P1: Allies=5 Deck=67 Hand=4 Discard=0 Exile=0
 P2: Allies=2 Deck=67 Hand=4 Discard=4 Exile=0
@@ -64,76 +64,81 @@ Room: 2 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
 ═══════════════════════════════════════
-  P2 plays MONSTER: P2-Orc Warlord (STR:4 HP:4)
-  P2 plays MONSTER: P2-Phase Spider (STR:3 HP:4)
-  P2 plays MONSTER: P2-Kobold-3 (STR:2 HP:2)
+  P2 plays MONSTER: P2-Death Knight (ATK:5 HP:7)
+  P2 plays MONSTER: P2-Displacer Beast (ATK:3 HP:4)
   P2 has no traps to set.
 → Phase: Combat
 ═══════════════════════════════════════
   COMBAT (Room 2)
 ═══════════════════════════════════════
 Attacker (P1): P1-Paladin Kael(S5/H5), P1-Trapper(S2/H2), P1-War Cleric(S3/H4), P1-Militia-2(S2/H3), P1-Novice Healer-0(S2/H3)
-Defender (P2) monsters: P2-Orc Warlord(S4/H4), P2-Phase Spider(S3/H4), P2-Kobold-3(S2/H2)
-  5 allies (STR:14) vs 3 monsters (STR:9)
-  Result: DefenderEliminated
-  Damage: 9 to attacker, 14 to defender
+Defender (P2) monsters: P2-Death Knight(S5/H7), P2-Displacer Beast(S3/H4)
+  5 allies (ATK:14) vs 2 monsters (ATK:8)
+  Result: DefenderEliminated (11 rounds)
+  Damage: 0 HP to attacker, 11 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
-  *** MONSTER P2-Orc Warlord ELIMINATED ***
-  *** MONSTER P2-Phase Spider ELIMINATED ***
-  *** MONSTER P2-Kobold-3 ELIMINATED ***
+  *** MONSTER P2-Death Knight ELIMINATED ***
+  *** MONSTER P2-Displacer Beast ELIMINATED ***
   Phase: RoomCleared
-ADVANCE → Room 3 | P2 RESHUFFLES hand (1 monsters was too few) and draws 8 fresh cards
-P2 hand composition: 1 allies, 0 monsters, 0 traps, 0 equipment
+ADVANCE → Room 3 | P2 RESHUFFLES hand (0 monsters was too few) and draws 8 fresh cards
+P2 hand composition: 0 allies, 2 monsters, 0 traps, 0 equipment
 Phase: PlayCards
 P1: Allies=5 Deck=67 Hand=4 Discard=0 Exile=0
-P2: Allies=2 Deck=67 Hand=1 Discard=7 Exile=0
+P2: Allies=2 Deck=67 Hand=2 Discard=6 Exile=0
 
 ══════════════ ROUND 3 (P1's turn) ══════════════
 Room: 3 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
 ═══════════════════════════════════════
-  P2 has NO MONSTERS in hand! Room is undefended by monsters.
+  P2 plays MONSTER: P2-Basilisk (ATK:4 HP:5)
+  P2 plays MONSTER: P2-Orc Grunt-2 (ATK:3 HP:3)
   P2 has no traps to set.
 → Phase: Combat
 ═══════════════════════════════════════
   COMBAT (Room 3)
 ═══════════════════════════════════════
 Attacker (P1): P1-Paladin Kael(S5/H5), P1-Trapper(S2/H2), P1-War Cleric(S3/H4), P1-Militia-2(S2/H3), P1-Novice Healer-0(S2/H3)
-Defender (P2) monsters: (none)
-Defender has no monsters — room undefended, attacker wins!
+Defender (P2) monsters: P2-Basilisk(S4/H5), P2-Orc Grunt-2(S3/H3)
+  5 allies (ATK:14) vs 2 monsters (ATK:7)
+  Result: DefenderEliminated (0 rounds)
+  Damage: 0 HP to attacker, 8 HP to defender
+  Advantage: ATK=Advantage DEF=Disadvantage
+  *** MONSTER P2-Basilisk ELIMINATED ***
+  *** MONSTER P2-Orc Grunt-2 ELIMINATED ***
   Phase: RoomCleared
 STOP & HEAL → Cure 1 HP all allies, pass turn
 Phase: PlayCards
 P1: Allies=5 Deck=67 Hand=4 Discard=0 Exile=0
-P2: Allies=2 Deck=60 Hand=8 Discard=7 Exile=0
+P2: Allies=2 Deck=59 Hand=8 Discard=8 Exile=0
 
 ══════════════ ROUND 4 (P2's turn) ══════════════
 Room: 1 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P2)
 ═══════════════════════════════════════
-  P2 plays ALLY: P2-Acolyte (STR:3 HP:3 INIT:1 Class:Cleric)
-  P2 plays ALLY: P2-Shieldbearer (STR:3 HP:4 INIT:1 Class:Warrior)
-  P2 plays ALLY: P2-Militia-0 (STR:2 HP:3 INIT:1 Class:Warrior)
-  P2 equips P2-Mithril Chainmail (+0S/+2H) on P2-Paladin Kael
-  P2 total field: 5 allies (STR:15 HP:17)
+  P2 plays ALLY: P2-Knight Errant (ATK:3 HP:4 INIT:1 Class:Warrior)
+  P2 plays ALLY: P2-Evoker (ATK:3 HP:3 INIT:2 Class:Mage)
+  P2 plays ALLY: P2-Novice Healer-0 (ATK:2 HP:3 INIT:1 Class:Cleric)
+  P2 equips P2-Leather Armor (+0S/+1H) on P2-Paladin Kael
+  P2 equips P2-Smoke Bomb (+0S/+1H) on P2-Paladin Kael
+  P2 total field: 5 allies (ATK:15 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P1)
 ═══════════════════════════════════════
-  P1 plays MONSTER: P1-Manticore (STR:4 HP:5)
-  P1 plays MONSTER: P1-Goblin Raider-0 (STR:2 HP:3)
+  P1 plays MONSTER: P1-Manticore (ATK:4 HP:5)
+  P1 plays MONSTER: P1-Goblin Raider-0 (ATK:2 HP:3)
   P1 sets TRAP: P1-Lightning Rune (DMG:3)
   P1 sets TRAP: P1-Spike Pit-2 (DMG:2)
 → Phase: Combat
@@ -144,11 +149,11 @@ Room: 1 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   COMBAT (Room 1)
 ═══════════════════════════════════════
-Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Acolyte(S3/H3), P2-Shieldbearer(S3/H4), P2-Militia-0(S2/H3)
+Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Knight Errant(S3/H4), P2-Evoker(S3/H3), P2-Novice Healer-0(S2/H3)
 Defender (P1) monsters: P1-Manticore(S4/H5), P1-Goblin Raider-0(S2/H3)
-  5 allies (STR:15) vs 2 monsters (STR:6)
-  Result: DefenderEliminated
-  Damage: 6 to attacker, 15 to defender
+  5 allies (ATK:15) vs 2 monsters (ATK:6)
+  Result: DefenderEliminated (0 rounds)
+  Damage: 0 HP to attacker, 8 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
   *** MONSTER P1-Manticore ELIMINATED ***
   *** MONSTER P1-Goblin Raider-0 ELIMINATED ***
@@ -157,14 +162,14 @@ ADVANCE → Room 2 | P1 RESHUFFLES hand (0 monsters was too few) and draws 8 fre
 P1 hand composition: 0 allies, 0 monsters, 0 traps, 0 equipment
 Phase: PlayCards
 P1: Allies=5 Deck=67 Hand=0 Discard=4 Exile=0
-P2: Allies=5 Deck=60 Hand=4 Discard=7 Exile=0
+P2: Allies=5 Deck=59 Hand=3 Discard=8 Exile=0
 
 ══════════════ ROUND 5 (P2's turn) ══════════════
 Room: 2 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P2)
 ═══════════════════════════════════════
-  P2 total field: 5 allies (STR:15 HP:17)
+  P2 total field: 5 allies (ATK:15 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P1)
@@ -175,7 +180,7 @@ Room: 2 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   COMBAT (Room 2)
 ═══════════════════════════════════════
-Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Acolyte(S3/H3), P2-Shieldbearer(S3/H4), P2-Militia-0(S2/H3)
+Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Knight Errant(S3/H4), P2-Evoker(S3/H3), P2-Novice Healer-0(S2/H3)
 Defender (P1) monsters: (none)
 Defender has no monsters — room undefended, attacker wins!
   Phase: RoomCleared
@@ -183,14 +188,14 @@ ADVANCE → Room 3 | P1 RESHUFFLES hand (0 monsters was too few) and draws 8 fre
 P1 hand composition: 0 allies, 0 monsters, 0 traps, 0 equipment
 Phase: PlayCards
 P1: Allies=5 Deck=67 Hand=0 Discard=4 Exile=0
-P2: Allies=5 Deck=60 Hand=4 Discard=7 Exile=0
+P2: Allies=5 Deck=59 Hand=3 Discard=8 Exile=0
 
 ══════════════ ROUND 6 (P2's turn) ══════════════
 Room: 3 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P2)
 ═══════════════════════════════════════
-  P2 total field: 5 allies (STR:15 HP:17)
+  P2 total field: 5 allies (ATK:15 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P1)
@@ -201,57 +206,55 @@ Room: 3 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   COMBAT (Room 3)
 ═══════════════════════════════════════
-Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Acolyte(S3/H3), P2-Shieldbearer(S3/H4), P2-Militia-0(S2/H3)
+Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Knight Errant(S3/H4), P2-Evoker(S3/H3), P2-Novice Healer-0(S2/H3)
 Defender (P1) monsters: (none)
 Defender has no monsters — room undefended, attacker wins!
   Phase: RoomCleared
 STOP & HEAL → Cure 1 HP all allies, pass turn
 Phase: PlayCards
 P1: Allies=5 Deck=59 Hand=8 Discard=4 Exile=0
-P2: Allies=5 Deck=60 Hand=4 Discard=7 Exile=0
+P2: Allies=5 Deck=59 Hand=3 Discard=8 Exile=0
 
 ══════════════ ROUND 7 (P1's turn) ══════════════
 Room: 3 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 equips P1-Wooden Shield (+0S/+1H) on P1-Paladin Kael
-  P1 equips P1-Potion of Might (+1S/+0H) on P1-Paladin Kael
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
 ═══════════════════════════════════════
-  P2 plays MONSTER: P2-Beholder (STR:6 HP:6)
-  P2 plays MONSTER: P2-Ogre Chieftain (STR:4 HP:5)
-  P2 plays MONSTER: P2-Skeleton Warrior-3 (STR:2 HP:2)
-  P2 has no traps to set.
+  P2 plays MONSTER: P2-Harpy (ATK:3 HP:4)
+  P2 plays MONSTER: P2-Wraith (ATK:3 HP:4)
+  P2 sets TRAP: P2-Tripwire-0 (DMG:1)
 → Phase: Combat
+  *** TRAP ACTIVATES: P2-Tripwire-0 deals 1 damage! ***
+    -> P1-Trapper takes 1 trap damage
 ═══════════════════════════════════════
   COMBAT (Room 3)
 ═══════════════════════════════════════
 Attacker (P1): P1-Paladin Kael(S5/H5), P1-Trapper(S2/H2), P1-War Cleric(S3/H4), P1-Militia-2(S2/H3), P1-Novice Healer-0(S2/H3)
-Defender (P2) monsters: P2-Beholder(S6/H6), P2-Ogre Chieftain(S4/H5), P2-Skeleton Warrior-3(S2/H2)
-  5 allies (STR:14) vs 3 monsters (STR:12)
-  Result: DefenderEliminated
-  Damage: 12 to attacker, 14 to defender
+Defender (P2) monsters: P2-Harpy(S3/H4), P2-Wraith(S3/H4)
+  5 allies (ATK:14) vs 2 monsters (ATK:6)
+  Result: DefenderEliminated (0 rounds)
+  Damage: 0 HP to attacker, 8 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
-  *** MONSTER P2-Beholder ELIMINATED ***
-  *** MONSTER P2-Ogre Chieftain ELIMINATED ***
-  *** MONSTER P2-Skeleton Warrior-3 ELIMINATED ***
+  *** MONSTER P2-Harpy ELIMINATED ***
+  *** MONSTER P2-Wraith ELIMINATED ***
   Phase: RoomCleared
 ADVANCE → Room 4 | P2 RESHUFFLES hand (0 monsters was too few) and draws 8 fresh cards
-P2 hand composition: 1 allies, 0 monsters, 0 traps, 0 equipment
+P2 hand composition: 0 allies, 0 monsters, 0 traps, 0 equipment
 Phase: PlayCards
-P1: Allies=5 Deck=59 Hand=6 Discard=4 Exile=0
-P2: Allies=5 Deck=60 Hand=1 Discard=10 Exile=0
+P1: Allies=5 Deck=59 Hand=8 Discard=4 Exile=0
+P2: Allies=5 Deck=59 Hand=0 Discard=11 Exile=0
 
 ══════════════ ROUND 8 (P1's turn) ══════════════
 Room: 4 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
@@ -267,17 +270,17 @@ Defender (P2) monsters: (none)
 Defender has no monsters — room undefended, attacker wins!
   Phase: RoomCleared
 ADVANCE → Room 5 | P2 RESHUFFLES hand (0 monsters was too few) and draws 8 fresh cards
-P2 hand composition: 0 allies, 0 monsters, 0 traps, 1 equipment
+P2 hand composition: 0 allies, 0 monsters, 0 traps, 0 equipment
 Phase: PlayCards
-P1: Allies=5 Deck=59 Hand=6 Discard=4 Exile=0
-P2: Allies=5 Deck=60 Hand=1 Discard=10 Exile=0
+P1: Allies=5 Deck=59 Hand=8 Discard=4 Exile=0
+P2: Allies=5 Deck=59 Hand=0 Discard=11 Exile=0
 
 ══════════════ ROUND 9 (P1's turn) ══════════════
 Room: 5 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
@@ -294,182 +297,185 @@ Defender has no monsters — room undefended, attacker wins!
   Phase: RoomCleared
 STOP & HEAL → Cure 1 HP all allies, pass turn
 Phase: PlayCards
-P1: Allies=5 Deck=59 Hand=6 Discard=4 Exile=0
-P2: Allies=5 Deck=53 Hand=8 Discard=10 Exile=0
+P1: Allies=5 Deck=59 Hand=8 Discard=4 Exile=0
+P2: Allies=5 Deck=51 Hand=8 Discard=11 Exile=0
 
 ══════════════ ROUND 10 (P2's turn) ══════════════
 Room: 3 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P2)
 ═══════════════════════════════════════
-  P2 equips P2-Scroll of Fireball (+2S/+0H) on P2-Paladin Kael
-  P2 equips P2-Wooden Shield (+0S/+1H) on P2-Paladin Kael
-  P2 total field: 5 allies (STR:15 HP:17)
+  P2 total field: 5 allies (ATK:15 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P1)
 ═══════════════════════════════════════
-  P1 plays MONSTER: P1-Death Knight (STR:5 HP:7)
-  P1 plays MONSTER: P1-Orc Grunt-3 (STR:3 HP:3)
-  P1 plays MONSTER: P1-Ghoul Pack (STR:3 HP:5)
-  P1 has no traps to set.
+  P1 plays MONSTER: P1-Minotaur (ATK:4 HP:5)
+  P1 plays MONSTER: P1-Troll Berserker (ATK:4 HP:5)
+  P1 plays MONSTER: P1-Ghoul Pack (ATK:3 HP:5)
+  P1 sets TRAP: P1-Spike Pit-1 (DMG:2)
 → Phase: Combat
+  *** TRAP ACTIVATES: P1-Spike Pit-1 deals 2 damage! ***
+    -> P2-Trapper takes 2 trap damage
 ═══════════════════════════════════════
   COMBAT (Room 3)
 ═══════════════════════════════════════
-Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Acolyte(S3/H3), P2-Shieldbearer(S3/H4), P2-Militia-0(S2/H3)
-Defender (P1) monsters: P1-Death Knight(S5/H7), P1-Orc Grunt-3(S3/H3), P1-Ghoul Pack(S3/H5)
-  5 allies (STR:15) vs 3 monsters (STR:11)
-  Result: DefenderEliminated
-  Damage: 11 to attacker, 15 to defender
+Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Knight Errant(S3/H4), P2-Evoker(S3/H3), P2-Novice Healer-0(S2/H3)
+Defender (P1) monsters: P1-Minotaur(S4/H5), P1-Troll Berserker(S4/H5), P1-Ghoul Pack(S3/H5)
+  5 allies (ATK:15) vs 3 monsters (ATK:11)
+  Result: DefenderEliminated (15 rounds)
+  Damage: 0 HP to attacker, 15 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
-  *** MONSTER P1-Death Knight ELIMINATED ***
-  *** MONSTER P1-Orc Grunt-3 ELIMINATED ***
+  *** MONSTER P1-Minotaur ELIMINATED ***
+  *** MONSTER P1-Troll Berserker ELIMINATED ***
   *** MONSTER P1-Ghoul Pack ELIMINATED ***
   Phase: RoomCleared
-ADVANCE → Room 4 | P1 draws up to 8 (had 2 monsters)
-P1 hand composition: 4 allies, 3 monsters, 0 traps, 1 equipment
+ADVANCE → Room 4 | P1 draws up to 8 (had 3 monsters)
+P1 hand composition: 2 allies, 5 monsters, 0 traps, 1 equipment
 Phase: PlayCards
-P1: Allies=5 Deck=54 Hand=8 Discard=7 Exile=0
-P2: Allies=5 Deck=53 Hand=6 Discard=10 Exile=0
+P1: Allies=5 Deck=55 Hand=8 Discard=8 Exile=0
+P2: Allies=5 Deck=51 Hand=8 Discard=11 Exile=0
 
 ══════════════ ROUND 11 (P2's turn) ══════════════
 Room: 4 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P2)
 ═══════════════════════════════════════
-  P2 equips P2-Leather Armor (+0S/+1H) on P2-Trapper
-  P2 total field: 5 allies (STR:15 HP:17)
+  P2 total field: 5 allies (ATK:15 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P1)
 ═══════════════════════════════════════
-  P1 plays MONSTER: P1-Kobold-1 (STR:2 HP:2)
-  P1 plays MONSTER: P1-Skeleton Warrior-0 (STR:2 HP:2)
-  P1 plays MONSTER: P1-Skeleton Warrior-1 (STR:2 HP:2)
+  P1 plays MONSTER: P1-Ancient Wyvern (ATK:6 HP:7)
+  P1 plays MONSTER: P1-Orc Grunt-2 (ATK:3 HP:3)
+  P1 plays MONSTER: P1-Wraith (ATK:3 HP:4)
   P1 has no traps to set.
 → Phase: Combat
 ═══════════════════════════════════════
   COMBAT (Room 4)
 ═══════════════════════════════════════
-Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Acolyte(S3/H3), P2-Shieldbearer(S3/H4), P2-Militia-0(S2/H3)
-Defender (P1) monsters: P1-Kobold-1(S2/H2), P1-Skeleton Warrior-0(S2/H2), P1-Skeleton Warrior-1(S2/H2)
-  5 allies (STR:15) vs 3 monsters (STR:6)
-  Result: DefenderEliminated
-  Damage: 6 to attacker, 15 to defender
+Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Knight Errant(S3/H4), P2-Evoker(S3/H3), P2-Novice Healer-0(S2/H3)
+Defender (P1) monsters: P1-Ancient Wyvern(S6/H7), P1-Orc Grunt-2(S3/H3), P1-Wraith(S3/H4)
+  5 allies (ATK:15) vs 3 monsters (ATK:12)
+  Result: DefenderEliminated (14 rounds)
+  Damage: 0 HP to attacker, 14 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
-  *** MONSTER P1-Kobold-1 ELIMINATED ***
-  *** MONSTER P1-Skeleton Warrior-0 ELIMINATED ***
-  *** MONSTER P1-Skeleton Warrior-1 ELIMINATED ***
+  *** MONSTER P1-Ancient Wyvern ELIMINATED ***
+  *** MONSTER P1-Orc Grunt-2 ELIMINATED ***
+  *** MONSTER P1-Wraith ELIMINATED ***
   Phase: RoomCleared
-ADVANCE → Room 5 | P1 RESHUFFLES hand (0 monsters was too few) and draws 8 fresh cards
-P1 hand composition: 3 allies, 1 monsters, 0 traps, 1 equipment
+ADVANCE → Room 5 | P1 draws up to 8 (had 2 monsters)
+P1 hand composition: 4 allies, 3 monsters, 0 traps, 1 equipment
 Phase: PlayCards
-P1: Allies=5 Deck=54 Hand=5 Discard=10 Exile=0
-P2: Allies=5 Deck=53 Hand=5 Discard=10 Exile=0
+P1: Allies=5 Deck=52 Hand=8 Discard=11 Exile=0
+P2: Allies=5 Deck=51 Hand=8 Discard=11 Exile=0
 
 ══════════════ ROUND 12 (P2's turn) ══════════════
 Room: 5 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P2)
 ═══════════════════════════════════════
-  P2 total field: 5 allies (STR:15 HP:17)
+  P2 total field: 5 allies (ATK:15 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P1)
 ═══════════════════════════════════════
-  P1 plays MONSTER: P1-Basilisk (STR:4 HP:5)
+  P1 plays MONSTER: P1-Goblin Raider-3 (ATK:2 HP:3)
+  P1 plays MONSTER: P1-Skeleton Warrior-0 (ATK:2 HP:2)
+  P1 plays MONSTER: P1-Kobold-2 (ATK:2 HP:2)
   P1 has no traps to set.
 → Phase: Combat
 ═══════════════════════════════════════
   COMBAT (Room 5)
 ═══════════════════════════════════════
-Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Acolyte(S3/H3), P2-Shieldbearer(S3/H4), P2-Militia-0(S2/H3)
-Defender (P1) monsters: P1-Basilisk(S4/H5)
-  5 allies (STR:15) vs 1 monsters (STR:4)
-  Result: DefenderEliminated
-  Damage: 4 to attacker, 15 to defender
+Attacker (P2): P2-Paladin Kael(S5/H5), P2-Trapper(S2/H2), P2-Knight Errant(S3/H4), P2-Evoker(S3/H3), P2-Novice Healer-0(S2/H3)
+Defender (P1) monsters: P1-Goblin Raider-3(S2/H3), P1-Skeleton Warrior-0(S2/H2), P1-Kobold-2(S2/H2)
+  5 allies (ATK:15) vs 3 monsters (ATK:6)
+  Result: DefenderEliminated (0 rounds)
+  Damage: 0 HP to attacker, 7 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
-  *** MONSTER P1-Basilisk ELIMINATED ***
+  *** MONSTER P1-Goblin Raider-3 ELIMINATED ***
+  *** MONSTER P1-Skeleton Warrior-0 ELIMINATED ***
+  *** MONSTER P1-Kobold-2 ELIMINATED ***
   Phase: RoomCleared
 STOP & HEAL → Cure 1 HP all allies, pass turn
 Phase: PlayCards
-P1: Allies=5 Deck=50 Hand=8 Discard=11 Exile=0
-P2: Allies=5 Deck=53 Hand=5 Discard=10 Exile=0
+P1: Allies=5 Deck=49 Hand=8 Discard=14 Exile=0
+P2: Allies=5 Deck=51 Hand=8 Discard=11 Exile=0
 
 ══════════════ ROUND 13 (P1's turn) ══════════════
 Room: 5 | Phase: PlayCards | Boss: False
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 equips P1-Smoke Bomb (+0S/+1H) on P1-Trapper
-  P1 equips P1-Scroll of Haste (+0S/+0H) on P1-War Cleric
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 equips P1-Iron Sword (+1S/+0H) on P1-Paladin Kael
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
 ═══════════════════════════════════════
-  P2 plays MONSTER: P2-Ghoul Pack (STR:3 HP:5)
-  P2 plays MONSTER: P2-Skeleton Warrior-0 (STR:2 HP:2)
-  P2 plays MONSTER: P2-Goblin Raider-2 (STR:2 HP:3)
-  P2 sets TRAP: P2-Tripwire-1 (DMG:1)
+  P2 plays MONSTER: P2-Ogre Chieftain (ATK:4 HP:5)
+  P2 plays MONSTER: P2-Phase Spider (ATK:3 HP:4)
+  P2 plays MONSTER: P2-Skeleton Warrior-0 (ATK:2 HP:2)
+  P2 sets TRAP: P2-Poison Dart Wall (DMG:3)
+  P2 sets TRAP: P2-Flame Geyser (DMG:3)
 → Phase: Combat
-  *** TRAP ACTIVATES: P2-Tripwire-1 deals 1 damage! ***
-    -> P1-Trapper takes 1 trap damage
+  *** TRAP ACTIVATES: P2-Poison Dart Wall deals 3 damage! ***
+    -> P1-Trapper takes 3 trap damage
+  *** TRAP ACTIVATES: P2-Flame Geyser deals 3 damage! ***
+    -> P1-Trapper takes 3 trap damage
 ═══════════════════════════════════════
   COMBAT (Room 5)
 ═══════════════════════════════════════
 Attacker (P1): P1-Paladin Kael(S5/H5), P1-Trapper(S2/H2), P1-War Cleric(S3/H4), P1-Militia-2(S2/H3), P1-Novice Healer-0(S2/H3)
-Defender (P2) monsters: P2-Ghoul Pack(S3/H5), P2-Skeleton Warrior-0(S2/H2), P2-Goblin Raider-2(S2/H3)
-  5 allies (STR:14) vs 3 monsters (STR:7)
-  Result: DefenderEliminated
-  Damage: 7 to attacker, 14 to defender
+Defender (P2) monsters: P2-Ogre Chieftain(S4/H5), P2-Phase Spider(S3/H4), P2-Skeleton Warrior-0(S2/H2)
+  5 allies (ATK:14) vs 3 monsters (ATK:9)
+  Result: DefenderEliminated (11 rounds)
+  Damage: 0 HP to attacker, 11 HP to defender
   Advantage: ATK=Advantage DEF=Disadvantage
-  *** MONSTER P2-Ghoul Pack ELIMINATED ***
+  *** MONSTER P2-Ogre Chieftain ELIMINATED ***
+  *** MONSTER P2-Phase Spider ELIMINATED ***
   *** MONSTER P2-Skeleton Warrior-0 ELIMINATED ***
-  *** MONSTER P2-Goblin Raider-2 ELIMINATED ***
   Phase: RoomCleared
 ADVANCE → Room 6 | P2 RESHUFFLES hand (0 monsters was too few) and draws 8 fresh cards
-P2 hand composition: 0 allies, 1 monsters, 0 traps, 0 equipment
+P2 hand composition: 1 allies, 0 monsters, 0 traps, 2 equipment
 Phase: PlayCards
-P1: Allies=5 Deck=50 Hand=6 Discard=11 Exile=0
-P2: Allies=5 Deck=53 Hand=1 Discard=14 Exile=0
+P1: Allies=5 Deck=49 Hand=7 Discard=14 Exile=0
+P2: Allies=5 Deck=51 Hand=3 Discard=16 Exile=0
 
 ══════════════ ROUND 14 (P1's turn) ══════════════
 Room: 6 | Phase: PlayCards | Boss: True
 ═══════════════════════════════════════
   PLAY CARDS (P1)
 ═══════════════════════════════════════
-  P1 total field: 5 allies (STR:14 HP:17)
+  P1 total field: 5 allies (ATK:14 HP:17)
 → Phase: DefenderSetup
 ═══════════════════════════════════════
   DEFENDER SETUP (P2)
 ═══════════════════════════════════════
-  BOSS ROOM — Strahd von Zarovich awaits! (STR:7 HP:10)
+  BOSS ROOM — Strahd von Zarovich awaits! (ATK:7 HP:10)
   Boss effect: Necrotic Aura — drains 1 HP from each ally at the start of boss combat.
-  P2 plays MONSTER: P2-Orc Grunt-3 (STR:3 HP:3)
+  P2 has NO MONSTERS in hand! Room is undefended by monsters.
   P2 has no traps to set.
 → Phase: BossRoom
 ═══════════════════════════════════════
   BOSS COMBAT
 ═══════════════════════════════════════
 Attacker (P1): P1-Paladin Kael(S5/H5), P1-Trapper(S2/H2), P1-War Cleric(S3/H4), P1-Militia-2(S2/H3), P1-Novice Healer-0(S2/H3)
-BOSS: Strahd von Zarovich (STR:7 HP:10)
-Boss minions: P2-Orc Grunt-3(S3/H3)
-Total defense: STR:10 HP:13
+BOSS: Strahd von Zarovich (ATK:7 HP:10)
+Total defense: ATK:7 HP:10
 Boss effect: Necrotic Aura — drains 1 HP from each ally at the start of boss combat.
-  5 allies (STR:14) vs BOSS (STR:7)
-  Result: DefenderEliminated
-  Damage: 7 to attacker, 14 to boss
+  5 allies (ATK:14) vs BOSS (ATK:7)
+  Result: DefenderEliminated (0 rounds)
+  Damage: 0 HP to attacker, 10 HP to boss
   Advantage: ATK=Advantage DEF=Disadvantage
   *** BOSS Strahd von Zarovich DEFEATED! ***
-  *** MINION P2-Orc Grunt-3 falls with the boss ***
   Phase: RoomCleared
 ADVANCE → Room 7 | P2 RESHUFFLES hand (0 monsters was too few) and draws 8 fresh cards
-P2 hand composition: 0 allies, 0 monsters, 0 traps, 0 equipment
+P2 hand composition: 1 allies, 0 monsters, 0 traps, 2 equipment
 Phase: Finished
-P1: Allies=5 Deck=50 Hand=6 Discard=11 Exile=0
-P2: Allies=5 Deck=53 Hand=0 Discard=15 Exile=0
+P1: Allies=5 Deck=49 Hand=7 Discard=14 Exile=0
+P2: Allies=5 Deck=51 Hand=3 Discard=16 Exile=0
 
 ╔════════════════════════════════════════════════════════════════╗
 ║                        MATCH RESULT                          ║
@@ -477,5 +483,5 @@ P2: Allies=5 Deck=53 Hand=0 Discard=15 Exile=0
 Finished: True | Phase: Finished
 Winner: PLAYER 1
 Rounds: 14 | Final room: 7
-P1 — Allies:5 Deck:50 Hand:6 Discard:11 Exile:0
-P2 — Allies:5 Deck:53 Hand:0 Discard:15 Exile:0
+P1 — Allies:5 Deck:49 Hand:7 Discard:14 Exile:0
+P2 — Allies:5 Deck:51 Hand:3 Discard:16 Exile:0

@@ -10,7 +10,7 @@ public class EffectEngine
 {
     /// <summary>
     /// Collects all stat modifications from effects that should be active for a given trigger.
-    /// Returns cumulative STR, HP, INIT modifiers.
+    /// Returns cumulative ATK, HP, INIT modifiers.
     /// </summary>
     public static StatModifiers CalculateModifiers(
         IReadOnlyList<EffectTag> tags,
@@ -29,8 +29,8 @@ public class EffectEngine
             {
                 switch (action.Action)
                 {
-                    case EffectAction.ModStr:
-                        mods.Strength += action.Value;
+                    case EffectAction.ModAtk:
+                        mods.Attack += action.Value;
                         break;
                     case EffectAction.ModHp:
                         mods.HitPoints += action.Value;
@@ -79,7 +79,7 @@ public class EffectEngine
             foreach (var action in tag.Actions)
             {
                 // Skip stat mods — those are handled by CalculateModifiers
-                if (action.Action is EffectAction.ModStr or EffectAction.ModHp
+                if (action.Action is EffectAction.ModAtk or EffectAction.ModHp
                     or EffectAction.ModInit or EffectAction.ElimDouble
                     or EffectAction.ReduceDamage or EffectAction.OppAttackDouble
                     or EffectAction.IgnoreOppAttackLimit or EffectAction.ForfeitTreasure)
@@ -135,7 +135,7 @@ public class EffectEngine
 /// </summary>
 public class StatModifiers
 {
-    public int Strength { get; set; }
+    public int Attack { get; set; }
     public int HitPoints { get; set; }
     public int Initiative { get; set; }
     public int DamageReduction { get; set; }

@@ -1,9 +1,9 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using CardgameDungeon.Unity.Cards;
 using CardgameDungeon.Unity.Core;
 using CardgameDungeon.Unity.Network;
 
@@ -11,243 +11,446 @@ namespace CardgameDungeon.Unity.UI
 {
     public class DeckBuilderUI : MonoBehaviour
     {
-        private const int MaxAdventurers = 40;
-        private const int MaxEnemies = 40;
-        private const int MaxRooms = 5;
-        private const int MaxBosses = 1;
+        private const int AdventurerMax = 40;
+        private const int EnemyMax = 40;
+        private const int RoomMax = 5;
+        private const string DeckPrefKeyPrefix = "DeckBuilder.ActiveDeckId.";
 
         [Header("Layout")]
         [SerializeField] private Transform collectionGrid;
         [SerializeField] private Transform deckPanel;
+        [SerializeField] private GameObject collectionRowPrefab;
+        [SerializeField] private GameObject deckRowPrefab;
+
+        [Header("Filters")]
+        [SerializeField] private TMP_InputField searchInput;
+        [SerializeField] private TMP_Dropdown typeDropdown;
+        [SerializeField] private Button refreshCollectionButton;
 
         [Header("Counters")]
         [SerializeField] private TMP_Text adventurerCountText;
         [SerializeField] private TMP_Text enemyCountText;
         [SerializeField] private TMP_Text roomCountText;
-
-        [Header("Boss")]
-        [SerializeField] private Transform bossSlot;
+        [SerializeField] private TMP_Text bossCountText;
 
         [Header("Actions")]
         [SerializeField] private Button saveButton;
+        [SerializeField] private Button validateButton;
+        [SerializeField] private Button clearDeckButton;
         [SerializeField] private Button backButton;
 
-        private string currentDeckId;
-        private readonly List<CardData> selectedAdventurers = new List<CardData>();
-        private readonly List<CardData> selectedEnemies = new List<CardData>();
-        private readonly List<CardData> selectedRooms = new List<CardData>();
-        private CardData selectedBoss;
+        [Header("Status")]
+        [SerializeField] private TMP_Text statusText;
+
+        private readonly List<string> _adventurerIds = new();
+        private readonly List<string> _enemyIds = new();
+        private readonly List<string> _roomIds = new();
+        private readonly Dictionary<string, PoolEntry> _poolById = new(StringComparer.OrdinalIgnoreCase);
+        private readonly List<PoolEntry> _pool = new();
+
+        private string _bossId = string.Empty;
+        private string _deckId = string.Empty;
+        private bool _isBusy;
+        private bool _loadedSavedDeck;
+
+        private Guid PlayerId => GameManager.Instance.CurrentPlayerId;
+        private string DeckPrefKey => $"{DeckPrefKeyPrefix}{PlayerId}";
+
+        private sealed class PoolEntry
+        {
+            public string Id;
+            public string Name;
+            public string Type;
+            public string Rarity;
+            public int Cost;
+            public int Available;
+            public int Reserved;
+        }
+
+        private enum Bucket { Adventurer, Enemy, Room, Boss, Unknown }
 
         private void OnEnable()
         {
-            saveButton.onClick.AddListener(SaveDeck);
-            backButton.onClick.AddListener(OnBackClicked);
+            if (saveButton != null) saveButton.onClick.AddListener(SaveDeck);
+            if (validateButton != null) validateButton.onClick.AddListener(ValidateDeck);
+            if (clearDeckButton != null) clearDeckButton.onClick.AddListener(ClearDeck);
+            if (refreshCollectionButton != null) refreshCollectionButton.onClick.AddListener(LoadCollection);
+            if (searchInput != null) searchInput.onValueChanged.AddListener(_ => RenderCollection());
+            if (typeDropdown != null) typeDropdown.onValueChanged.AddListener(_ => RenderCollection());
+            if (backButton != null) backButton.onClick.AddListener(() => GameManager.Instance.GoToSceneWithLoading("MainMenu"));
             LoadCollection();
         }
 
         private void OnDisable()
         {
-            saveButton.onClick.RemoveListener(SaveDeck);
-            backButton.onClick.RemoveListener(OnBackClicked);
+            if (saveButton != null) saveButton.onClick.RemoveAllListeners();
+            if (validateButton != null) validateButton.onClick.RemoveAllListeners();
+            if (clearDeckButton != null) clearDeckButton.onClick.RemoveAllListeners();
+            if (refreshCollectionButton != null) refreshCollectionButton.onClick.RemoveAllListeners();
+            if (searchInput != null) searchInput.onValueChanged.RemoveAllListeners();
+            if (typeDropdown != null) typeDropdown.onValueChanged.RemoveAllListeners();
+            if (backButton != null) backButton.onClick.RemoveAllListeners();
         }
 
         public void LoadCollection()
         {
-            StartCoroutine(LoadCollectionRoutine());
-        }
-
-        private IEnumerator LoadCollectionRoutine()
-        {
-            yield return StartCoroutine(ApiClient.GetCollection((cards, error) =>
+            if (_isBusy) return;
+            SetBusy(true);
+            SetStatus("Carregando coleção...");
+            GameManager.Instance.Api.GetCollection(this, PlayerId, response =>
             {
-                if (!string.IsNullOrEmpty(error))
+                BuildPool(response?.cards);
+                BindTypeFilter();
+                ReconcileSelection();
+                if (!_loadedSavedDeck)
                 {
-                    Debug.LogError($"Failed to load collection: {error}");
+                    _loadedSavedDeck = true;
+                    LoadSavedDeck();
                     return;
                 }
-
-                foreach (Transform child in collectionGrid)
-                {
-                    Destroy(child.gameObject);
-                }
-
-                foreach (var card in cards)
-                {
-                    var cardView = GameManager.Instance.CreateCardView(card, collectionGrid);
-                    var button = cardView.GetComponent<Button>();
-                    if (button != null)
-                    {
-                        var capturedCard = card;
-                        button.onClick.AddListener(() => AddCardToDeck(capturedCard));
-                    }
-                }
-            }));
+                RenderAll();
+                SetBusy(false);
+                SetStatus($"Coleção pronta: {_pool.Count} cartas únicas.");
+            }, error => { SetBusy(false); SetStatus($"Erro ao carregar coleção: {error}"); });
         }
 
-        public bool AddCardToDeck(CardData card)
+        private void LoadSavedDeck()
         {
-            switch (card.CardType)
+            var persisted = PlayerPrefs.GetString(DeckPrefKey, string.Empty);
+            if (!Guid.TryParse(persisted, out var deckGuid))
             {
-                case CardType.Ally:
-                case CardType.Equipment:
-                    if (selectedAdventurers.Count >= MaxAdventurers)
-                    {
-                        Debug.LogWarning($"Cannot add more adventurer cards. Maximum is {MaxAdventurers}.");
-                        return false;
-                    }
-                    selectedAdventurers.Add(card);
-                    break;
-
-                case CardType.Monster:
-                case CardType.Trap:
-                    if (selectedEnemies.Count >= MaxEnemies)
-                    {
-                        Debug.LogWarning($"Cannot add more enemy cards. Maximum is {MaxEnemies}.");
-                        return false;
-                    }
-                    selectedEnemies.Add(card);
-                    break;
-
-                case CardType.DungeonRoom:
-                    if (selectedRooms.Count >= MaxRooms)
-                    {
-                        Debug.LogWarning($"Cannot add more room cards. Maximum is {MaxRooms}.");
-                        return false;
-                    }
-                    selectedRooms.Add(card);
-                    break;
-
-                case CardType.Boss:
-                    if (selectedBoss != null)
-                    {
-                        Debug.LogWarning("A boss is already selected. Remove it first.");
-                        return false;
-                    }
-                    selectedBoss = card;
-                    break;
-
-                default:
-                    Debug.LogWarning($"Unknown card type: {card.CardType}");
-                    return false;
+                _deckId = string.Empty;
+                RenderAll();
+                SetBusy(false);
+                SetStatus("Nenhum deck salvo encontrado.");
+                return;
             }
 
-            UpdateCounters();
-            return true;
-        }
-
-        public void RemoveCardFromDeck(CardData card)
-        {
-            switch (card.CardType)
+            _deckId = persisted;
+            GameManager.Instance.Api.GetDeck(this, deckGuid, deck =>
             {
-                case CardType.Ally:
-                case CardType.Equipment:
-                    selectedAdventurers.Remove(card);
-                    break;
+                ApplyDeck(deck);
+                RenderAll();
+                SetBusy(false);
+                SetStatus("Deck salvo carregado.");
+            }, error =>
+            {
+                _deckId = string.Empty;
+                PlayerPrefs.DeleteKey(DeckPrefKey);
+                PlayerPrefs.Save();
+                RenderAll();
+                SetBusy(false);
+                SetStatus($"Falha ao carregar deck salvo: {error}");
+            });
+        }
 
-                case CardType.Monster:
-                case CardType.Trap:
-                    selectedEnemies.Remove(card);
-                    break;
+        private void BuildPool(List<OwnedCardDto> cards)
+        {
+            _poolById.Clear();
+            _pool.Clear();
+            if (cards == null) return;
 
-                case CardType.DungeonRoom:
-                    selectedRooms.Remove(card);
-                    break;
-
-                case CardType.Boss:
-                    if (selectedBoss == card)
-                    {
-                        selectedBoss = null;
-                    }
-                    break;
+            foreach (var group in cards.Where(c => c != null && !string.IsNullOrWhiteSpace(c.cardId)).GroupBy(c => c.cardId))
+            {
+                var first = group.First();
+                var entry = new PoolEntry
+                {
+                    Id = first.cardId,
+                    Name = first.cardName ?? "Unknown",
+                    Type = first.cardType ?? "Unknown",
+                    Rarity = first.rarity ?? "Unknown",
+                    Cost = first.cost,
+                    Available = group.Count(x => !x.isReserved),
+                    Reserved = group.Count(x => x.isReserved)
+                };
+                _pool.Add(entry);
+                _poolById[entry.Id] = entry;
             }
+        }
 
+        private void BindTypeFilter()
+        {
+            if (typeDropdown == null) return;
+            var current = typeDropdown.options.Count > 0 ? typeDropdown.options[typeDropdown.value].text : "All";
+            var options = _pool.Select(x => x.Type).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x).ToList();
+            options.Insert(0, "All");
+            typeDropdown.ClearOptions();
+            typeDropdown.AddOptions(options);
+            var idx = options.FindIndex(x => x.Equals(current, StringComparison.OrdinalIgnoreCase));
+            typeDropdown.value = idx >= 0 ? idx : 0;
+            typeDropdown.RefreshShownValue();
+        }
+
+        private void ApplyDeck(DeckResponse deck)
+        {
+            _adventurerIds.Clear();
+            _enemyIds.Clear();
+            _roomIds.Clear();
+            _bossId = string.Empty;
+            if (deck?.adventurerCards != null) _adventurerIds.AddRange(deck.adventurerCards.Where(x => x != null).Select(x => x.id));
+            if (deck?.enemyCards != null) _enemyIds.AddRange(deck.enemyCards.Where(x => x != null).Select(x => x.id));
+            if (deck?.dungeonRooms != null) _roomIds.AddRange(deck.dungeonRooms.Where(x => x != null).Select(x => x.id));
+            _bossId = deck?.boss?.id ?? string.Empty;
+            ReconcileSelection();
+        }
+
+        private void ReconcileSelection()
+        {
+            _adventurerIds.RemoveAll(id => !CanKeep(id, Bucket.Adventurer));
+            _enemyIds.RemoveAll(id => !CanKeep(id, Bucket.Enemy));
+            _roomIds.RemoveAll(id => !CanKeep(id, Bucket.Room));
+            if (!string.IsNullOrWhiteSpace(_bossId) && !CanKeep(_bossId, Bucket.Boss)) _bossId = string.Empty;
+        }
+
+        private bool CanKeep(string id, Bucket bucket)
+        {
+            return _poolById.TryGetValue(id, out var entry) && entry.Available > 0 && Resolve(entry.Type) == bucket;
+        }
+
+        private void RenderAll()
+        {
+            RenderCollection();
+            RenderDeck();
             UpdateCounters();
         }
+
+        private void RenderCollection()
+        {
+            if (collectionGrid == null) return;
+            foreach (Transform child in collectionGrid) Destroy(child.gameObject);
+
+            var search = searchInput != null ? searchInput.text?.Trim() ?? string.Empty : string.Empty;
+            var type = typeDropdown != null && typeDropdown.options.Count > 0 ? typeDropdown.options[typeDropdown.value].text : "All";
+            if (type.Equals("All", StringComparison.OrdinalIgnoreCase)) type = string.Empty;
+
+            var entries = _pool.Where(e =>
+                    (string.IsNullOrWhiteSpace(search) || e.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0) &&
+                    (string.IsNullOrWhiteSpace(type) || e.Type.Equals(type, StringComparison.OrdinalIgnoreCase)))
+                .OrderBy(e => e.Type).ThenBy(e => e.Name);
+
+            var any = false;
+            foreach (var entry in entries)
+            {
+                any = true;
+                var canAdd = CanAdd(entry);
+                var text = $"{entry.Name} | {entry.Type} | {entry.Rarity} | C {entry.Cost} | {entry.Available} disp";
+                CreateRow(collectionGrid, collectionRowPrefab, text, "Add", canAdd ? () => AddCard(entry.Id) : null);
+            }
+            if (!any) CreateRow(collectionGrid, collectionRowPrefab, "Nenhuma carta para os filtros.", "", null);
+        }
+
+        private bool CanAdd(PoolEntry entry)
+        {
+            if (entry.Available <= 0) return false;
+            if (IsSelected(entry.Id)) return false;
+            return Resolve(entry.Type) switch
+            {
+                Bucket.Adventurer => _adventurerIds.Count < AdventurerMax,
+                Bucket.Enemy => _enemyIds.Count < EnemyMax,
+                Bucket.Room => _roomIds.Count < RoomMax,
+                Bucket.Boss => string.IsNullOrWhiteSpace(_bossId),
+                _ => false
+            };
+        }
+
+        private void AddCard(string cardId)
+        {
+            if (!_poolById.TryGetValue(cardId, out var entry)) return;
+            if (!CanAdd(entry)) { SetStatus($"Não foi possível adicionar {entry.Name}."); return; }
+
+            switch (Resolve(entry.Type))
+            {
+                case Bucket.Adventurer: _adventurerIds.Add(cardId); break;
+                case Bucket.Enemy: _enemyIds.Add(cardId); break;
+                case Bucket.Room: _roomIds.Add(cardId); break;
+                case Bucket.Boss: _bossId = cardId; break;
+            }
+            RenderAll();
+            SetStatus($"{entry.Name} adicionado.");
+        }
+
+        private void RenderDeck()
+        {
+            if (deckPanel == null) return;
+            foreach (Transform child in deckPanel) Destroy(child.gameObject);
+
+            RenderBucket("Adventurers", _adventurerIds);
+            RenderBucket("Enemies", _enemyIds);
+            RenderBucket("Rooms", _roomIds);
+
+            CreateRow(deckPanel, deckRowPrefab, $"=== Boss ({(string.IsNullOrWhiteSpace(_bossId) ? 0 : 1)}) ===", "", null);
+            if (string.IsNullOrWhiteSpace(_bossId)) CreateRow(deckPanel, deckRowPrefab, "Empty", "", null);
+            else if (_poolById.TryGetValue(_bossId, out var boss))
+                CreateRow(deckPanel, deckRowPrefab, $"{boss.Name} | {boss.Rarity} | C {boss.Cost}", "Remove", () => RemoveCard(_bossId));
+        }
+
+        private void RenderBucket(string title, List<string> ids)
+        {
+            CreateRow(deckPanel, deckRowPrefab, $"=== {title} ({ids.Count}) ===", "", null);
+            if (ids.Count == 0) { CreateRow(deckPanel, deckRowPrefab, "Empty", "", null); return; }
+            foreach (var id in ids.OrderBy(x => _poolById.TryGetValue(x, out var e) ? e.Name : x))
+            {
+                if (!_poolById.TryGetValue(id, out var entry)) continue;
+                CreateRow(deckPanel, deckRowPrefab, $"{entry.Name} | {entry.Type} | {entry.Rarity} | C {entry.Cost}", "Remove", () => RemoveCard(id));
+            }
+        }
+
+        private void RemoveCard(string id)
+        {
+            if (_adventurerIds.Remove(id) || _enemyIds.Remove(id) || _roomIds.Remove(id) || string.Equals(_bossId, id, StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.Equals(_bossId, id, StringComparison.OrdinalIgnoreCase)) _bossId = string.Empty;
+                RenderAll();
+                SetStatus("Carta removida.");
+            }
+        }
+
+        private bool IsSelected(string id) => _adventurerIds.Contains(id) || _enemyIds.Contains(id) || _roomIds.Contains(id) || string.Equals(_bossId, id, StringComparison.OrdinalIgnoreCase);
+        private static Bucket Resolve(string type) => type switch
+        {
+            "Ally" or "Equipment" => Bucket.Adventurer,
+            "Monster" or "Trap" => Bucket.Enemy,
+            "DungeonRoom" => Bucket.Room,
+            "Boss" => Bucket.Boss,
+            _ => Bucket.Unknown
+        };
 
         public void SaveDeck()
         {
-            StartCoroutine(SaveDeckRoutine());
-        }
+            if (_isBusy) return;
+            if (!IsComplete(out var err)) { SetStatus(err); return; }
+            if (!Guid.TryParse(_bossId, out _)) { SetStatus("Boss inválido."); return; }
 
-        private IEnumerator SaveDeckRoutine()
-        {
-            var allCardIds = new List<string>();
-            foreach (var card in selectedAdventurers) allCardIds.Add(card.CardId);
-            foreach (var card in selectedEnemies) allCardIds.Add(card.CardId);
-            foreach (var card in selectedRooms) allCardIds.Add(card.CardId);
-            if (selectedBoss != null) allCardIds.Add(selectedBoss.CardId);
-
-            if (string.IsNullOrEmpty(currentDeckId))
+            var create = new CreateDeckRequest
             {
-                yield return StartCoroutine(ApiClient.CreateDeck(allCardIds, (deckId, error) =>
-                {
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Debug.LogError($"Failed to create deck: {error}");
-                        return;
-                    }
+                playerId = PlayerId.ToString(),
+                adventurerCardIds = _adventurerIds.ToList(),
+                enemyCardIds = _enemyIds.ToList(),
+                dungeonRoomIds = _roomIds.ToList(),
+                bossId = _bossId
+            };
 
-                    currentDeckId = deckId;
-                    Debug.Log($"Deck created with ID: {deckId}");
-                }));
-            }
-            else
+            SetBusy(true);
+            if (string.IsNullOrWhiteSpace(_deckId))
             {
-                yield return StartCoroutine(ApiClient.UpdateDeck(currentDeckId, allCardIds, (success, error) =>
-                {
-                    if (!string.IsNullOrEmpty(error))
-                    {
-                        Debug.LogError($"Failed to update deck: {error}");
-                        return;
-                    }
-
-                    Debug.Log($"Deck {currentDeckId} updated successfully.");
-                }));
+                GameManager.Instance.Api.CreateDeck(this, create, response => OnSaved(response?.id), error => OnSaveError(error, "criar"));
+                return;
             }
+
+            if (!Guid.TryParse(_deckId, out var deckGuid)) { SetBusy(false); SetStatus("DeckId inválido."); return; }
+            var update = new UpdateDeckRequest { adventurerCardIds = create.adventurerCardIds, enemyCardIds = create.enemyCardIds, dungeonRoomIds = create.dungeonRoomIds, bossId = create.bossId };
+            GameManager.Instance.Api.UpdateDeck(this, deckGuid, update, response => OnSaved(response?.id), error => OnSaveError(error, "atualizar"));
         }
 
-        public void UpdateCounters()
+        private void OnSaved(string responseDeckId)
         {
-            adventurerCountText.text = $"Adventurers: {selectedAdventurers.Count}/{MaxAdventurers}";
-            enemyCountText.text = $"Enemies: {selectedEnemies.Count}/{MaxEnemies}";
-            roomCountText.text = $"Rooms: {selectedRooms.Count}/{MaxRooms}";
+            _deckId = string.IsNullOrWhiteSpace(responseDeckId) ? _deckId : responseDeckId;
+            if (!string.IsNullOrWhiteSpace(_deckId))
+            {
+                PlayerPrefs.SetString(DeckPrefKey, _deckId);
+                PlayerPrefs.Save();
+            }
+            SetBusy(false);
+            SetStatus($"Deck salvo: {_deckId}");
         }
+
+        private void OnSaveError(string error, string action) { SetBusy(false); SetStatus($"Erro ao {action} deck: {error}"); }
 
         public void ValidateDeck()
         {
-            StartCoroutine(ValidateDeckRoutine());
+            if (_isBusy) return;
+            if (!Guid.TryParse(_deckId, out var deckGuid)) { SetStatus("Salve o deck antes de validar."); return; }
+            SetBusy(true);
+            GameManager.Instance.Api.ValidateDeck(this, deckGuid, response =>
+            {
+                SetBusy(false);
+                if (response?.isValid == true) { SetStatus("Deck válido."); return; }
+                var details = response?.errors != null && response.errors.Count > 0 ? string.Join(" | ", response.errors) : "sem detalhes";
+                SetStatus($"Deck inválido: {details}");
+            }, error => { SetBusy(false); SetStatus($"Erro ao validar deck: {error}"); });
         }
 
-        private IEnumerator ValidateDeckRoutine()
+        public void ClearDeck()
         {
-            if (string.IsNullOrEmpty(currentDeckId))
-            {
-                Debug.LogWarning("No deck to validate. Save the deck first.");
-                yield break;
-            }
-
-            yield return StartCoroutine(ApiClient.ValidateDeck(currentDeckId, (isValid, errors, error) =>
-            {
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Debug.LogError($"Failed to validate deck: {error}");
-                    return;
-                }
-
-                if (isValid)
-                {
-                    Debug.Log("Deck is valid!");
-                }
-                else
-                {
-                    Debug.LogWarning($"Deck validation failed: {string.Join(", ", errors)}");
-                }
-            }));
+            if (_isBusy) return;
+            _adventurerIds.Clear(); _enemyIds.Clear(); _roomIds.Clear(); _bossId = string.Empty; _deckId = string.Empty;
+            PlayerPrefs.DeleteKey(DeckPrefKey); PlayerPrefs.Save();
+            RenderAll();
+            SetStatus("Deck limpo.");
         }
 
-        private void OnBackClicked()
+        private bool IsComplete(out string error)
         {
-            GameManager.Instance.LoadScene("MainMenu");
+            if (_adventurerIds.Count != AdventurerMax) { error = $"Adventurers: {_adventurerIds.Count}/{AdventurerMax}"; return false; }
+            if (_enemyIds.Count != EnemyMax) { error = $"Enemies: {_enemyIds.Count}/{EnemyMax}"; return false; }
+            if (_roomIds.Count != RoomMax) { error = $"Rooms: {_roomIds.Count}/{RoomMax}"; return false; }
+            if (string.IsNullOrWhiteSpace(_bossId)) { error = "Boss não selecionado."; return false; }
+            error = null; return true;
+        }
+
+        private void UpdateCounters()
+        {
+            if (adventurerCountText != null) adventurerCountText.text = $"Adventurers: {_adventurerIds.Count}/{AdventurerMax}";
+            if (enemyCountText != null) enemyCountText.text = $"Enemies: {_enemyIds.Count}/{EnemyMax}";
+            if (roomCountText != null) roomCountText.text = $"Rooms: {_roomIds.Count}/{RoomMax}";
+            if (bossCountText != null) bossCountText.text = $"Boss: {(string.IsNullOrWhiteSpace(_bossId) ? 0 : 1)}/1";
+        }
+
+        private void CreateRow(Transform parent, GameObject prefab, string text, string action, Action onClick)
+        {
+            var row = prefab != null ? Instantiate(prefab, parent) : CreateFallbackRow(parent);
+            var label = row.GetComponentInChildren<TMP_Text>() ?? row.GetComponent<TMP_Text>();
+            if (label != null) label.text = text;
+            var button = row.GetComponentInChildren<Button>() ?? row.GetComponent<Button>();
+            if (button == null) return;
+            button.onClick.RemoveAllListeners();
+            if (onClick != null) button.onClick.AddListener(() => onClick.Invoke());
+            button.interactable = onClick != null && !_isBusy;
+            var buttonText = button.GetComponentInChildren<TMP_Text>();
+            if (buttonText != null) buttonText.text = action;
+        }
+
+        private static GameObject CreateFallbackRow(Transform parent)
+        {
+            var row = new GameObject("DeckRow", typeof(RectTransform), typeof(Image), typeof(HorizontalLayoutGroup));
+            row.transform.SetParent(parent, false);
+            row.GetComponent<Image>().color = new Color(0.14f, 0.11f, 0.08f, 0.7f);
+            var layout = row.GetComponent<HorizontalLayoutGroup>();
+            layout.spacing = 8;
+            layout.padding = new RectOffset(8, 8, 4, 4);
+
+            var textGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI), typeof(LayoutElement));
+            textGo.transform.SetParent(row.transform, false);
+            textGo.GetComponent<LayoutElement>().flexibleWidth = 1f;
+            textGo.GetComponent<TextMeshProUGUI>().fontSize = 20;
+
+            var buttonGo = new GameObject("Button", typeof(RectTransform), typeof(Image), typeof(Button), typeof(LayoutElement));
+            buttonGo.transform.SetParent(row.transform, false);
+            buttonGo.GetComponent<LayoutElement>().preferredWidth = 110;
+            buttonGo.GetComponent<LayoutElement>().preferredHeight = 30;
+            buttonGo.GetComponent<Image>().color = new Color(0.35f, 0.27f, 0.13f, 0.95f);
+            var bTextGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+            bTextGo.transform.SetParent(buttonGo.transform, false);
+            var rect = bTextGo.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = Vector2.zero; rect.offsetMax = Vector2.zero;
+            bTextGo.GetComponent<TextMeshProUGUI>().alignment = TextAlignmentOptions.Center;
+            bTextGo.GetComponent<TextMeshProUGUI>().fontSize = 18;
+            return row;
+        }
+
+        private void SetBusy(bool busy)
+        {
+            _isBusy = busy;
+            if (saveButton != null) saveButton.interactable = !busy;
+            if (validateButton != null) validateButton.interactable = !busy;
+            if (clearDeckButton != null) clearDeckButton.interactable = !busy;
+            if (refreshCollectionButton != null) refreshCollectionButton.interactable = !busy;
+        }
+
+        private void SetStatus(string message)
+        {
+            if (statusText != null) statusText.text = message;
+            Debug.Log($"[DeckBuilderUI] {message}");
         }
     }
 }

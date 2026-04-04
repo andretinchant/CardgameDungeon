@@ -25,7 +25,7 @@ public record PlayerStateDto(
 public record AllyDto(
     Guid Id,
     string Name,
-    int Strength,
+    int Attack,
     int HitPoints,
     int Initiative,
     int Cost,

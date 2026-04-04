@@ -52,6 +52,14 @@ namespace CardgameDungeon.Unity.Network
     }
 
     [Serializable]
+    public class ValidateDeckResponse
+    {
+        public string deckId;
+        public bool isValid;
+        public List<string> errors;
+    }
+
+    [Serializable]
     public class CardDto
     {
         public string id;

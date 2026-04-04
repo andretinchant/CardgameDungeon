@@ -2,7 +2,7 @@ namespace CardgameDungeon.Domain.Effects;
 
 /// <summary>
 /// A single parsed effect rule: trigger + optional cost + optional condition + actions.
-/// Example tag string: "ON_ACTIVATE|COST:EXILE_DECK:4|+STR:2|ELIM_DOUBLE|ONCE_PER_COMBAT"
+/// Example tag string: "ON_ACTIVATE|COST:EXILE_DECK:4|+ATK:2|ELIM_DOUBLE|ONCE_PER_COMBAT"
 /// </summary>
 public class EffectTag
 {
@@ -53,8 +53,8 @@ public class EffectActionEntry
     {
         var actionStr = Action switch
         {
-            EffectAction.ModStr when Value >= 0 => $"+STR:{Value}",
-            EffectAction.ModStr => $"-STR:{Math.Abs(Value)}",
+            EffectAction.ModAtk when Value >= 0 => $"+ATK:{Value}",
+            EffectAction.ModAtk => $"-ATK:{Math.Abs(Value)}",
             EffectAction.ModHp when Value >= 0 => $"+HP:{Value}",
             EffectAction.ModHp => $"-HP:{Math.Abs(Value)}",
             EffectAction.ModInit when Value >= 0 => $"+INIT:{Value}",

@@ -11,17 +11,17 @@ public class CombatResolverTests
     private readonly Guid _player2Id = Guid.NewGuid();
 
     private static AllyCard MakeAlly(
-        int strength = 3, int hp = 5, int initiative = 2,
+        int attack = 3, int hp = 5, int initiative = 2,
         bool isAmbusher = false, int cost = 1, string? name = null)
         => new(Guid.NewGuid(), name ?? $"Ally-{Guid.NewGuid():N}"[..12],
-            Rarity.Common, cost, strength, hp, initiative, isAmbusher);
+            Rarity.Common, cost, attack, hp, initiative, isAmbusher);
 
-    private static MonsterCard MakeMonster(int strength = 3, int hp = 5, int initiative = 2)
+    private static MonsterCard MakeMonster(int attack = 3, int hp = 5, int initiative = 2)
         => new(Guid.NewGuid(), $"Monster-{Guid.NewGuid():N}"[..12],
-            Rarity.Common, 1, strength, hp, initiative);
+            Rarity.Common, 1, attack, hp, initiative);
 
-    private static BossCard MakeBoss(int strength = 10, int hp = 20, int initiative = 5)
-        => new(Guid.NewGuid(), "DungeonBoss", Rarity.Unique, 1, strength, hp, initiative);
+    private static BossCard MakeBoss(int attack = 10, int hp = 20, int initiative = 5)
+        => new(Guid.NewGuid(), "DungeonBoss", Rarity.Unique, 1, attack, hp, initiative);
 
     #region Initiative
 
@@ -102,50 +102,75 @@ public class CombatResolverTests
 
     #endregion
 
-    #region Combat — Allies vs Allies
+    #region Combat — Allies vs Allies (1 HP per ATK comparison win)
 
     [Fact]
-    public void ResolveCombat_AttackerStronger_AttackerWins()
+    public void ResolveCombat_AttackerStronger_DefenderEliminatedAfterRounds()
     {
-        var attackers = new[] { MakeAlly(strength: 7, hp: 20) };
-        var defenders = new[] { MakeAlly(strength: 5, hp: 20) };
-
-        var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
-
-        Assert.Equal(CombatOutcome.AttackerWins, result.Outcome);
-        Assert.Equal(7, result.DamageToDefender);
-        Assert.Equal(5, result.DamageToAttacker);
-    }
-
-    [Fact]
-    public void ResolveCombat_EqualStrength_BothTakeDamage()
-    {
-        var attackers = new[] { MakeAlly(strength: 5, hp: 20) };
-        var defenders = new[] { MakeAlly(strength: 5, hp: 20) };
-
-        var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
-
-        Assert.Equal(CombatOutcome.BothTakeDamage, result.Outcome);
-        Assert.Equal(5, result.DamageToAttacker);
-        Assert.Equal(5, result.DamageToDefender);
-    }
-
-    [Fact]
-    public void ResolveCombat_DoubleStrength_EliminatesDefender()
-    {
-        var attackers = new[] { MakeAlly(strength: 10, hp: 10) };
-        var defenders = new[] { MakeAlly(strength: 5, hp: 10) };
+        // ATK 7 vs ATK 5 → attacker wins each round, defender loses 1 HP per round
+        // Defender has 6 HP → eliminated in 6 rounds
+        var attackers = new[] { MakeAlly(attack: 7, hp: 20) };
+        var defenders = new[] { MakeAlly(attack: 5, hp: 6) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
         Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
+        Assert.Equal(6, result.DamageToDefender);
+        Assert.Equal(0, result.DamageToAttacker); // attacker never took damage
+        Assert.Equal(6, result.Rounds);
     }
 
     [Fact]
-    public void ResolveCombat_DoubleStrength_EliminatesAttacker()
+    public void ResolveCombat_EqualAttack_BothEliminatedSimultaneously()
     {
-        var attackers = new[] { MakeAlly(strength: 3, hp: 10) };
-        var defenders = new[] { MakeAlly(strength: 6, hp: 10) };
+        // ATK 5 vs ATK 5 → tie each round, both lose 1 HP
+        // Both have 3 HP → eliminated in 3 rounds
+        var attackers = new[] { MakeAlly(attack: 5, hp: 3) };
+        var defenders = new[] { MakeAlly(attack: 5, hp: 3) };
+
+        var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
+
+        Assert.Equal(CombatOutcome.SimultaneousElimination, result.Outcome);
+        Assert.Equal(3, result.DamageToAttacker);
+        Assert.Equal(3, result.DamageToDefender);
+        Assert.Equal(3, result.Rounds);
+    }
+
+    [Fact]
+    public void ResolveCombat_EqualAttack_UnequalHp_LowerHpDiesFirst()
+    {
+        // ATK 5 vs ATK 5, both lose 1 HP per round
+        // Attacker HP 3, Defender HP 5 → attacker eliminated in 3 rounds
+        var attackers = new[] { MakeAlly(attack: 5, hp: 3) };
+        var defenders = new[] { MakeAlly(attack: 5, hp: 5) };
+
+        var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
+
+        Assert.Equal(CombatOutcome.AttackerEliminated, result.Outcome);
+        Assert.Equal(3, result.DamageToAttacker);
+        Assert.Equal(3, result.DamageToDefender); // defender took 3 HP too but survived
+        Assert.Equal(3, result.Rounds);
+    }
+
+    [Fact]
+    public void ResolveCombat_DoubleAttack_InstantElimination()
+    {
+        // ATK 10 vs ATK 5 → 10 >= 5*2 → instant elimination
+        var attackers = new[] { MakeAlly(attack: 10, hp: 10) };
+        var defenders = new[] { MakeAlly(attack: 5, hp: 10) };
+
+        var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
+
+        Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
+        Assert.Equal(10, result.DamageToDefender); // full HP as damage (instant kill)
+        Assert.Equal(0, result.DamageToAttacker);
+    }
+
+    [Fact]
+    public void ResolveCombat_DoubleAttack_EliminatesAttacker()
+    {
+        var attackers = new[] { MakeAlly(attack: 3, hp: 10) };
+        var defenders = new[] { MakeAlly(attack: 6, hp: 10) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
@@ -153,22 +178,11 @@ public class CombatResolverTests
     }
 
     [Fact]
-    public void ResolveCombat_DamageExceedsHp_EliminatesDefender()
-    {
-        var attackers = new[] { MakeAlly(strength: 7, hp: 10) };
-        var defenders = new[] { MakeAlly(strength: 5, hp: 6) };
-
-        var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
-
-        Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
-    }
-
-    [Fact]
     public void ResolveCombat_SimultaneousElimination_NormalRoom_DefenderWins()
     {
-        // Both sides have double-or-more strength vs the other's HP
-        var attackers = new[] { MakeAlly(strength: 6, hp: 3) };
-        var defenders = new[] { MakeAlly(strength: 6, hp: 3) };
+        // Equal ATK, equal HP → simultaneous elimination
+        var attackers = new[] { MakeAlly(attack: 6, hp: 3) };
+        var defenders = new[] { MakeAlly(attack: 6, hp: 3) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
@@ -180,8 +194,8 @@ public class CombatResolverTests
     [Fact]
     public void ResolveCombat_SimultaneousElimination_BossRoom_AttackerWins()
     {
-        var attackers = new[] { MakeAlly(strength: 6, hp: 3) };
-        var defenders = new[] { MakeAlly(strength: 6, hp: 3) };
+        var attackers = new[] { MakeAlly(attack: 6, hp: 3) };
+        var defenders = new[] { MakeAlly(attack: 6, hp: 3) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: true);
 
@@ -191,62 +205,78 @@ public class CombatResolverTests
     }
 
     [Fact]
-    public void ResolveCombat_MultipleAllies_SumsStrength()
+    public void ResolveCombat_MultipleAllies_SumsAttack()
     {
-        var attackers = new[] { MakeAlly(strength: 3, hp: 5), MakeAlly(strength: 4, hp: 5) };
-        var defenders = new[] { MakeAlly(strength: 2, hp: 20) };
+        // Two allies (ATK 3+4=7) vs one defender (ATK 4, HP 6)
+        // 7 < 4*2=8 → no instant elimination, war of attrition
+        // 7 > 4 → defender takes 1 HP per round → 6 rounds to eliminate
+        var attackers = new[] { MakeAlly(attack: 3, hp: 5), MakeAlly(attack: 4, hp: 5) };
+        var defenders = new[] { MakeAlly(attack: 4, hp: 6) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
-        Assert.Equal(7, result.AttackerStrength);
-        Assert.Equal(7, result.DamageToDefender);
+        Assert.Equal(7, result.AttackerAttack);
+        Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
+        Assert.Equal(6, result.DamageToDefender);
+        Assert.Equal(6, result.Rounds);
     }
 
     [Fact]
-    public void ResolveCombat_DefenderStronger_DefenderWins()
+    public void ResolveCombat_DefenderStronger_AttackerEliminatedAfterRounds()
     {
-        var attackers = new[] { MakeAlly(strength: 4, hp: 20) };
-        var defenders = new[] { MakeAlly(strength: 7, hp: 20) };
+        // ATK 4 vs ATK 7, attacker HP 5 → attacker eliminated in 5 rounds
+        var attackers = new[] { MakeAlly(attack: 4, hp: 5) };
+        var defenders = new[] { MakeAlly(attack: 7, hp: 20) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
-        Assert.Equal(CombatOutcome.DefenderWins, result.Outcome);
+        Assert.Equal(CombatOutcome.AttackerEliminated, result.Outcome);
+        Assert.Equal(5, result.DamageToAttacker);
+        Assert.Equal(0, result.DamageToDefender);
     }
 
     [Fact]
-    public void ResolveCombat_ExactDoubleStrength_Eliminates()
+    public void ResolveCombat_ExactDoubleAttack_InstantElimination()
     {
-        // Exactly 2x triggers elimination
-        var attackers = new[] { MakeAlly(strength: 8, hp: 20) };
-        var defenders = new[] { MakeAlly(strength: 4, hp: 20) };
+        // 8 >= 4*2 → instant elimination
+        var attackers = new[] { MakeAlly(attack: 8, hp: 20) };
+        var defenders = new[] { MakeAlly(attack: 4, hp: 20) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
         Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
+        Assert.Equal(20, result.DamageToDefender); // instant kill = full HP
     }
 
     [Fact]
-    public void ResolveCombat_JustUnderDoubleStrength_NoElimination()
+    public void ResolveCombat_JustUnderDoubleAttack_NoInstantElimination()
     {
-        // 7 < 4*2=8, so no elimination by strength. 7 < 20 HP, so no HP elimination either.
-        var attackers = new[] { MakeAlly(strength: 7, hp: 20) };
-        var defenders = new[] { MakeAlly(strength: 4, hp: 20) };
+        // 7 < 4*2=8 → no instant elimination, war of attrition
+        // ATK 7 > ATK 4 → defender takes 1 per round, defender HP 4 → 4 rounds
+        var attackers = new[] { MakeAlly(attack: 7, hp: 20) };
+        var defenders = new[] { MakeAlly(attack: 4, hp: 4) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
-        Assert.Equal(CombatOutcome.AttackerWins, result.Outcome);
+        Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
+        Assert.Equal(4, result.DamageToDefender);
+        Assert.Equal(0, result.DamageToAttacker);
+        Assert.Equal(4, result.Rounds);
     }
 
     [Fact]
-    public void ResolveCombat_DamageToAttackerAndDefender_Symmetric()
+    public void ResolveCombat_OnlyWinnerDealsDamage()
     {
-        var attackers = new[] { MakeAlly(strength: 6, hp: 20) };
-        var defenders = new[] { MakeAlly(strength: 4, hp: 20) };
+        // ATK 6 vs ATK 4, attacker wins each round
+        // Defender HP 3 → eliminated in 3 rounds
+        // Attacker takes 0 damage (only round winner deals damage)
+        var attackers = new[] { MakeAlly(attack: 6, hp: 20) };
+        var defenders = new[] { MakeAlly(attack: 4, hp: 3) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
-        Assert.Equal(4, result.DamageToAttacker);  // defender strength → attacker damage
-        Assert.Equal(6, result.DamageToDefender);  // attacker strength → defender damage
+        Assert.Equal(0, result.DamageToAttacker);
+        Assert.Equal(3, result.DamageToDefender);
     }
 
     #endregion
@@ -254,28 +284,29 @@ public class CombatResolverTests
     #region Combat — Allies vs Monsters
 
     [Fact]
-    public void ResolveCombat_VsMonsters_Works()
+    public void ResolveCombat_VsMonsters_WarOfAttrition()
     {
-        var attackers = new[] { MakeAlly(strength: 7, hp: 20) };
-        var defenders = new[] { MakeMonster(strength: 5, hp: 20) };
+        // ATK 7 vs ATK 5 → attacker wins rounds, monster HP 4 → 4 rounds
+        var attackers = new[] { MakeAlly(attack: 7, hp: 20) };
+        var defenders = new[] { MakeMonster(attack: 5, hp: 4) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
-        Assert.Equal(CombatOutcome.AttackerWins, result.Outcome);
-        Assert.Equal(7, result.DamageToDefender);
-        Assert.Equal(5, result.DamageToAttacker);
+        Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
+        Assert.Equal(4, result.DamageToDefender);
+        Assert.Equal(0, result.DamageToAttacker);
     }
 
     [Fact]
-    public void ResolveCombat_VsMultipleMonsters_SumsStrength()
+    public void ResolveCombat_VsMultipleMonsters_SumsAttack()
     {
-        var attackers = new[] { MakeAlly(strength: 10, hp: 20) };
-        var defenders = new[] { MakeMonster(strength: 3, hp: 5), MakeMonster(strength: 4, hp: 5) };
+        var attackers = new[] { MakeAlly(attack: 10, hp: 20) };
+        var defenders = new[] { MakeMonster(attack: 3, hp: 5), MakeMonster(attack: 4, hp: 5) };
 
         var result = _resolver.ResolveCombat(attackers, defenders, isBossRoom: false);
 
-        Assert.Equal(10, result.AttackerStrength);
-        Assert.Equal(7, result.DefenderStrength);
+        Assert.Equal(10, result.AttackerAttack);
+        Assert.Equal(7, result.DefenderAttack);
     }
 
     #endregion
@@ -285,26 +316,26 @@ public class CombatResolverTests
     [Fact]
     public void ResolveCombat_VsBoss_AlwaysBossRoom()
     {
-        var attackers = new[] { MakeAlly(strength: 5, hp: 10), MakeAlly(strength: 5, hp: 10) };
-        var boss = MakeBoss(strength: 10, hp: 20);
+        var attackers = new[] { MakeAlly(attack: 5, hp: 10), MakeAlly(attack: 5, hp: 10) };
+        var boss = MakeBoss(attack: 10, hp: 20);
 
         var result = _resolver.ResolveCombat(attackers, boss);
 
         Assert.True(result.IsBossRoom);
-        Assert.Equal(10, result.AttackerStrength);
-        Assert.Equal(10, result.DefenderStrength);
+        Assert.Equal(10, result.AttackerAttack);
+        Assert.Equal(10, result.DefenderAttack);
     }
 
     [Fact]
-    public void ResolveCombat_VsBoss_SimultaneousElimination_AttackerWins()
+    public void ResolveCombat_VsBoss_DoubleAttack_InstantElimination()
     {
-        var attackers = new[] { MakeAlly(strength: 20, hp: 5) };
-        var boss = MakeBoss(strength: 10, hp: 5);
+        // 20 >= 10*2 → instant elimination of boss
+        var attackers = new[] { MakeAlly(attack: 20, hp: 5) };
+        var boss = MakeBoss(attack: 10, hp: 5);
 
         var result = _resolver.ResolveCombat(attackers, boss);
 
-        Assert.Equal(CombatOutcome.SimultaneousElimination, result.Outcome);
-        Assert.Equal("Attacker", result.SimultaneousEliminationVictor);
+        Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
     }
 
     [Fact]
@@ -312,15 +343,15 @@ public class CombatResolverTests
     {
         var attackers = new[]
         {
-            MakeAlly(strength: 10, hp: 10),
-            MakeAlly(strength: 10, hp: 10),
-            MakeAlly(strength: 10, hp: 10)
+            MakeAlly(attack: 10, hp: 10),
+            MakeAlly(attack: 10, hp: 10),
+            MakeAlly(attack: 10, hp: 10)
         };
-        var boss = MakeBoss(strength: 8, hp: 15);
+        var boss = MakeBoss(attack: 8, hp: 15);
 
         var result = _resolver.ResolveCombat(attackers, boss);
 
-        // 30 >= 8*2=16 → boss eliminated
+        // 30 >= 8*2=16 → instant elimination
         Assert.Equal(CombatOutcome.DefenderEliminated, result.Outcome);
     }
 
@@ -387,7 +418,7 @@ public class CombatResolverTests
     [Fact]
     public void ResolveOpportunityAttack_FirstUse_ReturnsDamage()
     {
-        var attacker = MakeAlly(strength: 5);
+        var attacker = MakeAlly(attack: 5);
         var fleeing = MakeAlly(isAmbusher: false);
         var alliesInPlay = new[] { fleeing };
         var used = new HashSet<Guid>();
@@ -401,7 +432,7 @@ public class CombatResolverTests
     [Fact]
     public void ResolveOpportunityAttack_SecondUse_Throws()
     {
-        var attacker = MakeAlly(strength: 5);
+        var attacker = MakeAlly(attack: 5);
         var fleeing1 = MakeAlly(isAmbusher: false);
         var fleeing2 = MakeAlly(isAmbusher: false);
         var alliesInPlay = new[] { fleeing1, fleeing2 };
@@ -416,7 +447,7 @@ public class CombatResolverTests
     [Fact]
     public void ResolveOpportunityAttack_AmbusherRule_Enforced()
     {
-        var attacker = MakeAlly(strength: 5);
+        var attacker = MakeAlly(attack: 5);
         var normal = MakeAlly(isAmbusher: false);
         var ambusher = MakeAlly(isAmbusher: true);
         var alliesInPlay = new[] { normal, ambusher };
@@ -429,8 +460,8 @@ public class CombatResolverTests
     [Fact]
     public void ResolveOpportunityAttack_DifferentAttackers_BothAllowed()
     {
-        var attacker1 = MakeAlly(strength: 3);
-        var attacker2 = MakeAlly(strength: 4);
+        var attacker1 = MakeAlly(attack: 3);
+        var attacker2 = MakeAlly(attack: 4);
         var fleeing = MakeAlly(isAmbusher: false);
         var alliesInPlay = new[] { fleeing };
         var used = new HashSet<Guid>();
@@ -449,7 +480,7 @@ public class CombatResolverTests
     [Fact]
     public void ResolveRetarget_DealsDamageOnlyInPrimary()
     {
-        var ally = MakeAlly(strength: 6, hp: 8);
+        var ally = MakeAlly(attack: 6, hp: 8);
         var primaryGroup = new[] { ally, MakeAlly() };
         var secondaryGroup = new[] { MakeAlly(), MakeAlly() };
 
@@ -480,7 +511,7 @@ public class CombatResolverTests
     [Fact]
     public void ResolveRetarget_PaysCostFromDeck()
     {
-        var ally = MakeAlly(strength: 4);
+        var ally = MakeAlly(attack: 4);
         var primaryGroup = new[] { ally };
         var secondaryGroup = new[] { MakeAlly() };
 

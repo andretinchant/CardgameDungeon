@@ -43,15 +43,15 @@ public class CombatResolver
         var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
         var defMods = CalculateGroupModifiers(defenders, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
 
-        var (atkBaseStr, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
-        var (defBaseStr, defBaseHp, _) = CalculateGroupStatsWithEquipment(defenders, defenderState);
+        var (atkBaseAtk, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
+        var (defBaseAtk, defBaseHp, _) = CalculateGroupStatsWithEquipment(defenders, defenderState);
 
-        var atkStrength = atkBaseStr + atkMods.Strength;
-        var defStrength = defBaseStr + defMods.Strength;
+        var atkAttack = atkBaseAtk + atkMods.Attack;
+        var defAttack = defBaseAtk + defMods.Attack;
         var atkHp = atkBaseHp + atkMods.HitPoints;
         var defHp = defBaseHp + defMods.HitPoints;
 
-        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage,
+        return ResolveCore(atkAttack, defAttack, atkHp, defHp, isBossRoom, advantage,
             atkMods.EliminationDoubled, defMods.EliminationDoubled,
             atkMods.DamageReduction, defMods.DamageReduction);
     }
@@ -67,14 +67,14 @@ public class CombatResolver
         var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
         var defMods = CalculateGroupModifiers(defenders, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
 
-        var (atkBaseStr, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
+        var (atkBaseAtk, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
 
-        var atkStrength = atkBaseStr + atkMods.Strength;
-        var defStrength = defenders.Sum(m => m.Strength) + defMods.Strength;
+        var atkAttack = atkBaseAtk + atkMods.Attack;
+        var defAttack = defenders.Sum(m => m.Attack) + defMods.Attack;
         var atkHp = atkBaseHp + atkMods.HitPoints;
         var defHp = defenders.Sum(m => m.HitPoints) + defMods.HitPoints;
 
-        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom, advantage,
+        return ResolveCore(atkAttack, defAttack, atkHp, defHp, isBossRoom, advantage,
             atkMods.EliminationDoubled, defMods.EliminationDoubled,
             atkMods.DamageReduction, defMods.DamageReduction);
     }
@@ -89,21 +89,21 @@ public class CombatResolver
         var atkMods = CalculateGroupModifiers(attackers, advantage.AttackerHasAdvantage, advantage.AttackerHasDisadvantage);
         var bossMods = CalculateCardModifiers(boss, advantage.DefenderHasAdvantage, advantage.DefenderHasDisadvantage);
 
-        var (atkBaseStr, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
+        var (atkBaseAtk, atkBaseHp, _) = CalculateGroupStatsWithEquipment(attackers, attackerState);
 
-        var atkStrength = atkBaseStr + atkMods.Strength;
-        var defStrength = boss.Strength + bossMods.Strength;
+        var atkAttack = atkBaseAtk + atkMods.Attack;
+        var defAttack = boss.Attack + bossMods.Attack;
         var atkHp = atkBaseHp + atkMods.HitPoints;
         var defHp = boss.HitPoints + bossMods.HitPoints;
 
-        return ResolveCore(atkStrength, defStrength, atkHp, defHp, isBossRoom: true, advantage,
+        return ResolveCore(atkAttack, defAttack, atkHp, defHp, isBossRoom: true, advantage,
             atkMods.EliminationDoubled, bossMods.EliminationDoubled,
             atkMods.DamageReduction, bossMods.DamageReduction);
     }
 
     private static BattleResolutionResult ResolveCore(
-        int attackerStrength,
-        int defenderStrength,
+        int attackerAttack,
+        int defenderAttack,
         int attackerHp,
         int defenderHp,
         bool isBossRoom,
@@ -113,47 +113,93 @@ public class CombatResolver
         int attackerDamageReduction = 0,
         int defenderDamageReduction = 0)
     {
-        // Each side deals damage equal to their strength, reduced by damage reduction
-        var damageToAttacker = Math.Max(0, defenderStrength - attackerDamageReduction);
-        var damageToDefender = Math.Max(0, attackerStrength - defenderDamageReduction);
+        // Instant elimination: if one side's ATK is double the other's (with elimination doubled modifier)
+        var atkEffectiveAtk = attackerElimDoubled ? attackerAttack * 2 : attackerAttack;
+        var defEffectiveAtk = defenderElimDoubled ? defenderAttack * 2 : defenderAttack;
 
-        // If elimination is doubled, effective STR counts as 2x for elimination checks
-        var atkEffectiveStr = attackerElimDoubled ? attackerStrength * 2 : attackerStrength;
-        var defEffectiveStr = defenderElimDoubled ? defenderStrength * 2 : defenderStrength;
+        var attackerInstantElim = defEffectiveAtk >= attackerAttack * EliminationMultiplier && attackerAttack > 0;
+        var defenderInstantElim = atkEffectiveAtk >= defenderAttack * EliminationMultiplier && defenderAttack > 0;
 
-        var attackerEliminated = IsEliminated(attackerStrength, defEffectiveStr, attackerHp);
-        var defenderEliminated = IsEliminated(defenderStrength, atkEffectiveStr, defenderHp);
+        if (attackerInstantElim || defenderInstantElim)
+        {
+            var outcome = (attackerInstantElim, defenderInstantElim) switch
+            {
+                (true, true) => CombatOutcome.SimultaneousElimination,
+                (true, false) => CombatOutcome.AttackerEliminated,
+                _ => CombatOutcome.DefenderEliminated
+            };
 
-        var outcome = (attackerEliminated, defenderEliminated) switch
+            return new BattleResolutionResult(
+                attackerAttack, defenderAttack,
+                attackerInstantElim ? attackerHp : 0,
+                defenderInstantElim ? defenderHp : 0,
+                outcome, isBossRoom, advantage);
+        }
+
+        // War of attrition: each round, compare ATK. Winner deals 1 HP damage (reduced by damage reduction).
+        // Tie = both take 1 HP. Repeat until one side's HP reaches 0.
+        var atkHpRemaining = attackerHp;
+        var defHpRemaining = defenderHp;
+        var rounds = 0;
+        const int maxRounds = 500; // safety limit
+
+        while (atkHpRemaining > 0 && defHpRemaining > 0 && rounds < maxRounds)
+        {
+            rounds++;
+
+            if (attackerAttack > defenderAttack)
+            {
+                // Attacker wins this round — defender takes 1 HP (reduced by damage reduction)
+                var dmg = Math.Max(0, 1 - defenderDamageReduction);
+                defHpRemaining -= Math.Max(dmg, 0);
+                // If damage reduction negates all damage, combat is a stalemate
+                if (dmg <= 0) break;
+            }
+            else if (defenderAttack > attackerAttack)
+            {
+                // Defender wins this round — attacker takes 1 HP
+                var dmg = Math.Max(0, 1 - attackerDamageReduction);
+                atkHpRemaining -= Math.Max(dmg, 0);
+                if (dmg <= 0) break;
+            }
+            else
+            {
+                // Tie — both take 1 HP
+                var dmgToAtk = Math.Max(0, 1 - attackerDamageReduction);
+                var dmgToDef = Math.Max(0, 1 - defenderDamageReduction);
+                atkHpRemaining -= dmgToAtk;
+                defHpRemaining -= dmgToDef;
+                // If both are fully reduced, stalemate
+                if (dmgToAtk <= 0 && dmgToDef <= 0) break;
+            }
+        }
+
+        var damageToAttacker = attackerHp - Math.Max(0, atkHpRemaining);
+        var damageToDefender = defenderHp - Math.Max(0, defHpRemaining);
+
+        var attackerEliminated = atkHpRemaining <= 0;
+        var defenderEliminated = defHpRemaining <= 0;
+
+        var combatOutcome = (attackerEliminated, defenderEliminated) switch
         {
             (true, true) => CombatOutcome.SimultaneousElimination,
             (true, false) => CombatOutcome.AttackerEliminated,
             (false, true) => CombatOutcome.DefenderEliminated,
-            _ when attackerStrength == defenderStrength => CombatOutcome.BothTakeDamage,
-            _ when attackerStrength > defenderStrength => CombatOutcome.AttackerWins,
-            _ => CombatOutcome.DefenderWins
+            _ when damageToAttacker > 0 || damageToDefender > 0 => CombatOutcome.BothTakeDamage,
+            _ when attackerAttack > defenderAttack => CombatOutcome.AttackerWins,
+            _ when defenderAttack > attackerAttack => CombatOutcome.DefenderWins,
+            _ => CombatOutcome.BothTakeDamage
         };
 
         return new BattleResolutionResult(
-            attackerStrength,
-            defenderStrength,
+            attackerAttack,
+            defenderAttack,
             damageToAttacker,
             damageToDefender,
-            outcome,
+            combatOutcome,
             isBossRoom,
-            advantage);
-    }
-
-    /// <summary>
-    /// A side is eliminated if the opponent's strength is at least double theirs,
-    /// or if the incoming damage exceeds their total HP.
-    /// </summary>
-    private static bool IsEliminated(int ownStrength, int opponentStrength, int ownHp)
-    {
-        if (opponentStrength >= ownStrength * EliminationMultiplier)
-            return true;
-
-        return opponentStrength >= ownHp;
+            advantage,
+            rounds);
     }
 
     #endregion
@@ -188,7 +234,7 @@ public class CombatResolver
 
     /// <summary>
     /// Resolves an opportunity attack (1 per player per round) triggered
-    /// when an ally abandons combat. The attacker deals strength damage.
+    /// when an ally abandons combat. The attacker deals attack damage.
     /// </summary>
     public int ResolveOpportunityAttack(
         AllyCard attacker,
@@ -202,7 +248,7 @@ public class CombatResolver
 
         ValidateTarget(fleeingTarget, alliesInPlay);
 
-        return attacker.Strength;
+        return attacker.Attack;
     }
 
     #endregion
@@ -227,14 +273,14 @@ public class CombatResolver
 
         player.PayCostFromDeck(retargetCost);
 
-        // Ally contributes strength only to primary combat
-        var primaryStrength = ally.Strength;
-        const int secondaryStrength = 0;
+        // Ally contributes attack only to primary combat
+        var primaryAttack = ally.Attack;
+        const int secondaryAttack = 0;
 
         return new RetargetResult(
             ally.Id,
-            primaryStrength,
-            secondaryStrength,
+            primaryAttack,
+            secondaryAttack,
             retargetCost);
     }
 
@@ -245,7 +291,7 @@ public class CombatResolver
     private static (int str, int hp, int init) CalculateGroupStatsWithEquipment(
         IReadOnlyList<AllyCard> allies, PlayerState? ownerState)
     {
-        var str = allies.Sum(a => a.Strength);
+        var str = allies.Sum(a => a.Attack);
         var hp = allies.Sum(a => a.HitPoints);
         var init = allies.Sum(a => a.Initiative);
 
@@ -257,7 +303,7 @@ public class CombatResolver
                 {
                     if (!equip.Slot.IsCompanionOrSummon() && !equip.Slot.IsShapeshift())
                     {
-                        str += equip.StrengthModifier;
+                        str += equip.AttackModifier;
                         hp += equip.HitPointsModifier;
                         init += equip.InitiativeModifier;
                     }
@@ -284,7 +330,7 @@ public class CombatResolver
         foreach (var card in cards)
         {
             var mods = CalculateCardModifiers(card, hasAdvantage, hasDisadvantage);
-            combined.Strength += mods.Strength;
+            combined.Attack += mods.Attack;
             combined.HitPoints += mods.HitPoints;
             combined.Initiative += mods.Initiative;
             combined.DamageReduction += mods.DamageReduction;
@@ -337,7 +383,7 @@ public class CombatResolver
         foreach (var trigger in triggers)
         {
             var triggerMods = EffectEngine.CalculateModifiers(tags, trigger, context);
-            mods.Strength += triggerMods.Strength;
+            mods.Attack += triggerMods.Attack;
             mods.HitPoints += triggerMods.HitPoints;
             mods.Initiative += triggerMods.Initiative;
             mods.DamageReduction += triggerMods.DamageReduction;

@@ -182,8 +182,8 @@ public class MatchState
         {
             var attackerPlayer = GetAttacker();
             var defenderPlayer = GetDefender();
-            // attackerDamage = damage dealt TO attacker (from defender's strength)
-            // defenderDamage = damage dealt TO defender (from attacker's strength)
+            // attackerDamage = damage dealt TO attacker (from defender's attack)
+            // defenderDamage = damage dealt TO defender (from attacker's attack)
             attackerPlayer.TakeDamage(attackerDamage);
             defenderPlayer.TakeDamage(defenderDamage);
         }

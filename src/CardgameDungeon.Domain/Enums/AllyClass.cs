@@ -32,7 +32,7 @@ public enum AllyClass
     /// <summary>Scroll amplifier. Copies Scroll effects, recovers Scrolls from discard via discard/exile cost, empowers Scroll potency.</summary>
     Sorcerer,
 
-    /// <summary>Rage bruiser. Highest STR/HP base. Exile cards from hand to enter Rage: +STR, damage reduction, and counts as double STR for elimination checks.</summary>
+    /// <summary>Rage bruiser. Highest ATK/HP base. Exile cards from hand to enter Rage: +ATK, damage reduction, and counts as double ATK for elimination checks.</summary>
     Barbarian,
 
     /// <summary>Nature caster. Reshuffles hand+deck and redraws. Recovers cards from exile to discard. Reduces costs when events occur (ally dies, room advances, trap triggers).</summary>

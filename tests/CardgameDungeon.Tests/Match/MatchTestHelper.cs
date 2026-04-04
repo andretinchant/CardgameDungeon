@@ -8,10 +8,10 @@ namespace CardgameDungeon.Tests.Match;
 public static class MatchTestHelper
 {
     public static AllyCard MakeAlly(
-        int strength = 3, int hp = 5, int initiative = 2,
+        int attack = 3, int hp = 5, int initiative = 2,
         bool isAmbusher = false, int cost = 1, string? name = null)
         => new(Guid.NewGuid(), name ?? $"Ally-{Guid.NewGuid():N}"[..12],
-            Rarity.Common, cost, strength, hp, initiative, isAmbusher);
+            Rarity.Common, cost, attack, hp, initiative, isAmbusher);
 
     public static DungeonRoomCard MakeRoom(int order, bool hasMonsters = true)
     {
@@ -121,12 +121,12 @@ public static class MatchTestHelper
         // Filler cards go first (drawn to hand by RefillHand), then setup allies with specific stats
         var p1Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
         var p1SetupAllies = Enumerable.Range(0, 5)
-            .Select(_ => (Card)MakeAlly(strength: p1Strength, hp: p1Hp, initiative: 5, cost: 1)).ToList();
+            .Select(_ => (Card)MakeAlly(attack: p1Strength, hp: p1Hp, initiative: 5, cost: 1)).ToList();
         var p1Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
 
         var p2Filler = Enumerable.Range(0, 8).Select(_ => (Card)MakeAlly()).ToList();
         var p2SetupAllies = Enumerable.Range(0, 5)
-            .Select(_ => (Card)MakeAlly(strength: p2Strength, hp: p2Hp, initiative: 2, cost: 1)).ToList();
+            .Select(_ => (Card)MakeAlly(attack: p2Strength, hp: p2Hp, initiative: 2, cost: 1)).ToList();
         var p2Extra = Enumerable.Range(0, 15).Select(_ => (Card)MakeAlly()).ToList();
 
         var p1Deck = p1Filler.Concat(p1SetupAllies).Concat(p1Extra).ToList();

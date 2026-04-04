@@ -8,7 +8,7 @@ public static class DeckTestHelper
 {
     public static AllyCard MakeAlly(Rarity rarity = Rarity.Common, string? name = null, int cost = 1)
         => new(Guid.NewGuid(), name ?? $"Ally-{Guid.NewGuid():N}"[..12],
-            rarity, cost, strength: 3, hitPoints: 5, initiative: 2);
+            rarity, cost, attack: 3, hitPoints: 5, initiative: 2);
 
     public static EquipmentCard MakeEquipment(int cost = 1)
         => new(Guid.NewGuid(), $"Equip-{Guid.NewGuid():N}"[..12],
@@ -16,7 +16,7 @@ public static class DeckTestHelper
 
     public static MonsterCard MakeMonster(int cost = 1)
         => new(Guid.NewGuid(), $"Monster-{Guid.NewGuid():N}"[..12],
-            Rarity.Common, cost, strength: 3, hitPoints: 5, initiative: 2);
+            Rarity.Common, cost, attack: 3, hitPoints: 5, initiative: 2);
 
     public static TrapCard MakeTrap(int cost = 1)
         => new(Guid.NewGuid(), $"Trap-{Guid.NewGuid():N}"[..12],

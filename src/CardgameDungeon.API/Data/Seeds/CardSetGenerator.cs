@@ -24,7 +24,7 @@ public static class CardSetGenerator
             var rarity = RarityDistribution60[i];
             set.AddCard(new AllyCard(
                 MakeGuid(theme.GuidPrefix, 1, i + 1),
-                a.Name, rarity, a.Cost, a.Strength, a.HitPoints, a.Initiative,
+                a.Name, rarity, a.Cost, a.Attack, a.HitPoints, a.Initiative,
                 a.IsAmbusher, a.Treasure, a.Effect));
         }
 
@@ -34,7 +34,7 @@ public static class CardSetGenerator
             var rarity = RarityDistribution60[i];
             set.AddCard(new EquipmentCard(
                 MakeGuid(theme.GuidPrefix, 2, i + 1),
-                e.Name, rarity, e.Cost, e.StrMod, e.HpMod, e.InitMod, e.Slot, e.Effect));
+                e.Name, rarity, e.Cost, e.AtkMod, e.HpMod, e.InitMod, e.Slot, e.Effect));
         }
 
         if (theme.Consumables is not null)
@@ -45,7 +45,7 @@ public static class CardSetGenerator
                 var rarity = RarityDistribution60[i];
                 set.AddCard(new EquipmentCard(
                     MakeGuid(theme.GuidPrefix, 7, i + 1),
-                    c.Name, rarity, c.Cost, c.StrMod, c.HpMod, c.InitMod, c.Slot, c.Effect));
+                    c.Name, rarity, c.Cost, c.AtkMod, c.HpMod, c.InitMod, c.Slot, c.Effect));
             }
         }
 
@@ -55,7 +55,7 @@ public static class CardSetGenerator
             var rarity = RarityDistribution60[i];
             set.AddCard(new MonsterCard(
                 MakeGuid(theme.GuidPrefix, 3, i + 1),
-                m.Name, rarity, m.Cost, m.Strength, m.HitPoints, m.Initiative,
+                m.Name, rarity, m.Cost, m.Attack, m.HitPoints, m.Initiative,
                 m.Treasure, m.Effect));
         }
 
@@ -84,7 +84,7 @@ public static class CardSetGenerator
             var b = theme.Bosses[i];
             set.AddCard(new BossCard(
                 MakeGuid(theme.GuidPrefix, 6, i + 1),
-                b.Name, Rarity.Unique, b.Cost, b.Strength, b.HitPoints, b.Initiative,
+                b.Name, Rarity.Unique, b.Cost, b.Attack, b.HitPoints, b.Initiative,
                 b.Effect));
         }
 

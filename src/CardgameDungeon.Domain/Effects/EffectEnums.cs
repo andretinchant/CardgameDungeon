@@ -24,7 +24,7 @@ public enum EffectTrigger
 
 public enum EffectAction
 {
-    ModStr,
+    ModAtk,
     ModHp,
     ModInit,
     Damage,

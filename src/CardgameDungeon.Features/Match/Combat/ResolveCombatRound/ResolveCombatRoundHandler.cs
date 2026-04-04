@@ -30,7 +30,7 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
 
         var groupedByDefender = assignments.GroupBy(a => a.DefenderId);
 
-        // Track allies that have already contributed STR in a prior group (retarget rule:
+        // Track allies that have already contributed ATK in a prior group (retarget rule:
         // an ally participating in multiple combats only deals damage in the primary one).
         var alliesAlreadyCounted = new HashSet<Guid>();
 
@@ -47,7 +47,7 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
 
             if (attackerAllies.Count == 0) continue;
 
-            // For retargeted allies (appearing in multiple groups), only count their STR
+            // For retargeted allies (appearing in multiple groups), only count their ATK
             // in the first group encountered (primary). In secondary groups, exclude them
             // from damage contribution.
             var primaryAllies = new List<AllyCard>();
@@ -83,8 +83,8 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
                 results.Add(new CombatResultDto(
                     atkAlly.Id,
                     defenderAlly.Id,
-                    battleResult.AttackerStrength,
-                    battleResult.DefenderStrength,
+                    battleResult.AttackerAttack,
+                    battleResult.DefenderAttack,
                     battleResult.DamageToAttacker,
                     battleResult.DamageToDefender,
                     battleResult.Outcome,
@@ -155,7 +155,7 @@ public class ResolveCombatRoundHandler(IMatchRepository matchRepo, CombatResolve
                     // Collect opportunity attack damage from all surviving attackers
                     foreach (var atkAlly in attacker.AlliesInPlay)
                     {
-                        var oppDamage = atkAlly.Strength;
+                        var oppDamage = atkAlly.Attack;
                         // Check for OPP_ATTACK_DOUBLE (Irvine)
                         var mods = EffectEngine.CalculateModifiers(
                             atkAlly.ParsedEffects, EffectTrigger.Passive, new EffectContext { SourceCardId = atkAlly.Id });

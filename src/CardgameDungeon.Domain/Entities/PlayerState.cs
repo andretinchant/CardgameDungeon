@@ -308,7 +308,7 @@ public class PlayerState
             shapeshiftEquip.Name,
             shapeshiftEquip.Rarity,
             shapeshiftEquip.Cost,
-            shapeshiftEquip.StrengthModifier,
+            shapeshiftEquip.AttackModifier,
             Math.Max(1, shapeshiftEquip.HitPointsModifier),
             shapeshiftEquip.InitiativeModifier,
             effect: shapeshiftEquip.Effect,
@@ -378,7 +378,7 @@ public class PlayerState
                 equip.Name,
                 equip.Rarity,
                 equip.Cost,
-                equip.StrengthModifier,
+                equip.AttackModifier,
                 Math.Max(1, equip.HitPointsModifier),
                 equip.InitiativeModifier,
                 effectTags: equip.EffectTags);

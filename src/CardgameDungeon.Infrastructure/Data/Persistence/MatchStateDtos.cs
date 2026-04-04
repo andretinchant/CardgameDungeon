@@ -63,7 +63,7 @@ internal class CardDto
     // Ally / Monster / Boss
     public int? AllyClass { get; set; }
     public int? Race { get; set; }
-    public int? Strength { get; set; }
+    public int? Attack { get; set; }
     public int? HitPoints { get; set; }
     public int? Initiative { get; set; }
     public int? Treasure { get; set; }
@@ -71,7 +71,7 @@ internal class CardDto
     public string? Effect { get; set; }
     // Equipment
     public int? EquipmentSlot { get; set; }
-    public int? StrengthModifier { get; set; }
+    public int? AttackModifier { get; set; }
     public int? HitPointsModifier { get; set; }
     public int? InitiativeModifier { get; set; }
     // Trap

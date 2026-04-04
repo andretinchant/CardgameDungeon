@@ -41,7 +41,7 @@ TYPE_FIELD_ORDER = {
         "name",
         "rarity",
         "cost",
-        "strength",
+        "attack",
         "hit_points",
         "initiative",
         "is_ambusher",
@@ -53,7 +53,7 @@ TYPE_FIELD_ORDER = {
         "name",
         "rarity",
         "cost",
-        "strength_mod",
+        "attack_mod",
         "hit_points_mod",
         "initiative_mod",
         "slot",
@@ -64,7 +64,7 @@ TYPE_FIELD_ORDER = {
         "name",
         "rarity",
         "cost",
-        "strength",
+        "attack",
         "hit_points",
         "initiative",
         "treasure",
@@ -93,7 +93,7 @@ TYPE_FIELD_ORDER = {
         "name",
         "rarity",
         "cost",
-        "strength",
+        "attack",
         "hit_points",
         "initiative",
         "effect",
@@ -103,7 +103,7 @@ TYPE_FIELD_ORDER = {
 TYPE_FIELD_ALIASES = {
     "hitPoints": "hit_points",
     "isAmbusher": "is_ambusher",
-    "strMod": "strength_mod",
+    "strMod": "attack_mod",
     "hpMod": "hit_points_mod",
     "initMod": "initiative_mod",
     "monsterCostBudget": "monster_cost_budget",
@@ -112,7 +112,7 @@ TYPE_FIELD_ALIASES = {
 THEME_FIELD_ORDER = {
     "AllyTheme": [
         "name",
-        "strength",
+        "attack",
         "hit_points",
         "initiative",
         "cost",
@@ -123,13 +123,13 @@ THEME_FIELD_ORDER = {
     "EquipmentTheme": [
         "name",
         "cost",
-        "strength_mod",
+        "attack_mod",
         "hit_points_mod",
         "initiative_mod",
     ],
     "MonsterTheme": [
         "name",
-        "strength",
+        "attack",
         "hit_points",
         "initiative",
         "cost",
@@ -149,7 +149,7 @@ THEME_FIELD_ORDER = {
     ],
     "BossTheme": [
         "name",
-        "strength",
+        "attack",
         "hit_points",
         "initiative",
         "cost",
@@ -335,7 +335,7 @@ CONSUMABLE_VISUAL_PATTERN_RULES = [
     (r"\brage\b", "crimson rage aura and jagged war sigils"),
     (r"\bcourage\b", "steady golden courage glow and rally sigils"),
     (r"\bwar\b", "martial runes and aggressive battle aura"),
-    (r"\bgiant strength\b", "massive strength glyphs carved in heavy strokes"),
+    (r"\bgiant attack\b", "massive attack glyphs carved in heavy strokes"),
     (r"\bfortitude\b", "fortifying stone-like runes and endurance aura"),
     (r"\btoughness\b", "dense protective glow emphasizing durability"),
     (r"\bbless\b", "soft divine glow and blessing sigils"),
@@ -672,14 +672,14 @@ class CardDefinition:
     name: str
     rarity: str
     cost: int | None = None
-    strength: int | None = None
+    attack: int | None = None
     hit_points: int | None = None
     initiative: int | None = None
     treasure: int | None = None
     damage: int | None = None
     effect: str | None = None
     is_ambusher: bool | None = None
-    strength_mod: int | None = None
+    attack_mod: int | None = None
     hit_points_mod: int | None = None
     initiative_mod: int | None = None
     slot: str | None = None
@@ -1082,7 +1082,7 @@ def build_ally_visual_profile(card: CardDefinition, hero_class: str) -> str:
         phrases.append("subtle stealth posture and hidden attack readiness")
     if card.initiative and card.initiative >= 5:
         phrases.append("quick agile movement frozen mid-action")
-    if card.strength and card.strength >= 6:
+    if card.attack and card.attack >= 6:
         phrases.append("powerful athletic physique and forceful strike")
     if card.hit_points and card.hit_points >= 7:
         phrases.append("battle-worn resilience and heavy protective gear")
@@ -1115,7 +1115,7 @@ def build_monster_visual_profile(card: CardDefinition) -> str:
     phrases.extend(collect_matching_phrases(source, MONSTER_ADJECTIVE_VISUALS))
     phrases.extend(collect_matching_phrases(source, MONSTER_EFFECT_VISUALS))
 
-    if card.strength and card.strength >= 8:
+    if card.attack and card.attack >= 8:
         phrases.append("extreme physical power and crushing presence")
     if card.hit_points and card.hit_points >= 9:
         phrases.append("thick armor, hide, or supernatural durability")
@@ -1137,7 +1137,7 @@ def build_boss_visual_profile(card: CardDefinition) -> str:
     phrases.extend(collect_matching_phrases(source, MONSTER_EFFECT_VISUALS))
     phrases.append("single boss only, one central subject dominating the entire image")
     phrases.append("mythic scale with the environment dwarfed around it")
-    if card.strength and card.strength >= 12:
+    if card.attack and card.attack >= 12:
         phrases.append("apocalyptic destructive power")
     if card.hit_points and card.hit_points >= 20:
         phrases.append("near-immortal resilience and overwhelming durability")
@@ -1195,7 +1195,7 @@ def build_effect_hint(card: CardDefinition) -> str:
             parts.append(collapse_whitespace(first_sentence.strip()))
 
     if card.card_type == "Equipment":
-        if (card.strength_mod or 0) > 0:
+        if (card.attack_mod or 0) > 0:
             parts.append("glowing with offensive battle enchantment")
         if (card.hit_points_mod or 0) > 0:
             parts.append("radiating protective ward magic")
@@ -1264,7 +1264,7 @@ def describe_equipment_item(name: str) -> str:
     if "health" in words:
         extra_traits.append("with restorative life sigils")
     if "giant" in words or "ogre" in words:
-        extra_traits.append("with strength glyphs")
+        extra_traits.append("with attack glyphs")
     if "defense" in words:
         extra_traits.append("with protective ward engravings")
     if "blasting" in words:
@@ -1301,7 +1301,7 @@ def build_consumable_visual_profile(card: CardDefinition, slot: str) -> str:
 
     phrases.extend(collect_regex_phrases(source, CONSUMABLE_VISUAL_PATTERN_RULES))
 
-    if (card.strength_mod or 0) > 0:
+    if (card.attack_mod or 0) > 0:
         phrases.append("offensive battle runes pulsing from the item core")
     if (card.hit_points_mod or 0) > 0:
         phrases.append("protective restorative aura wrapping the object")

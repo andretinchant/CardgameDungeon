@@ -63,11 +63,11 @@ public static partial class CardSetSeeder
             ["Blindness Trap"] =
                 "Activation condition: triggers only if the target has ranged weapon equipment.",
             ["Fear Totem"] =
-                "Activation condition: triggers only if the target has current Strength 4 or higher.",
+                "Activation condition: triggers only if the target has current Attack 4 or higher.",
             ["Necrotic Drain"] =
                 "Activation condition: triggers only if an Undead or Fiend monster is in play.",
             ["Petrification Beam"] =
-                "Activation condition: triggers only if the target has current Strength 5 or higher.",
+                "Activation condition: triggers only if the target has current Attack 5 or higher.",
             ["Tripwire"] =
                 "Activation condition: triggers only if the attacker has Initiative 3 or higher.",
             ["Caltrops Field"] =
@@ -97,7 +97,7 @@ public static partial class CardSetSeeder
             ["Sliding Floor"] =
                 "Activation condition: triggers only if 3 or more allies are in play.",
             ["Tipping Bridge"] =
-                "Activation condition: triggers only if the attacker has current Strength 5 or higher.",
+                "Activation condition: triggers only if the attacker has current Attack 5 or higher.",
             ["Sand Trap"] =
                 "Activation condition: triggers only if the attacker has no Boots-slot equipment.",
             ["Smoke Vent"] =
@@ -123,7 +123,7 @@ public static partial class CardSetSeeder
             ["Spring Blade"] =
                 "Activation condition: triggers only if the attacker has Initiative 4 or higher.",
             ["Falling Net"] =
-                "Activation condition: triggers only if the target has current Strength 4 or higher.",
+                "Activation condition: triggers only if the target has current Attack 4 or higher.",
             ["Swinging Log"] =
                 "Activation condition: triggers only against a front-line attacker.",
             ["Crossbow Trap"] =
@@ -149,107 +149,107 @@ public static partial class CardSetSeeder
             //  UNIQUE (2)
             // ═══════════════════════════════════════════════════════════════
 
-            // Budget 17: Damage5 + Effect8 + single-use downside = 17 (Cost 6, Unique)
+            // Budget 17: Damage2 + Effect11 + single-use downside = 17 (Cost 6, Unique)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000001"),
                 "Sphere of Annihilation Trap",
                 Rarity.Unique,
                 cost: 6,
-                damage: 5,
+                damage: 2,
                 "Exiles the target ally permanently. Equipped gear is exiled with them. This trap is exiled after use (single use)",
                 effectTags: "ON_ACTIVATE|EXILE_TARGET|EXILE_EQUIPMENT|EXILE_SELF"),
 
-            // Budget 15: Damage5 + Effect10 = 15 (Cost 5, Unique)
+            // Budget 15: Damage2 + Effect13 = 15 (Cost 5, Unique)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000002"),
                 "Demiplane Prison",
                 Rarity.Unique,
                 cost: 5,
-                damage: 5,
-                "Target ally is removed from combat for 2 rounds and cannot be targeted or deal damage. Returns with -2 STR permanently",
-                effectTags: "ON_ACTIVATE|REMOVE_FROM_COMBAT:2:ENEMY|-STR:2:ENEMY"),
+                damage: 2,
+                "Target ally is removed from combat for 2 rounds and cannot be targeted or deal damage. Returns with -2 ATK permanently",
+                effectTags: "ON_ACTIVATE|REMOVE_FROM_COMBAT:2:ENEMY|-ATK:2:ENEMY"),
 
             // ═══════════════════════════════════════════════════════════════
             //  RARE (8) — Cost 3→8, Cost 4→10, Cost 5→12
             // ═══════════════════════════════════════════════════════════════
 
-            // Budget 12: Damage4 + Effect8 = 12 (Cost 5)
+            // Budget 12: Damage1 + Effect11 = 12 (Cost 5)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000003"),
                 "Prismatic Wall Trap",
                 Rarity.Rare,
                 cost: 5,
-                damage: 4,
-                "Deals 2 damage to each attacking ally at the start of combat for the remainder of this room",
-                effectTags: "ON_COMBAT_START|DAMAGE:2:ALL_ENEMIES"),
+                damage: 1,
+                "Deals 1 damage to each attacking ally at the start of combat for the remainder of this room",
+                effectTags: "ON_COMBAT_START|DAMAGE:1:ALL_ENEMIES"),
 
-            // Budget 12: Damage5 + Effect7 = 12 (Cost 5)
+            // Budget 12: Damage1 + Effect11 = 12 (Cost 5)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000004"),
                 "Symbol of Death",
                 Rarity.Rare,
                 cost: 5,
-                damage: 5,
+                damage: 1,
                 "All attacking allies with current HP equal to or below 5 are reduced to 1 HP",
                 effectTags: "ON_ACTIVATE|IF_HP_BELOW:5|SET_HP:1:ALL_ENEMIES"),
 
-            // Budget 10: Damage4 + Effect6 = 10 (Cost 4)
+            // Budget 10: Damage1 + Effect9 = 10 (Cost 4)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000005"),
                 "Reverse Gravity Chamber",
                 Rarity.Rare,
                 cost: 4,
-                damage: 4,
+                damage: 1,
                 "All attacking allies lose their INIT bonus this round. Allies with Boots equipment are immune",
                 effectTags: "ON_ACTIVATE|SET_INIT:0:ALL_ENEMIES|IF_HAS_BOOTS|IMMUNE"),
 
-            // Budget 10: Damage3 + Effect7 = 10 (Cost 4)
+            // Budget 10: Damage1 + Effect9 = 10 (Cost 4)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000006"),
                 "Crushing Walls Room",
                 Rarity.Rare,
                 cost: 4,
-                damage: 3,
+                damage: 1,
                 "Each round this trap remains active, deal 1 additional damage to all allies. Discard 3 cards from your deck to disable it",
                 effectTags: "ON_ROUND_START|DAMAGE:1:ALL_ENEMIES\nCOST:DISCARD_HAND:3|DISABLE_TRAP"),
 
-            // Budget 10: Damage5 + Effect5 = 10 (Cost 4)
+            // Budget 10: Damage1 + Effect9 = 10 (Cost 4)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000007"),
                 "Vorpal Blade Pendulum",
                 Rarity.Rare,
                 cost: 4,
-                damage: 5,
+                damage: 1,
                 "Target the ally with the lowest HP. If defeated, that ally is exiled instead of discarded",
                 effectTags: "ON_ACTIVATE|TARGET_LOWEST_HP|ON_KILL|EXILE_TARGET"),
 
-            // Budget 12: Damage6 + Effect6 = 12 (Cost 5)
+            // Budget 12: Damage1 + Effect11 = 12 (Cost 5)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000008"),
                 "Disintegration Ray",
                 Rarity.Rare,
                 cost: 5,
-                damage: 6,
-                "Target ally permanently loses HP equal to half this damage for the rest of the dungeon. Equipment cannot prevent this",
-                effectTags: "ON_ACTIVATE|-HP:3:ENEMY|UNPREVENTABLE"),
+                damage: 1,
+                "Target ally permanently loses 1 HP for the rest of the dungeon. Equipment cannot prevent this",
+                effectTags: "ON_ACTIVATE|-HP:1:ENEMY|UNPREVENTABLE"),
 
-            // Budget 8: Damage2 + Effect6 = 8 (Cost 3)
+            // Budget 8: Damage1 + Effect7 = 8 (Cost 3)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000009"),
                 "Banishment Sigil",
                 Rarity.Rare,
                 cost: 3,
-                damage: 2,
+                damage: 1,
                 "Target ally is returned to the owner's hand. The owner must pay its cost again to replay it",
                 effectTags: "ON_ACTIVATE|RETURN_TO_HAND:ENEMY"),
 
-            // Budget 12: Damage7 + Effect5 = 12 (Cost 5)
+            // Budget 12: Damage1 + Effect11 = 12 (Cost 5)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000010"),
                 "Power Word Kill Glyph",
                 Rarity.Rare,
                 cost: 5,
-                damage: 7,
+                damage: 1,
                 "If the target ally has 3 or fewer HP remaining after damage, it is immediately exiled",
                 effectTags: "ON_ACTIVATE|IF_HP_BELOW:3|EXILE_TARGET"),
 
@@ -257,113 +257,113 @@ public static partial class CardSetSeeder
             //  UNCOMMON (20) — Cost 2→6, Cost 3→8
             // ═══════════════════════════════════════════════════════════════
 
-            // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
+            // Budget 6: Damage1 + Effect5 = 6 (Cost 2)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000011"),
                 "Poison Dart Trap",
                 Rarity.Uncommon,
                 cost: 2,
-                damage: 2,
-                "Deals damage and reduces target ally's STR by 1 for the next 2 rounds",
-                effectTags: "ON_ACTIVATE|-STR:1:ENEMY"),
+                damage: 1,
+                "Deals damage and reduces target ally's ATK by 1 for the next 2 rounds",
+                effectTags: "ON_ACTIVATE|-ATK:1:ENEMY"),
 
-            // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
+            // Budget 6: Damage1 + Effect5 = 6 (Cost 2)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000012"),
                 "Spiked Pit",
                 Rarity.Uncommon,
                 cost: 2,
-                damage: 3,
+                damage: 1,
                 "Target ally cannot participate in combat next round while climbing out",
                 effectTags: "ON_ACTIVATE|STUN:ENEMY"),
 
-            // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
+            // Budget 8: Damage1 + Effect7 = 8 (Cost 3)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000013"),
                 "Explosive Rune",
                 Rarity.Uncommon,
                 cost: 3,
-                damage: 4,
-                "Deals damage to the target and half damage (rounded down) to all other attacking allies",
-                effectTags: "ON_ACTIVATE|DAMAGE:2:ALL_ENEMIES"),
+                damage: 1,
+                "Deals damage to the target and 1 damage to all other attacking allies",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ALL_ENEMIES"),
 
-            // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
+            // Budget 6: Damage1 + Effect5 = 6 (Cost 2)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000014"),
                 "Flame Jet",
                 Rarity.Uncommon,
                 cost: 2,
-                damage: 3,
+                damage: 1,
                 "Deals damage and 1 additional damage at the start of the next round",
                 effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY"),
 
-            // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
+            // Budget 8: Damage1 + Effect7 = 8 (Cost 3)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000015"),
                 "Collapsing Ceiling",
                 Rarity.Uncommon,
                 cost: 3,
-                damage: 4,
+                damage: 1,
                 "Deals damage to the target. The attacker cannot use opportunity attacks this room",
                 effectTags: "ON_ACTIVATE|DISABLE_OPP_ATTACK:OPPONENT"),
 
-            // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
+            // Budget 6: Damage1 + Effect5 = 6 (Cost 2)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000016"),
                 "Swinging Blade",
                 Rarity.Uncommon,
                 cost: 2,
-                damage: 3,
+                damage: 1,
                 "Deals damage and destroys one Armor-slot equipment on the target ally",
                 effectTags: "ON_ACTIVATE|DESTROY_ARMOR:ENEMY"),
 
-            // Budget 8: Damage4 + Effect4 = 8 (Cost 3)
+            // Budget 8: Damage1 + Effect7 = 8 (Cost 3)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000017"),
                 "Lightning Bolt Trap",
                 Rarity.Uncommon,
                 cost: 3,
-                damage: 4,
-                "Deals damage to the target ally and 2 damage to one adjacent ally in play",
-                effectTags: "ON_ACTIVATE|DAMAGE:2:ENEMY"),
+                damage: 1,
+                "Deals damage to the target ally and 1 damage to one adjacent ally in play",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY"),
 
-            // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
+            // Budget 6: Damage1 + Effect5 = 6 (Cost 2)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000018"),
                 "Acid Spray Trap",
                 Rarity.Uncommon,
                 cost: 2,
-                damage: 2,
+                damage: 1,
                 "Deals damage and destroys one random equipment card attached to the target ally",
                 effectTags: "ON_ACTIVATE|DESTROY_EQUIPMENT:ENEMY"),
 
-            // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
+            // Budget 6: Damage1 + Effect5 = 6 (Cost 2)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000019"),
                 "Freezing Glyph",
                 Rarity.Uncommon,
                 cost: 2,
-                damage: 2,
+                damage: 1,
                 "Deals damage and reduces target ally's INIT by 3 for the remainder of this room",
                 effectTags: "ON_ACTIVATE|-INIT:3:ENEMY"),
 
-            // Budget 8: Damage3 + Effect5 = 8 (Cost 3)
+            // Budget 8: Damage1 + Effect7 = 8 (Cost 3)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000020"),
                 "Sleep Gas Vent",
                 Rarity.Uncommon,
                 cost: 3,
-                damage: 3,
+                damage: 1,
                 "Target ally cannot attack or use consumables next round. A Potion or Balm can wake them early",
                 effectTags: "ON_ACTIVATE|STUN:ENEMY|DISABLE_CONSUMABLE:ENEMY"),
 
-            // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
+            // Budget 6: Damage1 + Effect5 = 6 (Cost 2)
             new TrapCard(
                 new Guid("00000000-0000-0000-0004-000000000021"),
                 "Web Trap",
                 Rarity.Uncommon,
                 cost: 2,
-                damage: 2,
+                damage: 1,
                 "Target ally cannot retarget or use opportunity attacks this round",
                 effectTags: "ON_ACTIVATE|DISABLE_RETARGET:ENEMY|DISABLE_OPP_ATTACK:ENEMY"),
 
@@ -424,7 +424,7 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 3,
-                "Target ally's STR is halved (rounded down) for their next attack",
+                "Target ally's ATK is halved (rounded down) for their next attack",
                 effectTags: "ON_ACTIVATE|HALVE_STR:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
@@ -454,8 +454,8 @@ public static partial class CardSetSeeder
                 Rarity.Uncommon,
                 cost: 3,
                 damage: 4,
-                "Target ally's STR is reduced by 1 permanently for the rest of the dungeon",
-                effectTags: "ON_ACTIVATE|-STR:1:ENEMY"),
+                "Target ally's ATK is reduced by 1 permanently for the rest of the dungeon",
+                effectTags: "ON_ACTIVATE|-ATK:1:ENEMY"),
 
             // ═══════════════════════════════════════════════════════════════
             //  COMMON (30) — Cost 1→4, Cost 2→6
@@ -628,8 +628,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "All allies with INIT below 3 lose 1 STR this round",
-                effectTags: "ON_ACTIVATE|IF_INIT_BELOW:3|-STR:1:ALL_ENEMIES"),
+                "All allies with INIT below 3 lose 1 ATK this round",
+                effectTags: "ON_ACTIVATE|IF_INIT_BELOW:3|-ATK:1:ALL_ENEMIES"),
 
             // Budget 4: Damage1 + Effect3 = 4 (Cost 1)
             new TrapCard(
@@ -638,7 +638,7 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally's Weapon equipment provides no STR bonus this round",
+                "Target ally's Weapon equipment provides no ATK bonus this round",
                 effectTags: "ON_ACTIVATE|DISABLE_WEAPON_STR:ENEMY"),
 
             // Budget 6: Damage2 + Effect4 = 6 (Cost 2)
@@ -738,8 +738,8 @@ public static partial class CardSetSeeder
                 Rarity.Common,
                 cost: 1,
                 damage: 1,
-                "Target ally's STR is reduced by 2 this round",
-                effectTags: "ON_ACTIVATE|-STR:2:ENEMY"),
+                "Target ally's ATK is reduced by 2 this round",
+                effectTags: "ON_ACTIVATE|-ATK:2:ENEMY"),
 
             // Budget 6: Damage3 + Effect3 = 6 (Cost 2)
             new TrapCard(

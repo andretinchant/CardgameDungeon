@@ -78,9 +78,9 @@ namespace CardgameDungeon.Unity.Network
         }
 
         /// <summary>POST /api/decks/{id}/validate</summary>
-        public Coroutine ValidateDeck(MonoBehaviour host, Guid deckId, Action<DeckResponse> onSuccess, Action<string> onError = null)
+        public Coroutine ValidateDeck(MonoBehaviour host, Guid deckId, Action<ValidateDeckResponse> onSuccess, Action<string> onError = null)
         {
-            return host.StartCoroutine(Post<DeckResponse>($"/api/decks/{deckId}/validate", null, onSuccess, onError));
+            return host.StartCoroutine(Post<ValidateDeckResponse>($"/api/decks/{deckId}/validate", null, onSuccess, onError));
         }
 
         // ──────────────────────────────────────────────

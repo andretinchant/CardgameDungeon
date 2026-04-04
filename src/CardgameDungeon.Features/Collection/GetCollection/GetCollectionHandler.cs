@@ -65,20 +65,20 @@ public class GetCollectionHandler(
         => card switch
         {
             AllyCard ally =>
-                $"STR {ally.Strength} | HP {ally.HitPoints} | INIT {ally.Initiative} | Treasure {ally.Treasure}" +
+                $"ATK {ally.Attack} | HP {ally.HitPoints} | INIT {ally.Initiative} | Treasure {ally.Treasure}" +
                 $"{(ally.IsAmbusher ? " | Ambusher" : string.Empty)}" +
                 $"{(string.IsNullOrWhiteSpace(ally.Effect) ? string.Empty : $" | {ally.Effect}")}",
 
             MonsterCard monster =>
-                $"STR {monster.Strength} | HP {monster.HitPoints} | INIT {monster.Initiative} | Treasure {monster.Treasure}" +
+                $"ATK {monster.Attack} | HP {monster.HitPoints} | INIT {monster.Initiative} | Treasure {monster.Treasure}" +
                 $"{(string.IsNullOrWhiteSpace(monster.Effect) ? string.Empty : $" | {monster.Effect}")}",
 
             BossCard boss =>
-                $"STR {boss.Strength} | HP {boss.HitPoints} | INIT {boss.Initiative}" +
+                $"ATK {boss.Attack} | HP {boss.HitPoints} | INIT {boss.Initiative}" +
                 $"{(string.IsNullOrWhiteSpace(boss.Effect) ? string.Empty : $" | {boss.Effect}")}",
 
             EquipmentCard equipment =>
-                $"Slot {equipment.Slot} | STR {Signed(equipment.StrengthModifier)} | HP {Signed(equipment.HitPointsModifier)} | INIT {Signed(equipment.InitiativeModifier)}" +
+                $"Slot {equipment.Slot} | ATK {Signed(equipment.AttackModifier)} | HP {Signed(equipment.HitPointsModifier)} | INIT {Signed(equipment.InitiativeModifier)}" +
                 $"{(string.IsNullOrWhiteSpace(equipment.Effect) ? string.Empty : $" | {equipment.Effect}")}",
 
             TrapCard trap =>

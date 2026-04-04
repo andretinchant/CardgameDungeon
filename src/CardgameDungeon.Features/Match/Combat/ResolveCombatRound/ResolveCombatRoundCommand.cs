@@ -8,8 +8,8 @@ public record ResolveCombatRoundCommand(Guid MatchId) : IRequest<ResolveCombatRo
 public record CombatResultDto(
     Guid AttackerId,
     Guid DefenderId,
-    int AttackerStrength,
-    int DefenderStrength,
+    int AttackerAttack,
+    int DefenderAttack,
     int DamageToAttacker,
     int DamageToDefender,
     CombatOutcome Outcome,

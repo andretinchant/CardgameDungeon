@@ -42,7 +42,7 @@ internal class AllyCardConfiguration : IEntityTypeConfiguration<AllyCard>
     {
         builder.Property(a => a.Class).HasConversion<string>().HasMaxLength(20);
         builder.Property(a => a.Race).HasColumnName("Race").HasConversion<string>().HasMaxLength(20);
-        builder.Property(a => a.Strength).HasColumnName("Strength");
+        builder.Property(a => a.Attack).HasColumnName("Attack");
         builder.Property(a => a.HitPoints).HasColumnName("HitPoints");
         builder.Property(a => a.Initiative).HasColumnName("Initiative");
         builder.Property(a => a.Treasure).HasColumnName("Treasure");
@@ -56,7 +56,7 @@ internal class EquipmentCardConfiguration : IEntityTypeConfiguration<EquipmentCa
     public void Configure(EntityTypeBuilder<EquipmentCard> builder)
     {
         builder.Property(e => e.Slot).HasConversion<string>().HasMaxLength(20);
-        builder.Property(e => e.StrengthModifier);
+        builder.Property(e => e.AttackModifier);
         builder.Property(e => e.HitPointsModifier);
         builder.Property(e => e.InitiativeModifier);
         builder.Property(e => e.Effect).HasColumnName("Effect").HasMaxLength(500);
@@ -69,7 +69,7 @@ internal class MonsterCardConfiguration : IEntityTypeConfiguration<MonsterCard>
     public void Configure(EntityTypeBuilder<MonsterCard> builder)
     {
         builder.Property(m => m.Race).HasColumnName("Race").HasConversion<string>().HasMaxLength(20);
-        builder.Property(m => m.Strength).HasColumnName("Strength");
+        builder.Property(m => m.Attack).HasColumnName("Attack");
         builder.Property(m => m.HitPoints).HasColumnName("HitPoints");
         builder.Property(m => m.Initiative).HasColumnName("Initiative");
         builder.Property(m => m.Treasure).HasColumnName("Treasure");
@@ -112,7 +112,7 @@ internal class BossCardConfiguration : IEntityTypeConfiguration<BossCard>
     public void Configure(EntityTypeBuilder<BossCard> builder)
     {
         builder.Property(b => b.Race).HasColumnName("Race").HasConversion<string>().HasMaxLength(20);
-        builder.Property(b => b.Strength).HasColumnName("Strength");
+        builder.Property(b => b.Attack).HasColumnName("Attack");
         builder.Property(b => b.HitPoints).HasColumnName("HitPoints");
         builder.Property(b => b.Initiative).HasColumnName("Initiative");
         builder.Property(b => b.Effect).HasColumnName("Effect").HasMaxLength(500);

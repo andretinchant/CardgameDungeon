@@ -41,7 +41,7 @@ public class RetargetHandlerTests
                 ExileCost: false),
             CancellationToken.None);
 
-        Assert.Equal(attacker.AlliesInPlay[0].Strength, response.PrimaryDamageContribution);
+        Assert.Equal(attacker.AlliesInPlay[0].Attack, response.PrimaryDamageContribution);
         Assert.Equal(0, response.SecondaryDamageContribution);
         Assert.Equal(2, response.CostPaid);
     }

@@ -13,11 +13,11 @@ public record SetTheme(
     BossTheme[] Bosses,
     EquipmentTheme[]? Consumables = null);
 
-public record AllyTheme(string Name, int Strength, int HitPoints, int Initiative, int Cost, int Treasure, bool IsAmbusher, string Effect);
-public record EquipmentTheme(string Name, int Cost, int StrMod, int HpMod, int InitMod,
+public record AllyTheme(string Name, int Attack, int HitPoints, int Initiative, int Cost, int Treasure, bool IsAmbusher, string Effect);
+public record EquipmentTheme(string Name, int Cost, int AtkMod, int HpMod, int InitMod,
     CardgameDungeon.Domain.Enums.EquipmentSlot Slot = CardgameDungeon.Domain.Enums.EquipmentSlot.Accessory,
     string? Effect = null);
-public record MonsterTheme(string Name, int Strength, int HitPoints, int Initiative, int Cost, int Treasure, string Effect);
+public record MonsterTheme(string Name, int Attack, int HitPoints, int Initiative, int Cost, int Treasure, string Effect);
 public record TrapTheme(string Name, int Cost, int Damage, string Effect);
 public record RoomTheme(string Name, int MonsterCostBudget, string Effect);
-public record BossTheme(string Name, int Strength, int HitPoints, int Initiative, int Cost, string Effect);
+public record BossTheme(string Name, int Attack, int HitPoints, int Initiative, int Cost, string Effect);

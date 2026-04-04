@@ -6,7 +6,7 @@ namespace CardgameDungeon.API.Data.Seeds;
 public static partial class CardSetSeeder
 {
     // Consumable budget (equipment +1 for single-use): Cost 1→4, 2→6, 3→7, 4→9, 5→11, Unique 5→13
-    // Formula: STR + HP + INIT*1.5 + EffectPts = Budget
+    // Formula: ATK + HP + INIT*1.5 + EffectPts = Budget
     // All consumables MUST have an effect.
     private static List<EquipmentCard> CreateConsumables()
     {
@@ -22,39 +22,39 @@ public static partial class CardSetSeeder
                 "Search your deck, discard pile, or exile: take any 1 card and put it in your hand. Exile this scroll after use",
                 effectTags: "ON_ACTIVATE|SEARCH_ANY:1|EXILE_SELF"),
 
-            // Budget: STR0 + HP4 + INIT0×1.5 + Effect9 = 13 (cannot-die effect ~7, self-damage -2 offset)
+            // Budget: STR0 + HP4 + INIT0×1.5 + Effect9 = 13 (cannot-die effect ~8, self-damage -1 offset)
             new(new Guid("00000000-0000-0000-0007-000000000002"),
                 "Elixir of Immortality", Rarity.Unique, 5, 0, 4, 0, EquipmentSlot.Potion,
-                "Target ally cannot be eliminated this round and gains +4 HP. At end of round: lose 2 HP",
-                effectTags: "ON_ACTIVATE|IMMUNE_ELIM:ALLY|+HP:4:ALLY\nON_ROUND_START|-HP:2:ALLY"),
+                "Target ally cannot be eliminated this round and gains +4 HP. At end of round: lose 1 HP",
+                effectTags: "ON_ACTIVATE|IMMUNE_ELIM:ALLY|+HP:4:ALLY\nON_ROUND_START|-HP:1:ALLY"),
 
             // ═══════════════════════════════════════════════════════════════
             //  RARE (8) — Cost 3→Budget 7, Cost 4→Budget 9
             // ═══════════════════════════════════════════════════════════════
 
-            // Budget: STR3 + HP0 + INIT0×1.5 + Effect6 = 9 (AoE split damage + Advantage bonus)
+            // Budget: STR1 + HP0 + INIT0×1.5 + Effect8 = 9 (AoE split damage + Advantage bonus)
             new(new Guid("00000000-0000-0000-0007-000000000003"),
-                "Scroll of Fireball", Rarity.Rare, 4, 3, 0, 0, EquipmentSlot.Scroll,
-                "Deal 3 damage split among all enemies in play. With Advantage: deal 5 damage instead",
-                effectTags: "ON_ACTIVATE|DAMAGE:3:ALL_ENEMIES\nWITH_ADVANTAGE|DAMAGE:5:ALL_ENEMIES"),
+                "Scroll of Fireball", Rarity.Rare, 4, 1, 0, 0, EquipmentSlot.Scroll,
+                "Deal 1 damage split among all enemies in play. With Advantage: deal 2 damage instead",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ALL_ENEMIES\nWITH_ADVANTAGE|DAMAGE:2:ALL_ENEMIES"),
 
             // Budget: STR4 + HP0 + INIT0×1.5 + Effect3 = 7
             new(new Guid("00000000-0000-0000-0007-000000000004"),
-                "Potion of Giant Strength", Rarity.Rare, 3, 4, 0, 0, EquipmentSlot.Potion,
-                "Target ally gains +4 STR for this combat round",
-                effectTags: "ON_ACTIVATE|+STR:4:ALLY"),
+                "Potion of Giant Attack", Rarity.Rare, 3, 4, 0, 0, EquipmentSlot.Potion,
+                "Target ally gains +4 ATK for this combat round",
+                effectTags: "ON_ACTIVATE|+ATK:4:ALLY"),
 
             // Budget: STR0 + HP0 + INIT0×1.5 + Effect9 = 9 (recovery from discard ~9)
             new(new Guid("00000000-0000-0000-0007-000000000005"),
                 "Scroll of Resurrection", Rarity.Rare, 4, 0, 0, 0, EquipmentSlot.Scroll,
-                "Return one ally from your discard pile to your hand. That ally enters play with -1 STR",
-                effectTags: "ON_ACTIVATE|RESTORE_ALLY_FROM_DISCARD|-STR:1:ALLY"),
+                "Return one ally from your discard pile to your hand. That ally enters play with -1 ATK",
+                effectTags: "ON_ACTIVATE|RESTORE_ALLY_FROM_DISCARD|-ATK:1:ALLY"),
 
-            // Budget: STR4 + HP0 + INIT0×1.5 + Effect5 = 9 (ignores Shield ~2, direct damage ~3)
+            // Budget: STR1 + HP0 + INIT0×1.5 + Effect8 = 9 (ignores Shield ~2, direct damage ~1)
             new(new Guid("00000000-0000-0000-0007-000000000006"),
-                "Bomb of Devastation", Rarity.Rare, 4, 4, 0, 0, EquipmentSlot.Bomb,
-                "Deal 4 damage to target enemy, ignoring Shield equipment bonuses",
-                effectTags: "ON_ACTIVATE|DAMAGE:4:ENEMY|IGNORE_SHIELD"),
+                "Bomb of Devastation", Rarity.Rare, 4, 1, 0, 0, EquipmentSlot.Bomb,
+                "Deal 1 damage to target enemy, ignoring Shield equipment bonuses",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY|IGNORE_SHIELD"),
 
             // Budget: STR0 + HP3 + INIT0×1.5 + Effect4 = 7 (AoE heal ~4)
             new(new Guid("00000000-0000-0000-0007-000000000007"),
@@ -65,8 +65,8 @@ public static partial class CardSetSeeder
             // Budget: STR0 + HP2 + INIT2×1.5 + Effect2 = 7
             new(new Guid("00000000-0000-0000-0007-000000000008"),
                 "Totem of Ancestral Guard", Rarity.Rare, 3, 0, 2, 2, EquipmentSlot.Totem,
-                "All allies gain +2 HP and +2 INIT this round. With Disadvantage: also grants +1 STR",
-                effectTags: "ON_ACTIVATE|+HP:2:ALL_ALLIES|+INIT:2:ALL_ALLIES\nWITH_DISADVANTAGE|+STR:1:ALL_ALLIES"),
+                "All allies gain +2 HP and +2 INIT this round. With Disadvantage: also grants +1 ATK",
+                effectTags: "ON_ACTIVATE|+HP:2:ALL_ALLIES|+INIT:2:ALL_ALLIES\nWITH_DISADVANTAGE|+ATK:1:ALL_ALLIES"),
 
             // Budget: STR0 + HP0 + INIT3×1.5 + Effect4.5 = 9 (guaranteed first-strike ~4.5)
             new(new Guid("00000000-0000-0000-0007-000000000009"),
@@ -84,11 +84,11 @@ public static partial class CardSetSeeder
             //  UNCOMMON (20) — Cost 2, Budget 6
             // ═══════════════════════════════════════════════════════════════
 
-            // Budget: STR3 + HP0 + INIT0×1.5 + Effect3 = 6
+            // Budget: STR1 + HP0 + INIT0×1.5 + Effect5 = 6
             new(new Guid("00000000-0000-0000-0007-000000000011"),
-                "Scroll of Lightning Bolt", Rarity.Uncommon, 2, 3, 0, 0, EquipmentSlot.Scroll,
-                "Deal 3 damage to target enemy",
-                effectTags: "ON_ACTIVATE|DAMAGE:3:ENEMY"),
+                "Scroll of Lightning Bolt", Rarity.Uncommon, 2, 1, 0, 0, EquipmentSlot.Scroll,
+                "Deal 1 damage to target enemy",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY"),
 
             // Budget: STR0 + HP3 + INIT0×1.5 + Effect3 = 6
             new(new Guid("00000000-0000-0000-0007-000000000012"),
@@ -108,17 +108,17 @@ public static partial class CardSetSeeder
                 "Target ally gains +3 INIT this round",
                 effectTags: "ON_ACTIVATE|+INIT:3:ALLY"),
 
-            // Budget: STR2 + HP0 + INIT0×1.5 + Effect4 = 6 (splash ~2, direct ~2)
+            // Budget: STR1 + HP0 + INIT0×1.5 + Effect5 = 6 (single target damage)
             new(new Guid("00000000-0000-0000-0007-000000000015"),
-                "Alchemist Fire", Rarity.Uncommon, 2, 2, 0, 0, EquipmentSlot.Bomb,
-                "Deal 2 damage to target enemy and 1 damage to one adjacent enemy",
-                effectTags: "ON_ACTIVATE|DAMAGE:2:ENEMY|DAMAGE:1:ENEMY"),
+                "Alchemist Fire", Rarity.Uncommon, 2, 1, 0, 0, EquipmentSlot.Bomb,
+                "Deal 1 damage to target enemy",
+                effectTags: "ON_ACTIVATE|DAMAGE:1:ENEMY"),
 
-            // Budget: STR3 + HP0 + INIT0×1.5 + Effect3 = 6 (type-restricted bonus ~1)
+            // Budget: STR1 + HP0 + INIT0×1.5 + Effect5 = 6 (type-restricted bonus ~1)
             new(new Guid("00000000-0000-0000-0007-000000000016"),
-                "Holy Water", Rarity.Uncommon, 2, 3, 0, 0, EquipmentSlot.Bomb,
-                "Deal 3 damage to target Undead or Fiend enemy. Exiles that enemy if defeated",
-                effectTags: "ON_ACTIVATE|IF_RACE:Undead|DAMAGE:3:ENEMY|EXILE_TARGET\nON_ACTIVATE|IF_RACE:Demon|DAMAGE:3:ENEMY|EXILE_TARGET"),
+                "Holy Water", Rarity.Uncommon, 2, 1, 0, 0, EquipmentSlot.Bomb,
+                "Deal 1 damage to target Undead or Fiend enemy. Exiles that enemy if defeated",
+                effectTags: "ON_ACTIVATE|IF_RACE:Undead|DAMAGE:1:ENEMY|EXILE_TARGET\nON_ACTIVATE|IF_RACE:Demon|DAMAGE:1:ENEMY|EXILE_TARGET"),
 
             // Budget: STR0 + HP2 + INIT0×1.5 + Effect4 = 6 (heal + cleanse ~4)
             new(new Guid("00000000-0000-0000-0007-000000000017"),
@@ -126,17 +126,17 @@ public static partial class CardSetSeeder
                 "Restore 2 HP to target ally and remove all Disadvantage effects",
                 effectTags: "ON_ACTIVATE|HEAL:2:ALLY|REMOVE_DISADVANTAGE:ALLY"),
 
-            // Budget: STR2 + HP0 + INIT0×1.5 + Effect4 = 6 (AoE STR ~4)
+            // Budget: STR2 + HP0 + INIT0×1.5 + Effect4 = 6 (AoE ATK ~4)
             new(new Guid("00000000-0000-0000-0007-000000000018"),
                 "Totem of War", Rarity.Uncommon, 2, 2, 0, 0, EquipmentSlot.Totem,
-                "All allies gain +2 STR this combat round",
-                effectTags: "ON_ACTIVATE|+STR:2:ALL_ALLIES"),
+                "All allies gain +2 ATK this combat round",
+                effectTags: "ON_ACTIVATE|+ATK:2:ALL_ALLIES"),
 
             // Budget: STR1 + HP0 + INIT2×1.5 + Effect2 = 6
             new(new Guid("00000000-0000-0000-0007-000000000019"),
                 "Scroll of Haste", Rarity.Uncommon, 2, 1, 0, 2, EquipmentSlot.Scroll,
-                "Target ally gains +1 STR and +2 INIT this round",
-                effectTags: "ON_ACTIVATE|+STR:1:ALLY|+INIT:2:ALLY"),
+                "Target ally gains +1 ATK and +2 INIT this round",
+                effectTags: "ON_ACTIVATE|+ATK:1:ALLY|+INIT:2:ALLY"),
 
             // Budget: STR0 + HP2 + INIT1×1.5 + Effect2.5 = 6
             new(new Guid("00000000-0000-0000-0007-000000000020"),
@@ -159,8 +159,8 @@ public static partial class CardSetSeeder
             // Budget: STR1 + HP1 + INIT0×1.5 + Effect4 = 6
             new(new Guid("00000000-0000-0000-0007-000000000023"),
                 "Balm of Heroes", Rarity.Uncommon, 2, 1, 1, 0, EquipmentSlot.Balm,
-                "Target ally gains +1 STR and +1 HP. Remove one negative effect",
-                effectTags: "ON_ACTIVATE|+STR:1:ALLY|+HP:1:ALLY|REMOVE_NEGATIVE:ALLY"),
+                "Target ally gains +1 ATK and +1 HP. Remove one negative effect",
+                effectTags: "ON_ACTIVATE|+ATK:1:ALLY|+HP:1:ALLY|REMOVE_NEGATIVE:ALLY"),
 
             // Budget: STR0 + HP2 + INIT0×1.5 + Effect4 = 6 (AoE HP ~4)
             new(new Guid("00000000-0000-0000-0007-000000000024"),
@@ -177,14 +177,14 @@ public static partial class CardSetSeeder
             // Budget: STR3 + HP-1 + INIT0×1.5 + Effect4 = 6 (self-damage drawback)
             new(new Guid("00000000-0000-0000-0007-000000000026"),
                 "Potion of Rage", Rarity.Uncommon, 2, 3, -1, 0, EquipmentSlot.Potion,
-                "Target ally gains +3 STR but loses 1 HP",
-                effectTags: "ON_ACTIVATE|+STR:3:ALLY|-HP:1:ALLY"),
+                "Target ally gains +3 ATK but loses 1 HP",
+                effectTags: "ON_ACTIVATE|+ATK:3:ALLY|-HP:1:ALLY"),
 
             // Budget: STR0 + HP0 + INIT0×1.5 + Effect6 = 6 (permanent HP loss ~6)
             new(new Guid("00000000-0000-0000-0007-000000000027"),
                 "Poison Vial", Rarity.Uncommon, 2, 0, 0, 0, EquipmentSlot.Bomb,
-                "Target enemy loses 2 HP permanently for the rest of the dungeon",
-                effectTags: "ON_ACTIVATE|-HP:2:ENEMY"),
+                "Target enemy loses 1 HP permanently for the rest of the dungeon",
+                effectTags: "ON_ACTIVATE|-HP:1:ENEMY"),
 
             // Budget: STR0 + HP0 + INIT2×1.5 + Effect3 = 6 (AoE INIT ~3)
             new(new Guid("00000000-0000-0000-0007-000000000028"),
@@ -236,14 +236,14 @@ public static partial class CardSetSeeder
             // Budget: STR1 + HP0 + INIT0×1.5 + Effect3 = 4
             new(new Guid("00000000-0000-0000-0007-000000000035"),
                 "Hunting Totem", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Totem,
-                "One ally gains +1 STR this round",
-                effectTags: "ON_ACTIVATE|+STR:1:ALLY"),
+                "One ally gains +1 ATK this round",
+                effectTags: "ON_ACTIVATE|+ATK:1:ALLY"),
 
             // Budget: STR1 + HP0 + INIT0×1.5 + Effect3 = 4
             new(new Guid("00000000-0000-0000-0007-000000000036"),
                 "Potion of Courage", Rarity.Common, 1, 1, 0, 0, EquipmentSlot.Potion,
-                "Target ally gains +1 STR this round",
-                effectTags: "ON_ACTIVATE|+STR:1:ALLY"),
+                "Target ally gains +1 ATK this round",
+                effectTags: "ON_ACTIVATE|+ATK:1:ALLY"),
 
             // Budget: STR0 + HP0 + INIT1×1.5 + Effect2.5 = 4
             new(new Guid("00000000-0000-0000-0007-000000000037"),
@@ -311,11 +311,11 @@ public static partial class CardSetSeeder
                 "Restore 1 HP to target ally",
                 effectTags: "ON_ACTIVATE|HEAL:1:ALLY"),
 
-            // Budget: STR0 + HP0 + INIT0×1.5 + Effect4 = 4 (enemy STR reduction ~4)
+            // Budget: STR0 + HP0 + INIT0×1.5 + Effect4 = 4 (enemy ATK reduction ~4)
             new(new Guid("00000000-0000-0000-0007-000000000048"),
                 "Frost Bomb", Rarity.Common, 1, 0, 0, 0, EquipmentSlot.Bomb,
-                "Target enemy loses 1 STR this round",
-                effectTags: "ON_ACTIVATE|-STR:1:ENEMY"),
+                "Target enemy loses 1 ATK this round",
+                effectTags: "ON_ACTIVATE|-ATK:1:ENEMY"),
 
             // Budget: STR0 + HP0 + INIT1×1.5 + Effect2.5 = 4
             new(new Guid("00000000-0000-0000-0007-000000000049"),
@@ -326,8 +326,8 @@ public static partial class CardSetSeeder
             // Budget: STR0 + HP0 + INIT0×1.5 + Effect4 = 4 (type-restricted debuff ~4)
             new(new Guid("00000000-0000-0000-0007-000000000050"),
                 "Bone Totem", Rarity.Common, 1, 0, 0, 0, EquipmentSlot.Totem,
-                "Reduce one Undead enemy's STR by 2 this round",
-                effectTags: "ON_ACTIVATE|IF_RACE:Undead|-STR:2:ENEMY"),
+                "Reduce one Undead enemy's ATK by 2 this round",
+                effectTags: "ON_ACTIVATE|IF_RACE:Undead|-ATK:2:ENEMY"),
 
             // Budget: STR0 + HP1 + INIT0×1.5 + Effect3 = 4
             new(new Guid("00000000-0000-0000-0007-000000000051"),
@@ -350,8 +350,8 @@ public static partial class CardSetSeeder
             // Budget: STR1 + HP0 + INIT-1×1.5 + Effect4.5 = 4 (drawback offsets)
             new(new Guid("00000000-0000-0000-0007-000000000054"),
                 "Dwarven Spirits", Rarity.Common, 1, 1, 0, -1, EquipmentSlot.Potion,
-                "Target ally gains +1 STR but loses 1 INIT this round",
-                effectTags: "ON_ACTIVATE|+STR:1:ALLY|-INIT:1:ALLY"),
+                "Target ally gains +1 ATK but loses 1 INIT this round",
+                effectTags: "ON_ACTIVATE|+ATK:1:ALLY|-INIT:1:ALLY"),
 
             // Budget: STR0 + HP0 + INIT0×1.5 + Effect4 = 4 (exile prevention ~4)
             new(new Guid("00000000-0000-0000-0007-000000000055"),

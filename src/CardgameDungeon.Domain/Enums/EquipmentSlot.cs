@@ -19,7 +19,7 @@ public enum EquipmentSlot
     Summon,
 
     // Shapeshift — equip on Druid only. Always cost 2.
-    // Replaces the Druid on the field with the Shapeshift form (has own STR/HP/INIT).
+    // Replaces the Druid on the field with the Shapeshift form (has own ATK/HP/INIT).
     // Druid and all equipment are "stored inside" the form.
     // When the Shapeshift form is eliminated, the Druid returns with all equipment.
     Shapeshift,

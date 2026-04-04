@@ -20,7 +20,7 @@ public record CombatAdvantage(
 {
     /// <summary>
     /// Calculates advantage states from unit counts.
-    /// No automatic STR bonus — advantage only triggers card effects.
+    /// No automatic ATK bonus — advantage only triggers card effects.
     /// </summary>
     public static CombatAdvantage Calculate(int attackerCount, int defenderCount)
     {

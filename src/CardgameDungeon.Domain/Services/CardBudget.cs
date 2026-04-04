@@ -10,7 +10,7 @@ namespace CardgameDungeon.Domain.Services;
 ///
 /// Unique/Boss bonus: +5 at cost 5, scaling to +10 at cost 10.
 ///
-/// Stat costs: STR=1, HP=1, INIT=1.5, Treasure=1, Ambusher=2
+/// Stat costs: ATK=1, HP=1, INIT=1.5, Treasure=1, Ambusher=2
 /// Effect budget = total budget - stat spend. Rarity determines effect allocation:
 ///   Common: 0-2 effect pts (stat stick)
 ///   Uncommon: 3-4 effect pts (moderate ability)
@@ -27,7 +27,7 @@ public static class CardBudget
     //  cost:  0   1   2   3   4   5   6   7   8   9  10
              [ 0,  0,  0,  0,  0,  5,  6,  7,  8,  9, 10 ];
 
-    public const float StrengthCost = 1.0f;
+    public const float AttackCost = 1.0f;
     public const float HitPointsCost = 1.0f;
     public const float InitiativeCost = 1.5f;
     public const float TreasureCost = 1.0f;
@@ -43,10 +43,10 @@ public static class CardBudget
     }
 
     /// <summary>Calculates how many budget points a card's stats consume.</summary>
-    public static float CalculateStatSpend(int strength, int hitPoints, int initiative,
+    public static float CalculateStatSpend(int attack, int hitPoints, int initiative,
         int treasure = 0, bool isAmbusher = false)
     {
-        return strength * StrengthCost
+        return attack * AttackCost
              + hitPoints * HitPointsCost
              + initiative * InitiativeCost
              + treasure * TreasureCost
@@ -54,11 +54,11 @@ public static class CardBudget
     }
 
     /// <summary>Returns the remaining budget available for effects.</summary>
-    public static float GetEffectBudget(int cost, int strength, int hitPoints, int initiative,
+    public static float GetEffectBudget(int cost, int attack, int hitPoints, int initiative,
         int treasure = 0, bool isAmbusher = false, bool isUniqueOrBoss = false)
     {
         var total = GetBudget(cost, isUniqueOrBoss);
-        var statSpend = CalculateStatSpend(strength, hitPoints, initiative, treasure, isAmbusher);
+        var statSpend = CalculateStatSpend(attack, hitPoints, initiative, treasure, isAmbusher);
         return total - statSpend;
     }
 
@@ -77,12 +77,12 @@ public static class CardBudget
     /// Returns (isValid, budget, statSpend, effectBudget, recommendedEffectRange).
     /// </summary>
     public static CardBudgetValidation Validate(
-        int cost, Rarity rarity, int strength, int hitPoints, int initiative,
+        int cost, Rarity rarity, int attack, int hitPoints, int initiative,
         int treasure = 0, bool isAmbusher = false)
     {
         var isUnique = rarity == Rarity.Unique;
         var budget = GetBudget(cost, isUnique);
-        var statSpend = CalculateStatSpend(strength, hitPoints, initiative, treasure, isAmbusher);
+        var statSpend = CalculateStatSpend(attack, hitPoints, initiative, treasure, isAmbusher);
         var effectBudget = budget - statSpend;
         var (minEffect, maxEffect) = GetEffectRange(rarity);
         var isValid = effectBudget >= minEffect && effectBudget <= maxEffect + 1;

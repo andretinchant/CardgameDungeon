@@ -18,7 +18,7 @@ public class ResolveCombatRoundHandlerTests
     [Fact]
     public async Task AttackerStronger_DefenderEliminated()
     {
-        // P1 strength=10, P2 strength=3, P2 hp=5 → 10 >= 5 → P2 eliminated
+        // P1 attack=10, P2 attack=3, P2 hp=5 → 10 >= 5 → P2 eliminated
         var match = MatchTestHelper.MakeMatchInCombat(p1Strength: 10, p1Hp: 20, p2Strength: 3, p2Hp: 5);
         _matchRepo.Seed(match);
 
@@ -40,8 +40,9 @@ public class ResolveCombatRoundHandlerTests
     }
 
     [Fact]
-    public async Task EqualStrength_BothTakeDamage()
+    public async Task EqualStrength_SimultaneousElimination()
     {
+        // Equal ATK + equal HP → tie each round, both lose 1 HP → simultaneous elimination
         var match = MatchTestHelper.MakeMatchInCombat(p1Strength: 5, p1Hp: 20, p2Strength: 5, p2Hp: 20);
         _matchRepo.Seed(match);
 
@@ -57,7 +58,7 @@ public class ResolveCombatRoundHandlerTests
             new ResolveCombatRoundCommand(match.Id),
             CancellationToken.None);
 
-        Assert.Equal(CombatOutcome.BothTakeDamage, response.Results[0].Outcome);
+        Assert.Equal(CombatOutcome.SimultaneousElimination, response.Results[0].Outcome);
     }
 
     [Fact]

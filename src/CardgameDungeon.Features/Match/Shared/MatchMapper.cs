@@ -27,7 +27,7 @@ public static class MatchMapper
             player.AlliesInPlay.Select(ToAllyDto).ToList());
 
     private static AllyDto ToAllyDto(AllyCard ally)
-        => new(ally.Id, ally.Name, ally.Strength, ally.HitPoints,
+        => new(ally.Id, ally.Name, ally.Attack, ally.HitPoints,
             ally.Initiative, ally.Cost, ally.IsAmbusher);
 
     private static DungeonRoomDto ToRoomDto(DungeonRoomCard room)

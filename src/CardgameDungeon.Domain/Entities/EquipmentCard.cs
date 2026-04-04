@@ -6,7 +6,7 @@ public class EquipmentCard : Card
 {
     public override CardType Type => CardType.Equipment;
     public EquipmentSlot Slot { get; private set; }
-    public int StrengthModifier { get; private set; }
+    public int AttackModifier { get; private set; }
     public int HitPointsModifier { get; private set; }
     public int InitiativeModifier { get; private set; }
     public string? Effect { get; private set; }
@@ -24,7 +24,7 @@ public class EquipmentCard : Card
         string name,
         Rarity rarity,
         int cost,
-        int strengthModifier,
+        int attackModifier,
         int hitPointsModifier,
         int initiativeModifier,
         EquipmentSlot slot = EquipmentSlot.Accessory,
@@ -33,7 +33,7 @@ public class EquipmentCard : Card
         : base(id, name, rarity, cost, effectTags)
     {
         Slot = slot;
-        StrengthModifier = strengthModifier;
+        AttackModifier = attackModifier;
         HitPointsModifier = hitPointsModifier;
         InitiativeModifier = initiativeModifier;
         Effect = effect;

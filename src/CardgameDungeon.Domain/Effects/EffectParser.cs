@@ -4,7 +4,7 @@ namespace CardgameDungeon.Domain.Effects;
 /// Parses effect tag strings into structured EffectTag objects.
 /// Format: lines separated by newline, tokens separated by |
 /// Example:
-///   "ON_ACTIVATE|COST:EXILE_DECK:4|+STR:2|ELIM_DOUBLE|ONCE_PER_COMBAT"
+///   "ON_ACTIVATE|COST:EXILE_DECK:4|+ATK:2|ELIM_DOUBLE|ONCE_PER_COMBAT"
 /// </summary>
 public static class EffectParser
 {
@@ -139,15 +139,15 @@ public static class EffectParser
 
     private static EffectActionEntry? ParseAction(string token)
     {
-        // +STR:2 / -STR:1 / +HP:3 / +INIT:2 / +STR:4:ALLY
-        if (token.StartsWith("+STR:") || token.StartsWith("-STR:"))
+        // +ATK:2 / -ATK:1 / +HP:3 / +INIT:2 / +ATK:4:ALLY
+        if (token.StartsWith("+ATK:") || token.StartsWith("-ATK:"))
         {
             var rest = token[4..].TrimStart(':');
             var valuePart = rest.Split(':')[0];
             var targetPart = rest.Contains(':') ? rest[(rest.IndexOf(':') + 1)..] : "";
             return new EffectActionEntry
             {
-                Action = EffectAction.ModStr,
+                Action = EffectAction.ModAtk,
                 Value = ParseSignedInt(":" + valuePart),
                 Target = string.IsNullOrEmpty(targetPart) ? EffectTarget.Self : ParseTarget(targetPart)
             };
