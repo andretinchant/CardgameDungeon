@@ -334,14 +334,27 @@ public class MatchSimulation
             {
                 if (match.CanAdvance)
                 {
-                    match.AdvanceToNextRoom(defenderReshuffles: false);
-                    Log($"ADVANCE → Room {match.CurrentRoom} | Phase: {match.Phase}");
+                    // Defender decides: reshuffle if few monsters in hand, otherwise just draw
+                    var def = match.GetInactivePlayer();
+                    var defName = activeId == p1Id ? "P2" : "P1";
+                    var monstersInDefHand = def.Hand.OfType<MonsterCard>().Count();
+                    bool shouldReshuffle = monstersInDefHand < 2;
+
+                    match.AdvanceToNextRoom(defenderReshuffles: shouldReshuffle);
+
+                    if (shouldReshuffle)
+                        Log($"ADVANCE → Room {match.CurrentRoom} | {defName} RESHUFFLES hand ({monstersInDefHand} monsters was too few) and draws 8 fresh cards");
+                    else
+                        Log($"ADVANCE → Room {match.CurrentRoom} | {defName} draws up to 8 (had {monstersInDefHand} monsters)");
+
+                    LogHandComposition(defName, def);
                 }
                 else
                 {
                     match.StopAndHeal();
-                    Log($"STOP & HEAL → Pass turn | Phase: {match.Phase}");
+                    Log($"STOP & HEAL → Cure 1 HP all allies, pass turn");
                 }
+                Log($"Phase: {match.Phase}");
                 LogState(player1, player2);
             }
 
